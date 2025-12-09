@@ -1,0 +1,2 @@
+# This project intentionally avoids external dependencies.
+# Use Python 3.8 or later to run the code.
