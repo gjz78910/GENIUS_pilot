@@ -29,4 +29,14 @@ jobs = [
     Job(id=3, location="C", time="11:00", required_skills=["maintain"]),
     Job(id=4, location="A", time="12:00", required_skills=["install"]),
     Job(id=5, location="A", time="13:00", required_skills=["repair", "install"]),
+    # Add more jobs at location A - Alice will get them all (she's closest)
+    Job(id=6, location="A", time="14:00", required_skills=["repair", "install"]),
+    Job(id=7, location="A", time="15:00", required_skills=["repair", "install"]),
+    Job(id=8, location="A", time="16:00", required_skills=["repair", "install"]),
+    Job(id=9, location="A", time="17:00", required_skills=["repair", "install"]),
+    Job(id=10, location="A", time="18:00", required_skills=["repair", "install"]),
+    Job(id=11, location="A", time="19:00", required_skills=["repair", "install"]),
+    Job(id=12, location="A", time="20:00", required_skills=["repair", "install"]),
+    Job(id=13, location="A", time="21:00", required_skills=["repair", "install"]),
+    # With 10 jobs at location A, Alice will check 10! = 3,628,800 routes (takes 1-3 seconds)
 ]

@@ -29,7 +29,7 @@ class TestScheduler(unittest.TestCase):
         }
         # Expected assignments based on skills and proximity
         expected = {
-            1: [4, 5],  # Engineer 1 should get jobs 4 and 5
+            1: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13],  # Engineer 1 (Alice) gets all jobs at location A
             2: [2],     # Engineer 2 should get job 2
             3: [3],     # Engineer 3 should get job 3
             4: [1],     # Engineer 4 should get job 1
