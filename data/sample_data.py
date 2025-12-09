@@ -15,7 +15,7 @@ __all__ = ["engineers", "jobs"]
 
 # Define a few engineers with distinct locations and skill sets
 engineers = [
-    Engineer(id=1, name="Alice", location="A", skills=["repair", "install"]),
+    Engineer(id=1, name="Alice", location="A", skills=["repair", "install", "upgrade"]),
     Engineer(id=2, name="Bob", location="B", skills=["install"]),
     Engineer(id=3, name="Charlie", location="C", skills=["repair", "maintain"]),
     Engineer(id=4, name="Daisy", location="D", skills=["maintain", "repair", "install"]),
@@ -27,16 +27,16 @@ jobs = [
     Job(id=1, location="D", time="09:00", required_skills=["repair"]),
     Job(id=2, location="B", time="10:00", required_skills=["install"]),
     Job(id=3, location="C", time="11:00", required_skills=["maintain"]),
-    Job(id=4, location="A", time="12:00", required_skills=["install"]),
-    Job(id=5, location="A", time="13:00", required_skills=["repair", "install"]),
-    # Add more jobs at location A - Alice will get them all (she's closest)
-    Job(id=6, location="A", time="14:00", required_skills=["repair", "install"]),
-    Job(id=7, location="A", time="15:00", required_skills=["repair", "install"]),
-    Job(id=8, location="A", time="16:00", required_skills=["repair", "install"]),
-    Job(id=9, location="A", time="17:00", required_skills=["repair", "install"]),
-    Job(id=10, location="A", time="18:00", required_skills=["repair", "install"]),
-    Job(id=11, location="A", time="19:00", required_skills=["repair", "install"]),
-    Job(id=12, location="A", time="20:00", required_skills=["repair", "install"]),
-    Job(id=13, location="A", time="21:00", required_skills=["repair", "install"]),
-    # With 10 jobs at location A, Alice will check 10! = 3,628,800 routes (takes 1-3 seconds)
+    # Alice gets jobs needing "upgrade" skill (only she has it) at various locations
+    Job(id=4, location="A", time="12:00", required_skills=["upgrade"]),
+    Job(id=5, location="B", time="13:00", required_skills=["upgrade"]),
+    Job(id=6, location="C", time="14:00", required_skills=["upgrade"]),
+    Job(id=7, location="D", time="15:00", required_skills=["upgrade"]),
+    Job(id=8, location="A", time="16:00", required_skills=["upgrade"]),
+    Job(id=9, location="B", time="17:00", required_skills=["upgrade"]),
+    Job(id=10, location="C", time="18:00", required_skills=["upgrade"]),
+    Job(id=11, location="D", time="19:00", required_skills=["upgrade"]),
+    Job(id=12, location="A", time="20:00", required_skills=["upgrade"]),
+    Job(id=13, location="B", time="21:00", required_skills=["upgrade"]),
+    # Alice (at A) gets 10 jobs across locations A,B,C,D → TSP finds best route order
 ]
