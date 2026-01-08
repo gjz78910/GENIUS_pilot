@@ -26,6 +26,8 @@ wheels/
 *.swp
 *.swo
 *~
+.amazonq/
+.cursor/
 
 # OS
 .DS_Store
