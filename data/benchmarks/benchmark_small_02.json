@@ -1,0 +1,78 @@
+{
+  "description": "Medium benchmark: 3 engineers, 5 jobs. All jobs assignable. Optimal solution balances workload.",
+  "engineers": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "location": "A",
+      "skills": ["repair"],
+      "working_hours": 6.0
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "location": "B",
+      "skills": ["install", "repair"],
+      "working_hours": 8.0
+    },
+    {
+      "id": 3,
+      "name": "Charlie",
+      "location": "C",
+      "skills": ["maintain", "install"],
+      "working_hours": 8.0
+    }
+  ],
+  "jobs": [
+    {
+      "id": 1,
+      "location": "A",
+      "time": "09:00",
+      "required_skills": ["repair"],
+      "length": 2.0
+    },
+    {
+      "id": 2,
+      "location": "B",
+      "time": "10:00",
+      "required_skills": ["install"],
+      "length": 1.5
+    },
+    {
+      "id": 3,
+      "location": "C",
+      "time": "11:00",
+      "required_skills": ["maintain"],
+      "length": 2.0
+    },
+    {
+      "id": 4,
+      "location": "B",
+      "time": "12:00",
+      "required_skills": ["repair"],
+      "length": 1.0
+    },
+    {
+      "id": 5,
+      "location": "C",
+      "time": "13:00",
+      "required_skills": ["install"],
+      "length": 1.5
+    }
+  ],
+  "travel_matrix": {
+    "A": {"A": 0.0, "B": 0.5, "C": 1.0},
+    "B": {"A": 0.5, "B": 0.0, "C": 0.5},
+    "C": {"A": 1.0, "B": 0.5, "C": 0.0}
+  },
+  "optimal_solution": {
+    "assignments": {
+      "1": [1],
+      "2": [2, 4],
+      "3": [3, 5]
+    },
+    "total_travel_time": 0.0,
+    "unassigned_jobs": [],
+    "notes": "Engineer 1 (A) gets job 1 (A). Engineer 2 (B) gets jobs 2,4 (both B). Engineer 3 (C) gets jobs 3,5 (both C). All engineers work at home locations, travel time = 0."
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "description": "Benchmark with unassignable jobs: 2 engineers, 4 jobs. One job requires unavailable skill.",
+  "engineers": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "location": "A",
+      "skills": ["repair", "install"],
+      "working_hours": 8.0
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "location": "B",
+      "skills": ["install"],
+      "working_hours": 6.0
+    }
+  ],
+  "jobs": [
+    {
+      "id": 1,
+      "location": "A",
+      "time": "09:00",
+      "required_skills": ["repair"],
+      "length": 2.0
+    },
+    {
+      "id": 2,
+      "location": "B",
+      "time": "10:00",
+      "required_skills": ["install"],
+      "length": 1.5
+    },
+    {
+      "id": 3,
+      "location": "A",
+      "time": "11:00",
+      "required_skills": ["maintain"],
+      "length": 2.0
+    },
+    {
+      "id": 4,
+      "location": "B",
+      "time": "12:00",
+      "required_skills": ["install"],
+      "length": 1.0
+    }
+  ],
+  "travel_matrix": {
+    "A": {"A": 0.0, "B": 1.0},
+    "B": {"A": 1.0, "B": 0.0}
+  },
+  "optimal_solution": {
+    "assignments": {
+      "1": [1],
+      "2": [2, 4]
+    },
+    "total_travel_time": 0.0,
+    "unassigned_jobs": [3],
+    "notes": "Engineer 1 (A) gets job 1 (A, requires repair). Engineer 2 (B) gets jobs 2,4 (both B, require install). Job 3 requires 'maintain' skill which neither engineer has, so it remains unassigned."
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "engineers": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "location": "A",
+      "skills": ["repair", "install"],
+      "working_hours": 8.0
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "location": "B",
+      "skills": ["install", "maintain"],
+      "working_hours": 8.0
+    },
+    {
+      "id": 3,
+      "name": "Charlie",
+      "location": "C",
+      "skills": ["repair", "maintain"],
+      "working_hours": 10.0
+    }
+  ],
+  "jobs": [
+    {
+      "id": 1,
+      "location": "A",
+      "time": "09:00",
+      "required_skills": ["repair"],
+      "length": 2.0
+    },
+    {
+      "id": 2,
+      "location": "B",
+      "time": "10:00",
+      "required_skills": ["install"],
+      "length": 1.5
+    },
+    {
+      "id": 3,
+      "location": "C",
+      "time": "11:00",
+      "required_skills": ["maintain"],
+      "length": 2.0
+    },
+    {
+      "id": 4,
+      "location": "A",
+      "time": "12:00",
+      "required_skills": ["install"],
+      "length": 1.0
+    },
+    {
+      "id": 5,
+      "location": "B",
+      "time": "13:00",
+      "required_skills": ["repair"],
+      "length": 1.5
+    }
+  ],
+  "travel_matrix": {
+    "A": {"A": 0.0, "B": 0.5, "C": 1.0},
+    "B": {"A": 0.5, "B": 0.0, "C": 0.5},
+    "C": {"A": 1.0, "B": 0.5, "C": 0.0}
+  }
+}

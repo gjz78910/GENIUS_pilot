@@ -1,0 +1,13 @@
+---
+name: keep-simple
+description: This is a new rule
+---
+
+# Overview
+
+Keep codebase simple and minimal**
+   - While satisfying task requirements, make the codebase in the simplest format and structure
+   - Use the smallest number of files possible
+   - Ensure the code is very easy to understand and work with
+   - Prefer inline documentation over separate documentation files
+   - Combine related functionality when it makes sense

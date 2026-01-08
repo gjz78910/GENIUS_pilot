@@ -1,0 +1,5 @@
+# This project intentionally avoids external dependencies for runtime.
+# Use Python 3.8 or later to run the code.
+
+# Development dependencies
+coverage>=7.0.0

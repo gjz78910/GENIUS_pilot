@@ -1,0 +1,55 @@
+{
+  "description": "Simple benchmark: 2 engineers, 3 jobs. All jobs assignable. Optimal solution: Engineer 1 gets jobs 1,3; Engineer 2 gets job 2.",
+  "engineers": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "location": "A",
+      "skills": ["repair", "install"],
+      "working_hours": 8.0
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "location": "B",
+      "skills": ["install", "maintain"],
+      "working_hours": 8.0
+    }
+  ],
+  "jobs": [
+    {
+      "id": 1,
+      "location": "A",
+      "time": "09:00",
+      "required_skills": ["repair"],
+      "length": 2.0
+    },
+    {
+      "id": 2,
+      "location": "B",
+      "time": "10:00",
+      "required_skills": ["install"],
+      "length": 1.5
+    },
+    {
+      "id": 3,
+      "location": "A",
+      "time": "11:00",
+      "required_skills": ["install"],
+      "length": 1.0
+    }
+  ],
+  "travel_matrix": {
+    "A": {"A": 0.0, "B": 1.0},
+    "B": {"A": 1.0, "B": 0.0}
+  },
+  "optimal_solution": {
+    "assignments": {
+      "1": [1, 3],
+      "2": [2]
+    },
+    "total_travel_time": 0.0,
+    "unassigned_jobs": [],
+    "notes": "Engineer 1 (at A) gets jobs 1 and 3 (both at A, no travel). Engineer 2 (at B) gets job 2 (at B, no travel). Total travel time = 0."
+  }
+}

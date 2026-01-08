@@ -1,0 +1,9 @@
+name: genius_pilot
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python>=3.8,<3.12
+  - pip
+  - pip:
+    - coverage>=7.0.0
