@@ -22,6 +22,11 @@ pip install -r requirements.txt
 # or
 conda env update -f environment.yml
 ```
+**Recommended:** Run all scripts from the `genius_pilot` conda env so `psutil` is available.
+```bash
+conda activate genius_pilot
+```
+If you plan to run code-quality checks, also install: `pylint`, `radon`, `pydocstyle`.
 
 ---
 
@@ -31,13 +36,13 @@ conda env update -f environment.yml
 ```bash
 python SCRIPTS/monitor_resources.py --participant-id <ID> --session-id <SESSION> -i 60 &
 ```
-Press Ctrl+C to stop when participant finishes.
+Press Ctrl+C to stop when participant finishes. (Requires `psutil`.)
 
 **2. Track tasks (optional):**
 ```bash
 python SCRIPTS/task_timer.py --participant-id <ID> --session-id <SESSION> -i
 ```
-Commands: `start <task>`, `end`, `save`
+Commands: `start <task>`, `end`, `save` (use `save` or Ctrl+C to write the JSON file)
 
 **3. Stop monitoring when participant finishes:**
 - Press Ctrl+C in the monitoring terminal, or
@@ -58,6 +63,8 @@ python SCRIPTS/git_activity_logger.py --participant-id <ID>
 ```bash
 python SCRIPTS/extract_cicd_metrics.py --participant-id <ID>
 ```
+Note: This script is GitLab-focused. If there is no `.gitlab-ci.yml` or GitLab API token,
+the output will be limited to local repo signals.
 
 **3. Q Developer metrics (AI participants only):**
 ```bash
@@ -68,6 +75,7 @@ python SCRIPTS/collect_q_developer_metrics.py --participant-id <ID> --session-id
 ```bash
 python SCRIPTS/collect_test_metrics.py --participant-id <ID> --session-id <SESSION>
 ```
+By default it skips performance tests. Add `--include-performance` only if you want the long run.
 
 **5. Code quality:**
 ```bash
@@ -85,6 +93,8 @@ python SCRIPTS/estimate_energy.py DATA_COLLECTION/resource_usage_<ID>_<SESSION>.
 python SCRIPTS/calculate_carbon_footprint.py DATA_COLLECTION/energy_estimate_<ID>.json \
   --location UK --participant-id <ID>
 ```
+If you want network or travel emissions included, add:
+`--network-data <GB>` and/or `--travel-data <path_to_travel.json>`. Defaults are 0.
 
 **8. Aggregate all data:**
 ```bash
@@ -102,16 +112,18 @@ python SCRIPTS/fill_gocodegreen_template.py DATA_COLLECTION/aggregated_<ID>_<SES
 **Compare baseline:**
 ```bash
 python SCRIPTS/compare_baseline.py \
-  DATA_COLLECTION/aggregated_manual_<ID>.json \
-  DATA_COLLECTION/aggregated_ai_<ID>.json
+  DATA_COLLECTION/aggregated_<MANUAL_ID>_<SESSION>.json \
+  DATA_COLLECTION/aggregated_<AI_ID>_<SESSION>.json
 ```
 
 **Generate success criteria report:**
 ```bash
 python SCRIPTS/generate_success_criteria_report.py \
-  DATA_COLLECTION/aggregated_manual_<ID>.json \
-  DATA_COLLECTION/aggregated_ai_<ID>.json
+  DATA_COLLECTION/aggregated_<MANUAL_ID>_<SESSION>.json \
+  DATA_COLLECTION/aggregated_<AI_ID>_<SESSION>.json
 ```
+Use your real participant IDs/session IDs, or rename files to `aggregated_manual_*.json`
+and `aggregated_ai_*.json` if that is easier.
 
 ---
 
@@ -121,12 +133,12 @@ python SCRIPTS/generate_success_criteria_report.py \
 - **Resource usage:** CPU%, memory, network, disk I/O (ON - every 60 seconds)
 - **Task timing:** Time spent per task, idle time (ON - optional)
 - **Git activity:** Commits, lines changed, branch activity (AFTER)
-- **CI/CD:** Pipeline runs, test times, pass/fail rates (AFTER)
-- **Q Developer:** AI queries, suggestions accepted/rejected (AFTER)
-- **Test metrics:** Execution time, pass/fail, memory usage (AFTER)
-- **Code quality:** Quality score, complexity, documentation (AFTER)
+- **CI/CD:** Pipeline runs, test times, pass/fail rates (AFTER; GitLab config/API only)
+- **Q Developer:** AI queries, suggestions accepted/rejected (AFTER; best-effort from VS Code logs)
+- **Test metrics:** Execution time, pass/fail, memory usage (AFTER; performance tests optional)
+- **Code quality:** Quality score, complexity, documentation (AFTER; requires extra tools)
 - **Energy:** Estimated from CPU/memory/GPU usage (AFTER)
-- **Carbon:** CO2 emissions from energy, network, travel (AFTER)
+- **Carbon:** CO2 emissions from energy; network/travel only if you provide those inputs (AFTER)
 
 ---
 
@@ -175,7 +187,7 @@ python SCRIPTS/verify_data_separation.py --participant-id <ID>
 **Before starting monitoring:**
 - Close unnecessary applications (browsers, media players, etc.)
 - Run: `python SCRIPTS/list_background_processes.py` to see what's running
-- See `EXPERIMENT_DOCUMENTS/ENVIRONMENT_CONTROL.md` for detailed guide
+- See `EXPERIMENT_DOCUMENTS/DRY_RUN_CHECKLIST.md` for a longer prep checklist
 
 **Why it matters:**
 - Background processes affect energy consumption measurements
@@ -187,6 +199,7 @@ python SCRIPTS/verify_data_separation.py --participant-id <ID>
 ## Troubleshooting
 
 - **Monitoring stops:** Check `psutil` installed: `pip install psutil`
+- **System info fails on macOS:** Run from the normal terminal (not a restricted shell) or try updating `psutil`
 - **Code quality fails:** Install tools: `pip install pylint radon pydocstyle`
 - **Q Developer metrics not found:** Check VS Code extension logs manually, or use screen recording
 - **Energy seems wrong:** Values are estimates - may need calibration for your hardware

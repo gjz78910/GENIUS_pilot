@@ -358,5 +358,53 @@ class TestReportCorrectness(unittest.TestCase):
                 )
 
 
+    def test_jobs_ordered_by_time(self):
+        """Test that jobs in the CSV are ordered by job_time (chronological)."""
+        # Travel matrix where TSP route D->B->A->C->D is optimal (distance 4.0)
+        # but job_time order is A(09:00), B(10:00), C(11:00)
+        # So TSP visits B(10:00) before A(09:00) — violating chronological order
+        travel_matrix = {
+            "A": {"A": 0.0, "B": 1.0, "C": 1.0, "D": 5.0},
+            "B": {"A": 1.0, "B": 0.0, "C": 5.0, "D": 1.0},
+            "C": {"A": 1.0, "B": 5.0, "C": 0.0, "D": 1.0},
+            "D": {"A": 5.0, "B": 1.0, "C": 1.0, "D": 0.0},
+        }
+        engineers = [
+            Engineer(
+                id=1, name="Alice", location="D",
+                skills=["repair", "install", "maintain"], working_hours=12.0,
+            ),
+        ]
+        jobs = [
+            Job(id=1, location="A", time="09:00", required_skills=["repair"], length=1.0),
+            Job(id=2, location="B", time="10:00", required_skills=["install"], length=1.0),
+            Job(id=3, location="C", time="11:00", required_skills=["maintain"], length=1.0),
+        ]
+        scheduler = Scheduler(engineers, jobs, travel_matrix)
+        assignments, routes, unassigned = scheduler.create_schedule()
+
+        self.assertEqual(len(assignments[1]), 3, "Alice should get all 3 jobs")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            generate_report(
+                engineers, assignments, routes, travel_matrix, output_dir=tmpdir
+            )
+
+            file_path = os.path.join(tmpdir, "engineer_1_schedule.csv")
+            self.assertTrue(os.path.exists(file_path))
+
+            with open(file_path, "r") as f:
+                reader = csv.DictReader(f)
+                rows = [r for r in reader if r["job_id"] != "TOTAL"]
+
+            # Jobs should be ordered by job_time (chronological)
+            job_times = [row["job_time"] for row in rows]
+            self.assertEqual(
+                job_times,
+                sorted(job_times),
+                f"Jobs should be in chronological order by job_time, got: {job_times}",
+            )
+
+
 if __name__ == "__main__":
     unittest.main()

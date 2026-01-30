@@ -133,7 +133,7 @@ Improve how jobs are assigned to engineers and how travel routes are calculated.
 
 **Where to look:**
 - `src/optimization/routing.py` - The routing algorithm (brute-force TSP)
-- `src/optimization/matching.py` - The job matching algorithm (bucket/bin sort)
+- `src/optimization/matching.py` - The job matching algorithm (greedy assignment)
 
 **What's the problem?**
 1. **Routing:** The system tries every possible route (brute-force), which is very slow when there are many jobs
@@ -162,7 +162,7 @@ Improve how jobs are assigned to engineers and how travel routes are calculated.
 ### 1. Correctness Tests
 
 ```bash
-python -m unittest tests.test_matching tests.test_routing tests.test_report_correctness -v
+python -m unittest tests.test_matching tests.test_routing -v
 ```
 
 **What you'll see:** All tests show `ok` (pass) or `FAIL` (fail)
@@ -205,7 +205,7 @@ python -m unittest discover -s tests/performance -v
 - **Test 2 (MODERATE):** Needs some optimization (~50-60s original, < 5s optimized)
 - **Test 3 (HARD):** Needs significant optimization (> 10 minutes original, < 10s optimized)
 - **Test 4 (VERY HARD):** Needs major optimization (> 30 minutes original, < 15s optimized)
-- **Test 5 (EXTREMELY HARD):** Requires full optimization (> 1 hour original, < 20s optimized)
+- **Test 5 (EXTREMELY HARD):** Requires full optimization (> 1 hour original, < 30s optimized)
 
 **Your target:** Optimize routing progressively so all tests pass in reasonable time
 
@@ -231,6 +231,7 @@ Read the failure messages to understand what is wrong.
 - `travel_time_minutes` should be the travel time to the next job (not always 0)
 - `total_time_minutes` should equal `job_duration_minutes + travel_time_minutes` (not always 0)
 - Each CSV should end with a summary row where `job_id` is `TOTAL`, summing up `job_duration_minutes`, `travel_time_minutes`, and `total_time_minutes`
+- Jobs in each CSV should be ordered by `job_time` (chronological order), not by route order
 
 **Example of a correct CSV:**
 ```csv

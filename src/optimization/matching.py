@@ -13,7 +13,7 @@ an engineer based on criteria:
 
 The algorithm does not attempt to balance workload evenly across engineers
 or take account of job times.  It simply finds the best match on a
-per‑job basis (bucket/bin sort) and produces a mapping from engineer IDs
+per‑job basis (greedy assignment) and produces a mapping from engineer IDs
 to lists of `Job` instances.
 """
 
@@ -29,7 +29,7 @@ from src.optimization.routing import brute_force_tsp
 def assign_jobs(
     engineers: List[Engineer], jobs: List[Job], travel_matrix: Dict[str, Dict[str, float]]
 ) -> tuple[Dict[int, List[Job]], List[Job]]:
-    """Assign jobs to engineers using a simple bucket/bin sort.
+    """Assign jobs to engineers using a simple greedy assignment.
 
     Parameters
     ----------

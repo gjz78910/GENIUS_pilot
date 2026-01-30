@@ -13,7 +13,7 @@ distance between locations is looked up in the provided travel matrix.
 from __future__ import annotations
 
 from itertools import permutations
-from typing import Iterable, Sequence, Tuple, Dict
+from typing import Sequence, Tuple, Dict
 
 
 def brute_force_tsp(

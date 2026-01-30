@@ -154,16 +154,16 @@ class TestScalability(unittest.TestCase):
     # Test 1 — Small HVAC company
     # ------------------------------------------------------------------
     def test_1_easy(self):
-        """Test 1: EASY — Small HVAC company, 30 engineers, 300 short jobs.
+        """Test 1: EASY — Small HVAC company, 25 engineers, 250 jobs.
 
-        8-hour day, quick service calls (0.3-1.0h each).  All engineers
-        share the same skills so every engineer is a candidate for every
-        job.  Short jobs pack 8-10 per engineer, giving routing some work.
-        30 metro-area locations.
+        8-hour day, medium service calls (0.5-1.5h each) across 30 metro
+        locations.  Mixed skills (2-4 per engineer) with 1-2 required per
+        job.  Each engineer accumulates ~5-7 jobs, keeping brute-force
+        routing feasible (7! = 5040 permutations).
         """
         tm = _create_travel_matrix(30, min_travel=0.1, max_travel=0.5)
-        engineers = _create_engineers(30, 30, working_hours=8.0, skill_variety="uniform")
-        jobs = _create_jobs(300, 30, length_range=(0.3, 1.0), skills_per_job=(1, 1))
+        engineers = _create_engineers(25, 30, working_hours=8.0, skill_variety="mixed")
+        jobs = _create_jobs(250, 30, length_range=(0.5, 1.5), skills_per_job=(1, 2))
 
         scheduler = Scheduler(engineers, jobs, tm)
         t0 = time.time()
