@@ -187,7 +187,7 @@ python SCRIPTS/verify_data_separation.py --participant-id <ID>
 **Before starting monitoring:**
 - Close unnecessary applications (browsers, media players, etc.)
 - Run: `python SCRIPTS/list_background_processes.py` to see what's running
-- See `EXPERIMENT_DOCUMENTS/DRY_RUN_CHECKLIST.md` for a longer prep checklist
+- See `EXPERIMENT_DOCUMENTS/EXPERIMENT_CHECKLIST.md` for a longer prep checklist
 
 **Why it matters:**
 - Background processes affect energy consumption measurements

@@ -1,4 +1,4 @@
-# Dry Run Checklist - Two Participants
+# Experiment Checklist - Two Participants
 
 **Date:** ___________  
 **Participant 1 (Manual):** ___________  
@@ -51,6 +51,19 @@
     - [ ] `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md`
     - [ ] Manual vs AI sections are clearly marked for participants
 
+### Data Collection Setup (BEFORE experiment day)
+
+- [ ] **Collect system info for each participant:**
+  - [ ] Run: `python SCRIPTS/collect_system_info.py --participant-id <ID>`
+  - [ ] Verify output: `DATA_COLLECTION/system_info_<ID>.json`
+- [ ] **Pre‑experiment survey completed:**
+  - [ ] Use `DATA_COLLECTION/pre_experiment_survey.md`
+  - [ ] Save as `DATA_COLLECTION/survey_<ID>.md`
+- [ ] **Dependencies installed for data collection:**
+  - [ ] `pip install -r requirements.txt` or `conda env update -f environment.yml`
+  - [ ] Recommended: `conda activate genius_pilot`
+  - [ ] If needed: `pip install pylint radon pydocstyle`
+
 ---
 
 ## START OF SESSION
@@ -58,7 +71,6 @@
 ### Welcome & Setup (15 minutes)
 
 - [ ] **Greet both participants**
-  - [ ] Explain this is a dry run/test
   - [ ] Explain one will code manually, one will use AI
   - [ ] Ask if they have questions
 
@@ -91,10 +103,16 @@
 ### Task Assignment
 
 - [ ] **Give both participants the same task**
-  - [ ] Choose ONE task to test (recommend Task 2 or Task 3 - simpler)
-  - [ ] Give them the task description from `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md`
-  - [ ] Set a time limit (e.g., 30-60 minutes for dry run)
+  - [ ] Confirm they understand there are three tasks and the order is up to them
+  - [ ] Set a time limit
   - [ ] Tell them to start
+
+### Data Collection (DURING session)
+
+- [ ] **Start resource monitoring (run in background):**
+  - [ ] `python SCRIPTS/monitor_resources.py --participant-id <ID> --session-id <SESSION> -i 60 &`
+- [ ] **Track tasks (optional):**
+  - [ ] `python SCRIPTS/task_timer.py --participant-id <ID> --session-id <SESSION> -i`
 
 ### Monitor Participants (One at a Time)
 
@@ -191,6 +209,27 @@
   - [ ] Are terminal outputs visible in screen recording?
   - [ ] If not, did you capture them separately?
 
+### Data Collection (AFTER session ends)
+
+- [ ] **Git activity:**
+  - [ ] `python SCRIPTS/git_activity_logger.py --participant-id <ID>`
+- [ ] **CI/CD metrics:**
+  - [ ] `python SCRIPTS/extract_cicd_metrics.py --participant-id <ID>`
+- [ ] **Q Developer metrics (AI only):**
+  - [ ] `python SCRIPTS/collect_q_developer_metrics.py --participant-id <ID> --session-id <SESSION>`
+- [ ] **Test metrics:**
+  - [ ] `python SCRIPTS/collect_test_metrics.py --participant-id <ID> --session-id <SESSION>`
+- [ ] **Code quality:**
+  - [ ] `python SCRIPTS/analyze_code_quality.py --participant-id <ID>`
+- [ ] **Energy estimate:**
+  - [ ] `python SCRIPTS/estimate_energy.py DATA_COLLECTION/resource_usage_<ID>_<SESSION>.jsonl --system-info DATA_COLLECTION/system_info_<ID>.json --participant-id <ID>`
+- [ ] **Carbon footprint:**
+  - [ ] `python SCRIPTS/calculate_carbon_footprint.py DATA_COLLECTION/energy_estimate_<ID>.json --location UK --participant-id <ID>`
+- [ ] **Aggregate all data:**
+  - [ ] `python SCRIPTS/aggregate_experiment_data.py <ID> --session-id <SESSION>`
+- [ ] **Fill GoCodeGreen template:**
+  - [ ] `python SCRIPTS/fill_gocodegreen_template.py DATA_COLLECTION/aggregated_<ID>_<SESSION>.json --session-type manual`
+
 ### Quick Feedback Session (Optional - 10 minutes)
 
 - [ ] **Ask Participant 1 (Manual):**
@@ -207,7 +246,7 @@
 
 ---
 
-## THINGS TO CHECK AFTER DRY RUN
+## THINGS TO CHECK AFTER EXPERIMENT
 
 ### Technical Issues
 
