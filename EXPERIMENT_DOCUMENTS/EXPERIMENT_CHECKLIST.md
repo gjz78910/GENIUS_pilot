@@ -30,7 +30,9 @@
 
 - [ ] **Codebase Setup**
   - [ ] Clone or copy the codebase to the laptop
-  - [ ] Test that conda environment works: `conda activate genius_pilot`
+  - [ ] If `genius_pilot` conda env does not exist, create it:
+    - [ ] `conda env update -f environment.yml` (or `conda env create -f environment.yml`)
+  - [ ] Activate: `conda activate genius_pilot`
   - [ ] Run demo to verify setup: `python -m src.demo`
   - [ ] Tag initial state: `git tag -a initial -m "Initial codebase state"` (if using Git)
   - [ ] **IMPORTANT:** After Participant 1 finishes, store their work and reset environment before Participant 2 starts
@@ -57,11 +59,11 @@
   - [ ] Run: `python SCRIPTS/collect_system_info.py --participant-id <ID>`
   - [ ] Verify output: `DATA_COLLECTION/system_info_<ID>.json`
 - [ ] **Pre‑experiment survey completed:**
-  - [ ] Use `DATA_COLLECTION/pre_experiment_survey.md`
+  - [ ] Use `EXPERIMENT_DOCUMENTS/Pre_Experiment_Survey.md`
   - [ ] Save as `DATA_COLLECTION/survey_<ID>.md`
 - [ ] **Dependencies installed for data collection:**
   - [ ] `pip install -r requirements.txt` or `conda env update -f environment.yml`
-  - [ ] Recommended: `conda activate genius_pilot`
+  - [ ] Activate: `conda activate genius_pilot`
   - [ ] If needed: `pip install pylint radon pydocstyle`
 
 ---

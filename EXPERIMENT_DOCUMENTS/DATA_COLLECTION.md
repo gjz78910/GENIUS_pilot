@@ -13,7 +13,7 @@ python SCRIPTS/collect_system_info.py --participant-id <ID>
 Output: `DATA_COLLECTION/system_info_<ID>.json`
 
 **2. Have participant fill survey:**
-- Use `DATA_COLLECTION/pre_experiment_survey.md`
+- Use `EXPERIMENT_DOCUMENTS/Pre_Experiment_Survey.md`
 - Save as `DATA_COLLECTION/survey_<ID>.md`
 
 **3. Install dependencies:**
