@@ -286,6 +286,86 @@ class TestBenchmarksWithOptimal(unittest.TestCase):
                 f"Travel time ratio {metrics['travel_time_ratio']:.2f} should be <= 1.5 (optimal = 1.0)"
             )
 
+    def test_benchmark_small_04(self):
+        """Test benchmark 4: Capacity-skill trade-off — greedy leaves a job unassigned."""
+        assignments, routes, unassigned, benchmark = self._load_and_run_benchmark(
+            "benchmark_small_04.json"
+        )
+
+        optimal = benchmark["optimal_solution"]
+
+        # Compute distance to optimal
+        metrics = compute_distance_to_optimal(
+            assignments,
+            unassigned,
+            routes,
+            optimal["assignments"],
+            optimal["unassigned_jobs"],
+            optimal.get("total_travel_time", 0.0),
+            benchmark["travel_matrix"],
+        )
+
+        # Print metrics for participant visibility
+        print(f"\n  Benchmark 4 Metrics:")
+        print(f"    assignment_accuracy: {metrics['assignment_accuracy']:.3f} (target: 1.0)")
+        print(f"    unassigned_penalty: {metrics['unassigned_penalty']} (target: 0)")
+        print(f"    jobs_assigned: {sum(len(j) for j in assignments.values())}/{len(benchmark['jobs'])}")
+        if metrics["unassigned_penalty"] == 0:
+            print(f"    travel_time_ratio: {metrics['travel_time_ratio']:.3f} (target: ≤ 1.5)")
+
+        # Verify all jobs assigned
+        self.assertEqual(len(unassigned), 0, "All jobs should be assigned")
+        self.assertEqual(metrics["unassigned_penalty"], 0, "Should have no unassigned penalty")
+
+        # Should achieve optimal solution
+        self.assertEqual(metrics["assignment_accuracy"], 1.0, "Should match optimal assignments")
+
+        # Travel time should be optimal or close to optimal
+        self.assertLessEqual(
+            metrics["travel_time_ratio"], 1.5,
+            f"Travel time ratio {metrics['travel_time_ratio']:.2f} should be <= 1.5 (optimal = 1.0)"
+        )
+
+    def test_benchmark_small_05(self):
+        """Test benchmark 5: Exclusive skill trap — greedy fills capacity with shared skills."""
+        assignments, routes, unassigned, benchmark = self._load_and_run_benchmark(
+            "benchmark_small_05.json"
+        )
+
+        optimal = benchmark["optimal_solution"]
+
+        # Compute distance to optimal
+        metrics = compute_distance_to_optimal(
+            assignments,
+            unassigned,
+            routes,
+            optimal["assignments"],
+            optimal["unassigned_jobs"],
+            optimal.get("total_travel_time", 0.0),
+            benchmark["travel_matrix"],
+        )
+
+        # Print metrics for participant visibility
+        print(f"\n  Benchmark 5 Metrics:")
+        print(f"    assignment_accuracy: {metrics['assignment_accuracy']:.3f} (target: 1.0)")
+        print(f"    unassigned_penalty: {metrics['unassigned_penalty']} (target: 0)")
+        print(f"    jobs_assigned: {sum(len(j) for j in assignments.values())}/{len(benchmark['jobs'])}")
+        if metrics["unassigned_penalty"] == 0:
+            print(f"    travel_time_ratio: {metrics['travel_time_ratio']:.3f} (target: ≤ 1.5)")
+
+        # Verify all jobs assigned
+        self.assertEqual(len(unassigned), 0, "All jobs should be assigned")
+        self.assertEqual(metrics["unassigned_penalty"], 0, "Should have no unassigned penalty")
+
+        # Should achieve optimal solution
+        self.assertEqual(metrics["assignment_accuracy"], 1.0, "Should match optimal assignments")
+
+        # Travel time should be optimal or close to optimal
+        self.assertLessEqual(
+            metrics["travel_time_ratio"], 1.5,
+            f"Travel time ratio {metrics['travel_time_ratio']:.2f} should be <= 1.5 (optimal = 1.0)"
+        )
+
     def test_brute_force_routing_optimal(self):
         """Test that brute-force routing finds optimal routes for small instances."""
         assignments, routes, unassigned, benchmark = self._load_and_run_benchmark(

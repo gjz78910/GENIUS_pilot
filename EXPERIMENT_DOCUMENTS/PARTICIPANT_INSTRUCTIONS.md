@@ -183,7 +183,7 @@ python -m unittest tests.test_benchmarks -v
 - `assignment_accuracy = 1.0`
 - `travel_time_ratio ≤ 1.5` (optimal = 1.0)
 
-**Your goal:** Maintain these values (don't make quality worse!)
+**Note:** Benchmarks 1-3 should pass with the original code. Benchmarks 4 and 5 require improving the matching algorithm — the current greedy matcher does not assign jobs optimally in all cases. Read the test output to understand what goes wrong.
 
 **Example output:**
 ```
@@ -194,7 +194,7 @@ Benchmark 1 Metrics:
 
 ---
 
-### 3. Performance Tests (Progressive Difficulty)
+### 3. Scalability Tests 
 
 ```bash
 python -m unittest discover -s tests/performance -v
@@ -214,32 +214,37 @@ python -m unittest discover -s tests/performance -v
 ### Task 2: Reporting on Engineer Schedules
 
 **What you need to do:**
-Work with the CSV report generation feature. Understand how it works and ensure it meets all requirements.
+The CSV report code has bugs and a missing feature. Some tests will fail. Fix the code so all tests pass.
 
 **Where to look:**
-- `src/features/report.py` - The report generation code
-- `tests/test_report_correctness.py` - Tests that validate reports
+- `src/features/report.py` - The report generation code (has bugs)
+- `tests/test_report_correctness.py` - Tests that define correct behavior
 
-**What the report should include:**
-- One line per job per engineer
-- Job details: ID, location, time, required skills
-- Timing details: start time, end time, duration (all in minutes)
-- Travel time to each job
-- Total time per job
-
-**Example report structure:**
-```csv
-engineer_id,engineer_name,job_id,job_location,job_time,required_skills,job_start_time_minutes,job_end_time_minutes,job_duration_minutes,travel_time_minutes,total_time_minutes
-1,Alice,1,A,09:00,repair,0.0,120.0,120.0,0.0,120.0
-1,Alice,3,A,11:00,install,120.0,180.0,60.0,0.0,60.0
+**Start by running the tests to see what fails:**
+```bash
+python -m unittest tests.test_report_correctness -v
 ```
 
-**What you should do:**
-1. Read `src/features/report.py` to understand how reports are generated
-2. Run the report generation: see "Generate a CSV Report" section above
-3. Check the generated CSV files in the `reports/` folder
-4. Run the correctness tests: `python -m unittest tests.test_report_correctness -v`
-5. Verify reports meet requirements: sequential timing, working-hours constraints, no duplicates
+Read the failure messages to understand what is wrong.
+
+**What needs fixing:**
+- `travel_time_minutes` should be the travel time to the next job (not always 0)
+- `total_time_minutes` should equal `job_duration_minutes + travel_time_minutes` (not always 0)
+- Each CSV should end with a summary row where `job_id` is `TOTAL`, summing up `job_duration_minutes`, `travel_time_minutes`, and `total_time_minutes`
+
+**Example of a correct CSV:**
+```csv
+engineer_id,engineer_name,job_id,job_location,job_time,required_skills,job_start_time_minutes,job_end_time_minutes,job_duration_minutes,travel_time_minutes,total_time_minutes
+1,Alice,1,A,09:00,repair,0.0,120.0,120.0,30.0,150.0
+1,Alice,3,B,11:00,install,150.0,210.0,60.0,30.0,90.0
+1,Alice,TOTAL,,,,0.0,0.0,180.0,60.0,240.0
+```
+
+**Steps:**
+1. Run the tests to see which ones fail
+2. Read `src/features/report.py` to find the bugs
+3. Fix the bugs and add the missing summary row
+4. Run the tests again until all pass
 
 ## ✅ Success Criteria
 
@@ -253,47 +258,35 @@ python -m unittest tests.test_report_correctness -v
 ### Task 3: External Job Data Integration
 
 **What you need to do:**
-Work with the external data loading feature. Understand how it loads data from JSON files and ensure it works correctly.
+The data loader is missing some input validation. Some tests will fail. Add the missing validation so all tests pass.
 
 **Where to look:**
-- `src/features/data_loader.py` - The data loading code
-- `data/benchmarks/benchmark_small_01.json` - Example JSON file format
-- `tests/test_data_loader.py` - Tests for data loading
+- `src/features/data_loader.py` - The data loading code (missing validation)
+- `tests/test_data_loader.py` - Tests that define what validation is needed
+- The docstring at the top of `data_loader.py` describes all the rules the data must follow
 
-**What the JSON format looks like:**
-```json
-{
-  "engineers": [
-    {
-      "id": 1,
-      "name": "Alice",
-      "location": "A",
-      "skills": ["repair", "install"],
-      "working_hours": 8.0
-    }
-  ],
-  "jobs": [
-    {
-      "id": 1,
-      "location": "A",
-      "time": "09:00",
-      "required_skills": ["repair"],
-      "length": 2.0
-    }
-  ],
-  "travel_matrix": {
-    "A": {"A": 0.0, "B": 1.0},
-    "B": {"A": 1.0, "B": 0.0}
-  }
-}
+**Start by running the tests to see what fails:**
+```bash
+python -m unittest tests.test_data_loader -v
 ```
 
-**What you should do:**
-1. Read `src/features/data_loader.py` to understand how data is loaded
-2. Look at example JSON files in `data/benchmarks/` or `data/performance/`
-3. Try loading data: see "Load Data from a JSON File" section above
-4. Run the data loader tests: `python -m unittest tests.test_data_loader -v`
-5. Verify loaded data works with the scheduler
+Read the failure messages to understand what validation is missing.
+
+**What needs to be added:**
+The loader should raise a `ValueError` when:
+- A job's location is not in the travel matrix
+- A job's time is not in valid `HH:MM` format (hours 0-23, minutes 0-59)
+- The travel matrix is not symmetric (A→B should equal B→A)
+- The travel matrix diagonal is not zero (A→A should be 0.0)
+- An engineer's working hours are negative or greater than 24
+
+The docstring in `data_loader.py` explains all these rules in detail.
+
+**Steps:**
+1. Run the tests to see which ones fail
+2. Read the docstring in `src/features/data_loader.py` for the full data format rules
+3. Add the missing validation checks (raise `ValueError` with a clear message)
+4. Run the tests again until all pass
 
 ## ✅ Success Criteria
 
@@ -303,58 +296,4 @@ python -m unittest tests.test_data_loader -v
 **Pass:** All tests show `ok`
 
 ---
-
-## How to Know You've Succeeded
-
-### Quick Check
-
-After completing your task, run:
-```bash
-# Run all correctness tests
-python -m unittest discover -s tests -p "test_*.py" -v
-```
-
-**If you see:**
-```
-----------------------------------------------------------------------
-Ran 10 tests in 0.234s
-
-OK
-```
-✅ **Success!** All tests pass.
-
-**If you see:**
-```
-----------------------------------------------------------------------
-Ran 10 tests in 0.234s
-
-FAILED (failures=2)
-```
-⚠️ **Some issues** - Read the error messages and fix them.
-
-### Understanding Test Results
-
-- **"ok"** = Test passed ✅ - You're good!
-- **"FAIL"** = Test failed - Read the error message, it tells you what's wrong
-- **"ERROR"** = Test crashed - There's a bug in your code, check the error message
-
-**Example good output:**
-```
-test_skill_matching ... ok
-test_working_hours ... ok
-----------------------------------------------------------------------
-Ran 2 tests in 0.001s
-OK
-```
-✅ This means success!
-
-**Example bad output:**
-```
-test_skill_matching ... FAIL
-test_working_hours ... ok
-----------------------------------------------------------------------
-Ran 2 tests in 0.001s
-FAILED (failures=1)
-```
-⚠️ One test failed - read the error message above to see what's wrong
 

@@ -1,0 +1,78 @@
+{
+  "description": "Exclusive skill trap: greedy fills Alice with repair (shared skill), leaving no room for inspect (only Alice can do). Optimal: reserve Alice for the exclusive inspect job, send Bob and Charlie for shared jobs.",
+  "engineers": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "location": "L1",
+      "skills": ["repair", "install", "inspect"],
+      "working_hours": 3.0
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "location": "L2",
+      "skills": ["repair"],
+      "working_hours": 8.0
+    },
+    {
+      "id": 3,
+      "name": "Charlie",
+      "location": "L3",
+      "skills": ["install"],
+      "working_hours": 8.0
+    }
+  ],
+  "jobs": [
+    {
+      "id": 1,
+      "location": "L1",
+      "time": "09:00",
+      "required_skills": ["repair"],
+      "length": 2.0
+    },
+    {
+      "id": 2,
+      "location": "L1",
+      "time": "10:00",
+      "required_skills": ["install"],
+      "length": 2.0
+    },
+    {
+      "id": 3,
+      "location": "L1",
+      "time": "11:00",
+      "required_skills": ["inspect"],
+      "length": 1.5
+    },
+    {
+      "id": 4,
+      "location": "L2",
+      "time": "09:00",
+      "required_skills": ["repair"],
+      "length": 2.0
+    },
+    {
+      "id": 5,
+      "location": "L3",
+      "time": "09:00",
+      "required_skills": ["install"],
+      "length": 2.0
+    }
+  ],
+  "travel_matrix": {
+    "L1": {"L1": 0.0, "L2": 1.0, "L3": 1.5},
+    "L2": {"L1": 1.0, "L2": 0.0, "L3": 0.5},
+    "L3": {"L1": 1.5, "L2": 0.5, "L3": 0.0}
+  },
+  "optimal_solution": {
+    "assignments": {
+      "1": [3],
+      "2": [1, 4],
+      "3": [2, 5]
+    },
+    "total_travel_time": 5.0,
+    "unassigned_jobs": [],
+    "notes": "Alice (L1, 3h) gets job 3 (inspect at L1, 1.5h, only she can do). Bob (L2, 8h) gets jobs 1 (repair at L1) and 4 (repair at L2). Bob route: L2->L1->L2 = 2.0h travel, 4.0h jobs, 6.0h total. Charlie (L3, 8h) gets jobs 2 (install at L1) and 5 (install at L3). Charlie route: L3->L1->L3 = 3.0h travel, 4.0h jobs, 7.0h total. Total travel: 0+2.0+3.0 = 5.0h."
+  }
+}
