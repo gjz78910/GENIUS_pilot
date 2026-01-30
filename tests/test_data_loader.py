@@ -160,6 +160,129 @@ class TestDataLoader(unittest.TestCase):
         finally:
             os.unlink(file_path)
 
+    def test_load_invalid_job_location(self):
+        """Test error handling for job locations not in travel matrix."""
+        invalid_data = {
+            "engineers": [{"id": 1, "name": "Alice", "location": "A", "skills": ["repair"]}],
+            "jobs": [{"id": 1, "location": "Z", "time": "09:00", "required_skills": ["repair"]}],
+            "travel_matrix": {"A": {"A": 0.0}},
+        }
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(invalid_data, f)
+            file_path = f.name
+
+        try:
+            with self.assertRaises(ValueError) as cm:
+                load_data(file_path)
+            self.assertIn("location", str(cm.exception).lower())
+        finally:
+            os.unlink(file_path)
+
+    def test_load_invalid_time_format(self):
+        """Test error handling for invalid job time format."""
+        # Time "25:00" is not a valid HH:MM time
+        invalid_data = {
+            "engineers": [{"id": 1, "name": "Alice", "location": "A"}],
+            "jobs": [{"id": 1, "location": "A", "time": "25:00"}],
+            "travel_matrix": {"A": {"A": 0.0}},
+        }
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(invalid_data, f)
+            file_path = f.name
+
+        try:
+            with self.assertRaises(ValueError) as cm:
+                load_data(file_path)
+            self.assertIn("time", str(cm.exception).lower())
+        finally:
+            os.unlink(file_path)
+
+        # Non-numeric time string
+        invalid_data["jobs"][0]["time"] = "abc"
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(invalid_data, f)
+            file_path = f.name
+
+        try:
+            with self.assertRaises(ValueError) as cm:
+                load_data(file_path)
+            self.assertIn("time", str(cm.exception).lower())
+        finally:
+            os.unlink(file_path)
+
+    def test_load_asymmetric_travel_matrix(self):
+        """Test error handling for asymmetric travel matrix."""
+        invalid_data = {
+            "engineers": [{"id": 1, "name": "Alice", "location": "A"}],
+            "jobs": [{"id": 1, "location": "B", "time": "09:00"}],
+            "travel_matrix": {
+                "A": {"A": 0.0, "B": 0.5},
+                "B": {"A": 1.0, "B": 0.0},  # B->A != A->B (asymmetric)
+            },
+        }
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(invalid_data, f)
+            file_path = f.name
+
+        try:
+            with self.assertRaises(ValueError) as cm:
+                load_data(file_path)
+            self.assertIn("symmetric", str(cm.exception).lower())
+        finally:
+            os.unlink(file_path)
+
+    def test_load_nonzero_diagonal(self):
+        """Test error handling for non-zero diagonal in travel matrix."""
+        invalid_data = {
+            "engineers": [{"id": 1, "name": "Alice", "location": "A"}],
+            "jobs": [{"id": 1, "location": "A", "time": "09:00"}],
+            "travel_matrix": {
+                "A": {"A": 1.0},  # Diagonal should be 0.0
+            },
+        }
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(invalid_data, f)
+            file_path = f.name
+
+        try:
+            with self.assertRaises(ValueError) as cm:
+                load_data(file_path)
+            self.assertIn("diagonal", str(cm.exception).lower())
+        finally:
+            os.unlink(file_path)
+
+    def test_load_invalid_working_hours(self):
+        """Test error handling for invalid working hours."""
+        # Negative working hours
+        invalid_data = {
+            "engineers": [{"id": 1, "name": "Alice", "location": "A", "working_hours": -1.0}],
+            "jobs": [],
+            "travel_matrix": {"A": {"A": 0.0}},
+        }
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(invalid_data, f)
+            file_path = f.name
+
+        try:
+            with self.assertRaises(ValueError) as cm:
+                load_data(file_path)
+            self.assertIn("working_hours", str(cm.exception).lower())
+        finally:
+            os.unlink(file_path)
+
+        # Excessively large working hours (> 24)
+        invalid_data["engineers"][0]["working_hours"] = 25.0
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(invalid_data, f)
+            file_path = f.name
+
+        try:
+            with self.assertRaises(ValueError) as cm:
+                load_data(file_path)
+            self.assertIn("working_hours", str(cm.exception).lower())
+        finally:
+            os.unlink(file_path)
+
     def test_load_benchmark_file(self):
         """Test loading one of the benchmark files."""
         benchmark_dir = os.path.join(

@@ -174,8 +174,6 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         job_ids.add(job_id)
 
         location = j_data["location"]
-        if location not in all_locations:
-            raise ValueError(f"Job location '{location}' not found in travel_matrix")
 
         job = Job(
             id=job_id,

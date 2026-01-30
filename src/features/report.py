@@ -59,13 +59,6 @@ def _calculate_job_timings(
                 job_duration_minutes = job.length * 60.0
                 job_end_minutes = job_start_minutes + job_duration_minutes
 
-                # Get travel time to next location (if not last job location)
-                next_travel_minutes = 0.0
-                if i < len(route) - 2:
-                    next_loc = route[i + 1]
-                    next_travel_hours = travel_matrix.get(current_loc, {}).get(next_loc, 0.0)
-                    next_travel_minutes = next_travel_hours * 60.0
-
                 job_records.append({
                     "job_id": job.id,
                     "job_location": job.location,
@@ -74,7 +67,7 @@ def _calculate_job_timings(
                     "job_start_time_minutes": job_start_minutes,
                     "job_end_time_minutes": job_end_minutes,
                     "job_duration_minutes": job_duration_minutes,
-                    "travel_time_minutes": next_travel_minutes,
+                    "travel_time_minutes": 0.0,
                 })
 
                 # Update current time after job completion
@@ -171,7 +164,7 @@ def generate_report(
             writer.writeheader()
 
             for record in job_records:
-                total_time = record["job_duration_minutes"] + record["travel_time_minutes"]
+                total_time = 0.0
                 writer.writerow({
                     "engineer_id": engineer_id,
                     "engineer_name": engineer.name,

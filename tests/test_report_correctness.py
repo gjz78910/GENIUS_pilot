@@ -231,5 +231,127 @@ class TestReportCorrectness(unittest.TestCase):
                                     self.fail(f"Non-numeric value in {col} for engineer {engineer_id}")
 
 
+    def test_travel_time_between_jobs(self):
+        """Test that travel_time_minutes > 0 when consecutive jobs are at different locations."""
+        # Use a setup where one engineer has jobs at multiple locations
+        engineers = [
+            Engineer(id=1, name="Alice", location="A", skills=["repair", "install"], working_hours=8.0),
+        ]
+        jobs = [
+            Job(id=1, location="A", time="09:00", required_skills=["repair"], length=1.0),
+            Job(id=2, location="B", time="10:00", required_skills=["install"], length=1.0),
+        ]
+        scheduler = Scheduler(engineers, jobs, self.travel_matrix)
+        assignments, routes, unassigned = scheduler.create_schedule()
+
+        # Verify Alice got both jobs at different locations
+        self.assertIn(1, assignments)
+        self.assertEqual(len(assignments[1]), 2)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            generate_report(
+                engineers, assignments, routes, self.travel_matrix, output_dir=tmpdir
+            )
+
+            file_path = os.path.join(tmpdir, "engineer_1_schedule.csv")
+            self.assertTrue(os.path.exists(file_path))
+
+            with open(file_path, "r") as f:
+                reader = csv.DictReader(f)
+                rows = [r for r in reader if r["job_id"] != "TOTAL"]
+
+            # At least one row should have travel_time > 0
+            travel_times = [float(row["travel_time_minutes"]) for row in rows]
+            self.assertTrue(
+                any(t > 0 for t in travel_times),
+                f"Engineer has jobs at A and B but all travel_time_minutes are 0: {travel_times}",
+            )
+
+    def test_total_time_is_duration_plus_travel(self):
+        """Test that total_time_minutes = job_duration_minutes + travel_time_minutes."""
+        scheduler = Scheduler(self.engineers, self.jobs, self.travel_matrix)
+        assignments, routes, unassigned = scheduler.create_schedule()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            generate_report(
+                self.engineers, assignments, routes, self.travel_matrix, output_dir=tmpdir
+            )
+
+            for engineer_id in assignments.keys():
+                file_path = os.path.join(tmpdir, f"engineer_{engineer_id}_schedule.csv")
+                if os.path.exists(file_path):
+                    with open(file_path, "r") as f:
+                        reader = csv.DictReader(f)
+                        for row in reader:
+                            if row["job_id"] == "TOTAL":
+                                continue
+                            duration = float(row["job_duration_minutes"])
+                            travel = float(row["travel_time_minutes"])
+                            total = float(row["total_time_minutes"])
+
+                            self.assertAlmostEqual(
+                                total,
+                                duration + travel,
+                                places=2,
+                                msg=f"Engineer {engineer_id}, job {row['job_id']}: "
+                                f"total ({total}) != duration ({duration}) + travel ({travel})",
+                            )
+
+    def test_summary_row(self):
+        """Test that each CSV ends with a TOTAL summary row with correct aggregates."""
+        scheduler = Scheduler(self.engineers, self.jobs, self.travel_matrix)
+        assignments, routes, unassigned = scheduler.create_schedule()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            generate_report(
+                self.engineers, assignments, routes, self.travel_matrix, output_dir=tmpdir
+            )
+
+            for engineer_id, assigned_jobs in assignments.items():
+                if not assigned_jobs:
+                    continue
+
+                file_path = os.path.join(tmpdir, f"engineer_{engineer_id}_schedule.csv")
+                self.assertTrue(os.path.exists(file_path))
+
+                with open(file_path, "r") as f:
+                    reader = csv.DictReader(f)
+                    rows = list(reader)
+
+                # Last row should be the summary
+                self.assertGreater(len(rows), 0, f"No rows for engineer {engineer_id}")
+                summary = rows[-1]
+                self.assertEqual(
+                    summary["job_id"],
+                    "TOTAL",
+                    f"Last row for engineer {engineer_id} should have job_id='TOTAL'",
+                )
+
+                # Verify aggregates match sum of detail rows
+                detail_rows = rows[:-1]
+                expected_duration = sum(float(r["job_duration_minutes"]) for r in detail_rows)
+                expected_travel = sum(float(r["travel_time_minutes"]) for r in detail_rows)
+                expected_total = sum(float(r["total_time_minutes"]) for r in detail_rows)
+
+                self.assertAlmostEqual(
+                    float(summary["job_duration_minutes"]),
+                    expected_duration,
+                    places=2,
+                    msg=f"Summary duration mismatch for engineer {engineer_id}",
+                )
+                self.assertAlmostEqual(
+                    float(summary["travel_time_minutes"]),
+                    expected_travel,
+                    places=2,
+                    msg=f"Summary travel mismatch for engineer {engineer_id}",
+                )
+                self.assertAlmostEqual(
+                    float(summary["total_time_minutes"]),
+                    expected_total,
+                    places=2,
+                    msg=f"Summary total mismatch for engineer {engineer_id}",
+                )
+
+
 if __name__ == "__main__":
     unittest.main()
