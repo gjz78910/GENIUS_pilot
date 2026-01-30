@@ -1,31 +1,27 @@
 """Benchmark tests with known optimal solutions.
 
-Tests the scheduling system against small benchmark instances with
-known optimal solutions to measure solution quality.
+Tests the scheduling system against SMALL benchmark instances that have
+known optimal solutions. These benchmarks measure solution QUALITY by comparing
+actual results to the optimal solution stored in each benchmark JSON file.
 
-**Why Benchmark Tests?**
-Benchmark tests are different from correctness and performance tests:
+**Why Benchmark Tests with Optimal Solutions?**
+Benchmark tests are different from correctness and scalability tests:
 
 1. **Correctness Tests** (test_matching.py, test_routing.py):
    - Purpose: Validate that solutions follow rules (skills, working hours, constraints)
    - Question: "Is the solution valid?" (binary: pass/fail)
    - Fast, small examples
 
-2. **Benchmark Tests** (this file):
-   - Purpose: Measure solution quality compared to known optimal solutions
+2. **Benchmark Tests with Optimal Solutions** (this file - test_benchmarks.py):
+   - Purpose: Measure solution QUALITY by comparing to known optimal solutions
    - Question: "How good is the solution?" (quantitative: accuracy, travel time ratio)
-   - Fast, small instances with known optimal
+   - SMALL instances only (2-5 jobs) - each has a known optimal solution in the JSON file
+   - Each benchmark file contains an "optimal_solution" field with:
+     * Expected job assignments per engineer
+     * Expected unassigned jobs
+     * Optimal total travel time
    - Measures: assignment correctness, travel time efficiency, route quality
-
-3. **Performance Tests** (test_performance.py):
-   - Purpose: Measure runtime and scalability on large datasets
-   - Question: "How fast is the solution?" (quantitative: execution time)
-   - Slow, large instances (10K-100K jobs)
-
-All three are needed because:
-- A solution can be correct (follows rules) but poor quality (far from optimal)
-- A solution can be high quality (close to optimal) but too slow (doesn't scale)
-- A solution can be fast but incorrect (breaks rules) or poor quality (far from optimal)
+   - NOT for scalability - use test_scalability.py for that
 """
 
 from __future__ import annotations
@@ -121,8 +117,16 @@ def compute_distance_to_optimal(
     }
 
 
-class TestBenchmarks(unittest.TestCase):
-    """Test benchmarks with known optimal solutions."""
+class TestBenchmarksWithOptimal(unittest.TestCase):
+    """Test benchmarks that have known optimal solutions.
+    
+    Each benchmark JSON file contains an "optimal_solution" field that specifies:
+    - Which jobs should be assigned to which engineers
+    - Which jobs should remain unassigned
+    - The optimal total travel time
+    
+    Tests compare actual results to these optimal solutions to measure quality.
+    """
 
     def setUp(self):
         """Set up benchmark directory path."""
@@ -166,7 +170,7 @@ class TestBenchmarks(unittest.TestCase):
         return assignments, routes, unassigned, benchmark
 
     def test_benchmark_small_01(self):
-        """Test benchmark 1: Simple 2-engineer, 3-job case."""
+        """Test benchmark 1: Simple 2-engineer, 3-job case with known optimal solution."""
         assignments, routes, unassigned, benchmark = self._load_and_run_benchmark(
             "benchmark_small_01.json"
         )
@@ -184,6 +188,12 @@ class TestBenchmarks(unittest.TestCase):
             benchmark["travel_matrix"],
         )
 
+        # Print metrics for participant visibility
+        print(f"\n  Benchmark 1 Metrics:")
+        print(f"    assignment_accuracy: {metrics['assignment_accuracy']:.3f} (target: 1.0)")
+        print(f"    travel_time_ratio: {metrics['travel_time_ratio']:.3f} (target: ≤ 1.5)")
+        print(f"    unassigned_penalty: {metrics['unassigned_penalty']}")
+        
         # Should achieve optimal solution (accuracy = 1.0, no penalties)
         self.assertEqual(metrics["assignment_accuracy"], 1.0, "Should match optimal assignments")
         self.assertEqual(metrics["unassigned_penalty"], 0, "Should have no unassigned penalty")
@@ -199,7 +209,7 @@ class TestBenchmarks(unittest.TestCase):
         self.assertEqual(len(unassigned), 0, "All jobs should be assigned")
 
     def test_benchmark_small_02(self):
-        """Test benchmark 2: 3-engineer, 5-job case."""
+        """Test benchmark 2: 3-engineer, 5-job case with known optimal solution."""
         assignments, routes, unassigned, benchmark = self._load_and_run_benchmark(
             "benchmark_small_02.json"
         )
@@ -217,19 +227,24 @@ class TestBenchmarks(unittest.TestCase):
             benchmark["travel_matrix"],
         )
 
-        # Should achieve optimal or near-optimal solution
-        self.assertGreaterEqual(
-            metrics["assignment_accuracy"], 0.8, "Should achieve at least 80% accuracy"
-        )
-        # Travel time should be reasonable (within 2x of optimal)
+        # Print metrics for participant visibility
+        print(f"\n  Benchmark 2 Metrics:")
+        print(f"    assignment_accuracy: {metrics['assignment_accuracy']:.3f} (target: 1.0)")
+        print(f"    travel_time_ratio: {metrics['travel_time_ratio']:.3f} (target: ≤ 1.5)")
+        print(f"    unassigned_penalty: {metrics['unassigned_penalty']}")
+        
+        # Should achieve optimal solution (accuracy = 1.0, no penalties)
+        self.assertEqual(metrics["assignment_accuracy"], 1.0, "Should match optimal assignments")
+        self.assertEqual(metrics["unassigned_penalty"], 0, "Should have no unassigned penalty")
+        # Travel time should be optimal or close to optimal
         self.assertLessEqual(
-            metrics["travel_time_ratio"], 2.0,
-            f"Travel time ratio {metrics['travel_time_ratio']:.2f} should be <= 2.0"
+            metrics["travel_time_ratio"], 1.5,
+            f"Travel time ratio {metrics['travel_time_ratio']:.2f} should be <= 1.5 (optimal = 1.0)"
         )
         self.assertEqual(len(unassigned), 0, "All assignable jobs should be assigned")
 
     def test_benchmark_small_03(self):
-        """Test benchmark 3: Case with unassignable jobs."""
+        """Test benchmark 3: Case with unassignable jobs and known optimal solution."""
         assignments, routes, unassigned, benchmark = self._load_and_run_benchmark(
             "benchmark_small_03.json"
         )
@@ -254,15 +269,21 @@ class TestBenchmarks(unittest.TestCase):
             unassigned_ids, optimal_unassigned, "Should correctly identify unassignable jobs"
         )
 
-        # Should achieve optimal for assignable jobs
-        self.assertGreaterEqual(
-            metrics["assignment_accuracy"], 0.75, "Should achieve at least 75% accuracy"
-        )
-        # Travel time should be reasonable for assignable jobs
+        # Print metrics for participant visibility
+        print(f"\n  Benchmark 3 Metrics:")
+        print(f"    assignment_accuracy: {metrics['assignment_accuracy']:.3f} (target: 1.0)")
+        if optimal.get("total_travel_time", 0.0) > 0:
+            print(f"    travel_time_ratio: {metrics['travel_time_ratio']:.3f} (target: ≤ 1.5)")
+        print(f"    unassigned_penalty: {metrics['unassigned_penalty']}")
+        
+        # Should achieve optimal solution (accuracy = 1.0 for assignable jobs)
+        self.assertEqual(metrics["assignment_accuracy"], 1.0, "Should match optimal assignments for assignable jobs")
+        self.assertEqual(metrics["unassigned_penalty"], 0, "Should have no unassigned penalty for assignable jobs")
+        # Travel time should be optimal or close to optimal
         if optimal.get("total_travel_time", 0.0) > 0:
             self.assertLessEqual(
-                metrics["travel_time_ratio"], 2.5,
-                f"Travel time ratio {metrics['travel_time_ratio']:.2f} should be <= 2.5"
+                metrics["travel_time_ratio"], 1.5,
+                f"Travel time ratio {metrics['travel_time_ratio']:.2f} should be <= 1.5 (optimal = 1.0)"
             )
 
     def test_brute_force_routing_optimal(self):

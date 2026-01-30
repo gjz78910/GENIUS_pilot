@@ -49,3 +49,11 @@ coverage.xml
 MEETING_AGENDA.md
 Experiment_design.md
 
+# Temp files
+*_temp.py
+*_temp.*
+*.tmp
+*.temp
+
+# Cursor IDE
+.cursor/

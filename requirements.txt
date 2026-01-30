@@ -3,3 +3,9 @@
 
 # Development dependencies
 coverage>=7.0.0
+
+# Data collection dependencies (for experiment scripts)
+psutil>=5.9.0  # For resource monitoring and system info collection
+pylint>=2.15.0  # For code quality analysis
+radon>=5.1.0  # For code complexity analysis
+pydocstyle>=6.1.0  # For documentation coverage analysis
