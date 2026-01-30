@@ -56,7 +56,7 @@ class TestReportCorrectness(unittest.TestCase):
             if os.path.exists(file_path):
                 with open(file_path, "r") as f:
                     reader = csv.DictReader(f)
-                    rows = list(reader)
+                    rows = [r for r in reader if r["job_id"] != "TOTAL"]
 
                 # Check no overlapping jobs
                 for i in range(len(rows) - 1):
@@ -85,9 +85,10 @@ class TestReportCorrectness(unittest.TestCase):
                         reader = csv.DictReader(f)
                         rows = list(reader)
 
-                    if rows:
+                    job_rows = [r for r in rows if r["job_id"] != "TOTAL"]
+                    if job_rows:
                         # Find last job end time
-                        last_end_time = max(float(row["job_end_time_minutes"]) for row in rows)
+                        last_end_time = max(float(row["job_end_time_minutes"]) for row in job_rows)
                         working_hours_minutes = engineer.working_hours * 60.0
 
                         self.assertLessEqual(
@@ -116,7 +117,7 @@ class TestReportCorrectness(unittest.TestCase):
 
                 with open(file_path, "r") as f:
                     reader = csv.DictReader(f)
-                    reported_job_ids = {int(row["job_id"]) for row in reader}
+                    reported_job_ids = {int(row["job_id"]) for row in reader if row["job_id"] != "TOTAL"}
 
                 assigned_job_ids = {job.id for job in assigned_jobs}
                 self.assertEqual(
@@ -143,7 +144,7 @@ class TestReportCorrectness(unittest.TestCase):
                 if os.path.exists(file_path):
                     with open(file_path, "r") as f:
                         reader = csv.DictReader(f)
-                        job_ids = [int(row["job_id"]) for row in reader]
+                        job_ids = [int(row["job_id"]) for row in reader if row["job_id"] != "TOTAL"]
 
                     self.assertEqual(
                         len(job_ids),
@@ -167,6 +168,8 @@ class TestReportCorrectness(unittest.TestCase):
                     with open(file_path, "r") as f:
                         reader = csv.DictReader(f)
                         for row in reader:
+                            if row["job_id"] == "TOTAL":
+                                continue
                             start = float(row["job_start_time_minutes"])
                             end = float(row["job_end_time_minutes"])
                             duration = float(row["job_duration_minutes"])
@@ -217,6 +220,8 @@ class TestReportCorrectness(unittest.TestCase):
 
                         # Check data types
                         for row in reader:
+                            if row["job_id"] == "TOTAL":
+                                continue
                             # Numeric fields should be parseable as float
                             for col in [
                                 "job_start_time_minutes",
