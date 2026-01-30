@@ -48,8 +48,8 @@
   - [ ] Benchmark files exist: `data/benchmarks/benchmark_small_*.json`
   - [ ] Test files exist: `tests/test_*.py`
   - [ ] Participant instructions ready:
-    - [ ] `PARTICIPANT_INSTRUCTIONS_MANUAL.md` for Participant 1 (no AI)
-    - [ ] `PARTICIPANT_INSTRUCTIONS_AI.md` for Participant 2 (with AI)
+    - [ ] `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md`
+    - [ ] Manual vs AI sections are clearly marked for participants
 
 ---
 
@@ -66,7 +66,7 @@
   - [ ] Show them the laptop setup
   - [ ] Explain: "You can use Google, Stack Overflow, documentation - but NO AI tools"
   - [ ] Explain: "No ChatGPT, no AI chatbots, no AI in IDE"
-  - [ ] Show them where PARTICIPANT_INSTRUCTIONS_MANUAL.md is
+  - [ ] Show them where `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md` is (Manual section)
   - [ ] Start screen recording
 
 - [ ] **For Participant 2 (AI Coding) - AFTER Participant 1 finishes:**
@@ -75,7 +75,7 @@
   - [ ] Show them the Q Developer AI plugin in VS Code
   - [ ] Explain: "You can use the AI assistant in VS Code"
   - [ ] Explain: "You can also use other AI tools if you want"
-  - [ ] Show them where PARTICIPANT_INSTRUCTIONS_AI.md is
+  - [ ] Show them where `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md` is (AI section)
   - [ ] Start screen recording
 
 - [ ] **Verify Setup Works**
@@ -92,7 +92,7 @@
 
 - [ ] **Give both participants the same task**
   - [ ] Choose ONE task to test (recommend Task 2 or Task 3 - simpler)
-  - [ ] Give them the task description from EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_MANUAL.md or PARTICIPANT_INSTRUCTIONS_AI.md
+  - [ ] Give them the task description from `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md`
   - [ ] Set a time limit (e.g., 30-60 minutes for dry run)
   - [ ] Tell them to start
 
@@ -292,6 +292,7 @@ python -m src.demo
 
 **Run tests:**
 ```bash
+python -m unittest tests.test_matching tests.test_routing -v
 python -m unittest tests.test_report_correctness -v
 python -m unittest tests.test_data_loader -v
 python -m unittest tests.test_benchmarks -v
