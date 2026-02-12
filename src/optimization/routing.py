@@ -1,16 +1,9 @@
-"""Travelling‑salesperson route optimisation.
+"""Routing functions for field engineer scheduling.
 
-This module provides route optimisation for field engineer scheduling.
-The main entry point is `find_optimal_route`, which finds the shortest
-route visiting all destinations and returning to the start.
-
-Currently `find_optimal_route` delegates to a brute‑force algorithm
-that exhaustively enumerates all permutations.  It is suitable only for
-small numbers of locations.
-
-The TSP algorithm assumes that the engineer starts and ends at the same
-home location and visits all assigned job locations exactly once.  The
-distance between locations is looked up in the provided travel matrix.
+The main entry point is `find_optimal_route`, which returns a route that:
+- starts at `start`
+- visits each destination once
+- returns to `start`
 """
 
 from __future__ import annotations
@@ -69,11 +62,7 @@ def brute_force_tsp(
 def find_optimal_route(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
 ) -> Tuple[Tuple[str, ...], float]:
-    """Find the optimal route visiting all destinations and returning to start.
-
-    This is the main entry point for route optimisation.  It currently
-    delegates to `brute_force_tsp` but can be replaced with a more
-    efficient algorithm.
+    """Find a route visiting all destinations and returning to start.
 
     Parameters
     ----------
@@ -87,7 +76,7 @@ def find_optimal_route(
     Returns
     -------
     Tuple[Tuple[str, ...], float]
-        A tuple containing the best route (including the start location at
-        the beginning and end) and the total distance of that route.
+        A tuple containing the route (including start at the beginning
+        and end) and its total distance.
     """
     return brute_force_tsp(start, destinations, travel_matrix)

@@ -1,4 +1,4 @@
-"""Definition of the Engineer class used in the scheduling tool.
+"""Definition of the Engineer class used in scheduling.
 
 An `Engineer` represents a field engineer with a unique identifier,
 a name, a home location and a list of skills.  Skills are expressed as
@@ -25,7 +25,7 @@ class Engineer:
     name: str
         Human‑friendly name.
     location: Location
-        Home base of the engineer.  For the purposes of this MVP the
+        Home base of the engineer. For this codebase the
         location is typically a simple string (e.g. "A", "B", ...).
     skills: List[str]
         A list of skills (strings) that this engineer possesses.

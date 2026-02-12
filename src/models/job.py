@@ -1,4 +1,4 @@
-"""Definition of the Job class used in the scheduling tool.
+"""Definition of the Job class used in scheduling.
 
 A `Job` represents a work assignment that needs to be carried out by an
 engineer.  It includes an identifier, the location where the work will
@@ -20,11 +20,11 @@ class Job:
     id: int
         Unique identifier for the job.
     location: str
-        Location of the job.  For the purposes of this MVP the location
+        Location of the job. For this codebase the location
         is typically a simple string (e.g. "A", "B", ...).
     time: str
         Scheduled time for the job represented as a human‑readable string.
-        The scheduling algorithms in this MVP do not yet make use of this
+        The current scheduling algorithms do not use this
         field but it is included for completeness.
     required_skills: List[str]
         A list of skills (strings) required to perform the job.

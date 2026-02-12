@@ -1,4 +1,4 @@
-"""Data models for the scheduling tool experiment."""
+"""Data models for scheduling."""
 
 from .engineer import Engineer  # noqa: F401
 from .job import Job  # noqa: F401

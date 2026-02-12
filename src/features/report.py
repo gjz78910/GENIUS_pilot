@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import csv
 import os
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from src.models.engineer import Engineer
 from src.models.job import Job
@@ -18,7 +18,7 @@ def _calculate_job_timings(
     jobs: List[Job],
     route: Tuple[str, ...],
     travel_matrix: Dict[str, Dict[str, float]],
-) -> List[Dict[str, any]]:
+) -> List[Dict[str, Any]]:
     """Calculate start/end times for jobs based on route order.
 
     Returns list of job records with timing information in minutes.

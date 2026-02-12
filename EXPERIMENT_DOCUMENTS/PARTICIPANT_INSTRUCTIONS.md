@@ -49,13 +49,20 @@ Imagine you have a company that sends engineers to customers' homes or offices t
 
 ## Getting Started
 
+### Time Limit
+
+You have **2 hours** total for this experiment.
+
+Work at your normal pace, but keep an eye on time.
+If you cannot finish everything, complete as much as you can in 2 hours.
+
+### Setup
+
 Activate the conda environment:
 
 ```bash
 conda activate genius_pilot
 ```
-
-### Git Setup
 
 Run this command to confirm you are on your participant branch:
 ```bash

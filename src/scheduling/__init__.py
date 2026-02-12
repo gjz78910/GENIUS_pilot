@@ -1,4 +1,4 @@
-"""Scheduling orchestration for the experiment."""
+"""Scheduling orchestration."""
 
 from .scheduler import Scheduler  # noqa: F401
 

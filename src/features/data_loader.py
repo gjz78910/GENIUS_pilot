@@ -1,60 +1,9 @@
-"""External data loader for scheduling tool.
+"""Load engineers, jobs, and travel matrix from a JSON file.
 
-Loads engineers, jobs and travel matrices from JSON files.
-
-Data Format Specification:
---------------------------
-
-The JSON file should contain a single object with three keys: "engineers", "jobs", and "travel_matrix".
-
-Example JSON structure:
-{
-  "engineers": [
-    {
-      "id": 1,
-      "name": "Alice",
-      "location": "A",
-      "skills": ["repair", "install"],
-      "working_hours": 8.0
-    }
-  ],
-  "jobs": [
-    {
-      "id": 1,
-      "location": "B",
-      "time": "09:00",
-      "required_skills": ["repair"],
-      "length": 2.0
-    }
-  ],
-  "travel_matrix": {
-    "A": {"A": 0.0, "B": 0.5},
-    "B": {"A": 0.5, "B": 0.0}
-  }
-}
-
-Field Requirements:
-- engineers: List of engineer objects
-  - id: int (required, unique)
-  - name: str (required)
-  - location: str (required, must exist in travel_matrix)
-  - skills: List[str] (optional, default: [])
-  - working_hours: float (optional, default: 8.0)
-
-- jobs: List of job objects
-  - id: int (required, unique)
-  - location: str (required, must exist in travel_matrix)
-  - time: str (required, format: "HH:MM")
-  - required_skills: List[str] (optional, default: [])
-  - length: float (optional, default: 1.0, in hours)
-
-- travel_matrix: Dict[str, Dict[str, float]]
-  - Outer keys: source locations
-  - Inner keys: destination locations
-  - Values: travel time in hours (must be >= 0.0)
-  - Must be symmetric: travel_matrix[A][B] == travel_matrix[B][A]
-  - Must include all locations referenced in engineers and jobs
-  - Diagonal values (same location) must be 0.0
+Expected top-level keys:
+- `engineers`
+- `jobs`
+- `travel_matrix`
 """
 
 from __future__ import annotations

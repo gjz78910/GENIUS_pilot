@@ -1,8 +1,8 @@
-"""High‑level scheduler that orchestrates matching and routing.
+"""High-level scheduler that runs matching and routing.
 
 This module defines a `Scheduler` class that takes a list of engineers,
-a list of jobs and a travel matrix.  It coordinates assigning jobs to
-engineers and computing an optimised travel route for each engineer.
+a list of jobs and a travel matrix. It assigns jobs to engineers and
+computes a route for each engineer.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from src.optimization.routing import find_optimal_route
 
 
 class Scheduler:
-    """Coordinate job assignment and route optimisation for engineers."""
+    """Coordinate job assignment and route calculation for engineers."""
 
     def __init__(
         self,
@@ -48,11 +48,11 @@ class Scheduler:
         assignments, unassigned = assign_jobs(self.engineers, self.jobs, self.travel_matrix)
 
         routes: Dict[int, Tuple[Tuple[str, ...], float]] = {}
-        # Compute the optimal route for each engineer based on their assigned jobs
+        # Compute route for each engineer based on assigned jobs
         for engineer in self.engineers:
             assigned_jobs: List[Job] = assignments.get(engineer.id, [])
             if not assigned_jobs:
-                # No jobs assigned; skip route optimisation
+                # No jobs assigned; skip route calculation
                 continue
             job_locations: List[str] = [job.location for job in assigned_jobs]
             route, distance = find_optimal_route(engineer.location, job_locations, self.travel_matrix)

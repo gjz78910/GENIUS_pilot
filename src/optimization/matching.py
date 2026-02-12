@@ -1,20 +1,8 @@
-"""Naïve job‑to‑engineer assignment logic.
+"""Job-to-engineer assignment logic.
 
-This module implements a simple matching algorithm that assigns each job to
-an engineer based on criteria:
-
-* **Skill match** – The engineer must possess all the skills required by
-  the job.
-* **Location proximity** – Among the engineers with suitable skills,
-  preference is given to the engineer whose home location is closest to
-  the job location according to the provided travel matrix.
-* **Capacity check** – Accounts for job length and travel time to ensure
-  the engineer has sufficient working hours.
-
-The algorithm does not attempt to balance workload evenly across engineers
-or take account of job times.  It simply finds the best match on a
-per‑job basis (greedy assignment) and produces a mapping from engineer IDs
-to lists of `Job` instances.
+The main entry point is `assign_jobs`, which returns:
+- assigned jobs per engineer
+- jobs that could not be assigned
 """
 
 from __future__ import annotations
@@ -29,7 +17,7 @@ from src.optimization.routing import find_optimal_route
 def assign_jobs(
     engineers: List[Engineer], jobs: List[Job], travel_matrix: Dict[str, Dict[str, float]]
 ) -> tuple[Dict[int, List[Job]], List[Job]]:
-    """Assign jobs to engineers using a simple greedy assignment.
+    """Assign jobs to engineers based on skills, distance, and capacity.
 
     Parameters
     ----------
@@ -71,18 +59,18 @@ def assign_jobs(
 
         skilled_candidates.sort(key=distance_fn)
         
-        # Try to assign to closest engineer with capacity (including optimized travel time)
+        # Try to assign to the closest engineer with available capacity
         assigned = False
         for engineer in skilled_candidates:
             current_jobs = assignments[engineer.id]
             total_job_time = sum(j.length for j in current_jobs)
             
-            # Calculate optimized travel time if we add this job
+            # Estimate travel time if this job is added
             test_jobs = current_jobs + [job]
             job_locations = [j.location for j in test_jobs]
             _, estimated_travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
             
-            # Check if engineer has capacity for jobs + optimized travel
+            # Check whether total work fits within working hours
             if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:
                 assignments[engineer.id].append(job)
                 assigned = True
