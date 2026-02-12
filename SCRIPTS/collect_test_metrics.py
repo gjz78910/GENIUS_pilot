@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
-"""Collect test execution metrics.
+"""Collect aggregate test execution metrics.
 
 This script runs tests and collects metrics including execution time, pass/fail
 counts, code coverage, and resource usage during test execution.
+
+Note:
+- Use `SCRIPTS/run_experiment_test_checkpoints.py` for Task 1/2/3 checkpoint
+  result files with names like `Task1_cp1_<ID>_<SESSION>.json`.
+- Use this script when you specifically need aggregate test/resource/coverage
+  metrics in `test_metrics_*.json`.
 """
 
 import json

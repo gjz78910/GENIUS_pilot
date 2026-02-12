@@ -72,6 +72,20 @@ Please select your primary role:
 
 ---
 
+## Sustainability Assessments
+
+### Self-Assessment Completion
+
+**Have you completed the Sustainable Software Engineering (SSE) self-assessment?**
+- [ ] Yes
+- [ ] No
+
+**Have you completed the DevOps maturity self-assessment?**
+- [ ] Yes
+- [ ] No
+
+---
+
 ## Additional Notes
 
 **Any other information you'd like to provide?**

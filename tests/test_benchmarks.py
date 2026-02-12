@@ -310,12 +310,20 @@ class TestBenchmarksWithOptimal(unittest.TestCase):
         print(f"    assignment_accuracy: {metrics['assignment_accuracy']:.3f} (target: 1.0)")
         print(f"    unassigned_penalty: {metrics['unassigned_penalty']} (target: 0)")
         print(f"    jobs_assigned: {sum(len(j) for j in assignments.values())}/{len(benchmark['jobs'])}")
-        if metrics["unassigned_penalty"] == 0:
-            print(f"    travel_time_ratio: {metrics['travel_time_ratio']:.3f} (target: ≤ 1.5)")
+        print(f"    travel_time_ratio: {metrics['travel_time_ratio']:.3f} (target: ≤ 1.5)")
 
         # Verify all jobs assigned
-        self.assertEqual(len(unassigned), 0, "All jobs should be assigned")
-        self.assertEqual(metrics["unassigned_penalty"], 0, "Should have no unassigned penalty")
+        if unassigned:
+            unassigned_ids = [job.id for job in unassigned]
+            self.fail(
+                f"Benchmark 4 has unassigned jobs: {unassigned_ids}. "
+                "Expected all jobs to be assigned."
+            )
+        if metrics["unassigned_penalty"] != 0:
+            self.fail(
+                f"Benchmark 4 unassigned_penalty={metrics['unassigned_penalty']} "
+                "(target: 0)."
+            )
 
         # Should achieve optimal solution
         self.assertEqual(metrics["assignment_accuracy"], 1.0, "Should match optimal assignments")
@@ -350,12 +358,20 @@ class TestBenchmarksWithOptimal(unittest.TestCase):
         print(f"    assignment_accuracy: {metrics['assignment_accuracy']:.3f} (target: 1.0)")
         print(f"    unassigned_penalty: {metrics['unassigned_penalty']} (target: 0)")
         print(f"    jobs_assigned: {sum(len(j) for j in assignments.values())}/{len(benchmark['jobs'])}")
-        if metrics["unassigned_penalty"] == 0:
-            print(f"    travel_time_ratio: {metrics['travel_time_ratio']:.3f} (target: ≤ 1.5)")
+        print(f"    travel_time_ratio: {metrics['travel_time_ratio']:.3f} (target: ≤ 1.5)")
 
         # Verify all jobs assigned
-        self.assertEqual(len(unassigned), 0, "All jobs should be assigned")
-        self.assertEqual(metrics["unassigned_penalty"], 0, "Should have no unassigned penalty")
+        if unassigned:
+            unassigned_ids = [job.id for job in unassigned]
+            self.fail(
+                f"Benchmark 5 has unassigned jobs: {unassigned_ids}. "
+                "Expected all jobs to be assigned."
+            )
+        if metrics["unassigned_penalty"] != 0:
+            self.fail(
+                f"Benchmark 5 unassigned_penalty={metrics['unassigned_penalty']} "
+                "(target: 0)."
+            )
 
         # Should achieve optimal solution
         self.assertEqual(metrics["assignment_accuracy"], 1.0, "Should match optimal assignments")

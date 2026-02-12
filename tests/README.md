@@ -1,44 +1,70 @@
-# Unit Tests
+# Tests Overview
 
-Comprehensive unit tests organized by requirement.
+This folder contains unit, integration, benchmark, and performance tests used by the
+participant tasks in `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md`.
 
 ## Test Organization
 
 ### test_engineer.py
-- **Requirement 2**: Working Hours Management
-- Model validation and data normalization
-- Tests: 7 tests
+- Model validation and working-hours rules
 
 ### test_job.py
-- **Requirement 2**: Job Length (Duration)
-- Model validation and data normalization
-- Tests: 7 tests
+- Job validation and duration rules
 
 ### test_matching.py
-- **Requirement 1**: Skill Matching & Location Proximity
-- **Requirement 2**: Working Hours & Capacity
-- **Requirement 3**: Travel Time Integration
-- **Requirement 4**: Overflow Handling
-- Tests: 8 tests
+- Skill matching, capacity, and travel-time integration
 
 ### test_routing.py
-- **Requirement 5**: Route Optimization (TSP)
-- **Requirement 3**: Travel Time (route calculation)
-- Tests: 9 tests
+- Route optimization and travel-time calculation
+
+### test_report_correctness.py
+- CSV report correctness and ordering requirements
+
+### test_data_loader.py
+- External data validation rules
+
+### test_benchmarks.py
+- Benchmark quality metrics (accuracy and travel-time ratio)
+
+### tests/performance/
+- Scalability tests (can be slow)
 
 ### test_scheduler_integration.py
-- Integration of all requirements (1-5)
-- End-to-end workflow testing
-- Tests: 9 tests
+- End-to-end scheduling integration tests
 
 ## Running Tests
 
-### Run all tests:
+### Run all tests (including performance):
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-### Run specific test file:
+### Run correctness tests for Task 1 (matching/routing):
+```bash
+python -m unittest tests.test_matching tests.test_routing -v
+```
+
+### Run Task 2 (reporting) tests:
+```bash
+python -m unittest tests.test_report_correctness -v
+```
+
+### Run Task 3 (data loader) tests:
+```bash
+python -m unittest tests.test_data_loader -v
+```
+
+### Run benchmark tests:
+```bash
+python -m unittest tests.test_benchmarks -v
+```
+
+### Run performance tests (slow):
+```bash
+python -m unittest discover -s tests/performance -v
+```
+
+### Run a specific test file:
 ```bash
 python -m unittest tests.test_matching -v
 ```
@@ -56,24 +82,9 @@ coverage report -m
 coverage html  # Generates htmlcov/index.html
 ```
 
-## Coverage Goals
+## Coverage (Optional)
 
-Target: **>90% coverage** for all modules:
-- `src/models/engineer.py`
-- `src/models/job.py`
-- `src/optimization/matching.py`
-- `src/optimization/routing.py`
-- `src/scheduling/scheduler.py`
-
-## Test Requirements Mapping
-
-| Requirement | Test Files | Test Count |
-|-------------|-----------|------------|
-| 1. Skill Matching & Location Proximity | test_matching.py | 3 tests |
-| 2. Working Hours & Capacity | test_engineer.py, test_job.py, test_matching.py | 6 tests |
-| 3. Travel Time Integration | test_matching.py, test_routing.py | 2 tests |
-| 4. Overflow Handling | test_matching.py, test_scheduler_integration.py | 2 tests |
-| 5. Route Optimization | test_routing.py, test_scheduler_integration.py | 11 tests |
-| Integration & Edge Cases | All test files | 16 tests |
-
-**Total: 40 tests**
+If you want coverage locally:
+```bash
+python run_tests_with_coverage.py
+```

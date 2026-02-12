@@ -4,7 +4,56 @@ Simple guide to collect all data needed for GoCodeGreen carbon footprint calcula
 
 ---
 
+## Execution Documents
+
+Use only these two documents during the session:
+- **For participants:** `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md`
+- **For organizers:** `EXPERIMENT_DOCUMENTS/DATA_COLLECTION.md` (this file)
+
+---
+
+## ID Naming Convention
+
+Throughout this guide, replace `<ID>` with your chosen participant identifier.
+Use `<SESSION>` only if you run the same participant more than once.
+
+- **`<ID>`** — Participant identifier. Use a short code, e.g. `P001`, `P002`, `P003`, ...
+- **`<SESSION>` (optional)** — Session identifier. Use only for repeated runs, e.g. `S1`, `S2`, `pilot1`.
+
+**Examples:**
+```bash
+# Participant P001 (single run)
+python SCRIPTS/collect_system_info.py --participant-id P001
+python SCRIPTS/monitor_resources.py --participant-id P001 -i 60
+./SCRIPTS/store_participant_work.sh P001
+```
+For repeated runs of the same participant, add a session label like `S1`.
+
+Keep IDs consistent across all scripts.
+If you use `<SESSION>`, use the same value everywhere for that run.
+
+---
+
 ## BEFORE EXPERIMENT DAY (Do these days/weeks before)
+
+**0. Prepare participant Git workspace (organizer only):**
+```bash
+git clone <YOUR_REPO_URL> experiment_<ID>
+cd experiment_<ID>
+git checkout main
+git pull
+rm -rf .git
+git init
+git checkout -b participant/<ID>
+git add .
+git commit -m "Start point for <ID>"
+git remote add origin <YOUR_REPO_URL>
+git push -u origin participant/<ID>
+```
+This gives the participant:
+- latest code from `main`
+- a clean Git history for this participant only
+- a separate branch that does not affect `main`
 
 **1. Collect system info:**
 ```bash
@@ -32,21 +81,18 @@ If you plan to run code-quality checks, also install: `pylint`, `radon`, `pydocs
 
 ## ON EXPERIMENT DAY (During the session)
 
-**1. Start resource monitoring (run in background):**
+**1. Start resource monitoring in a SEPARATE terminal** (so the participant's terminal stays free):
 ```bash
-python SCRIPTS/monitor_resources.py --participant-id <ID> --session-id <SESSION> -i 60 &
+# Open a new terminal window/tab, then:
+conda activate genius_pilot
+python SCRIPTS/monitor_resources.py --participant-id <ID> -i 60
 ```
-Press Ctrl+C to stop when participant finishes. (Requires `psutil`.)
+Leave this running until the participant finishes. (Requires `psutil`.)
 
-**2. Track tasks (optional):**
-```bash
-python SCRIPTS/task_timer.py --participant-id <ID> --session-id <SESSION> -i
-```
-Commands: `start <task>`, `end`, `save` (use `save` or Ctrl+C to write the JSON file)
+> **Note:** Tell the participant to use a **separate terminal** for their work and not to close or interfere with the monitoring terminal.
 
-**3. Stop monitoring when participant finishes:**
-- Press Ctrl+C in the monitoring terminal, or
-- Find process: `ps aux | grep monitor_resources` then `kill <process_id>`
+**2. Stop monitoring when participant finishes:**
+- Press Ctrl+C in the monitoring terminal
 
 ---
 
@@ -68,27 +114,40 @@ the output will be limited to local repo signals.
 
 **3. Q Developer metrics (AI participants only):**
 ```bash
-python SCRIPTS/collect_q_developer_metrics.py --participant-id <ID> --session-id <SESSION>
+python SCRIPTS/collect_q_developer_metrics.py > DATA_COLLECTION/q_developer_metrics_<ID>.json
 ```
 
-**4. Test metrics:**
+**4. Checkpoint/task test result files (canonical, run after the session on final codebase):**
 ```bash
-python SCRIPTS/collect_test_metrics.py --participant-id <ID> --session-id <SESSION>
+python SCRIPTS/run_experiment_test_checkpoints.py --participant-id <ID>
 ```
-By default it skips performance tests. Add `--include-performance` only if you want the long run.
+This produces:
+- `Task1_cp1_<ID>.json`
+- `Task1_cp2_<ID>.json`
+- `Task1_cp3_<ID>.json`
+- `Task2_<ID>.json`
+- `Task3_<ID>.json`
 
-**5. Code quality:**
+**5. Aggregate test metrics (optional):**
+```bash
+python SCRIPTS/collect_test_metrics.py --participant-id <ID>
+```
+Use this only if you also want one combined `test_metrics_<ID>.json` file
+(duration/resource/coverage summary). By default it skips performance tests.
+Add `--include-performance` only if you want the long run.
+
+**6. Code quality:**
 ```bash
 python SCRIPTS/analyze_code_quality.py --participant-id <ID>
 ```
 
-**6. Energy estimate:**
+**7. Energy estimate:**
 ```bash
-python SCRIPTS/estimate_energy.py DATA_COLLECTION/resource_usage_<ID>_<SESSION>.jsonl \
+python SCRIPTS/estimate_energy.py DATA_COLLECTION/resource_usage_<ID>.jsonl \
   --system-info DATA_COLLECTION/system_info_<ID>.json --participant-id <ID>
 ```
 
-**7. Carbon footprint:**
+**8. Carbon footprint:**
 ```bash
 python SCRIPTS/calculate_carbon_footprint.py DATA_COLLECTION/energy_estimate_<ID>.json \
   --location UK --participant-id <ID>
@@ -96,14 +155,14 @@ python SCRIPTS/calculate_carbon_footprint.py DATA_COLLECTION/energy_estimate_<ID
 If you want network or travel emissions included, add:
 `--network-data <GB>` and/or `--travel-data <path_to_travel.json>`. Defaults are 0.
 
-**8. Aggregate all data:**
+**9. Aggregate all data:**
 ```bash
-python SCRIPTS/aggregate_experiment_data.py <ID> --session-id <SESSION>
+python SCRIPTS/aggregate_experiment_data.py <ID>
 ```
 
-**9. Fill GoCodeGreen template:**
+**10. Fill GoCodeGreen template:**
 ```bash
-python SCRIPTS/fill_gocodegreen_template.py DATA_COLLECTION/aggregated_<ID>_<SESSION>.json \
+python SCRIPTS/fill_gocodegreen_template.py DATA_COLLECTION/aggregated_<ID>.json \
   --session-type manual  # or "ai-assisted"
 ```
 
@@ -112,18 +171,16 @@ python SCRIPTS/fill_gocodegreen_template.py DATA_COLLECTION/aggregated_<ID>_<SES
 **Compare baseline:**
 ```bash
 python SCRIPTS/compare_baseline.py \
-  DATA_COLLECTION/aggregated_<MANUAL_ID>_<SESSION>.json \
-  DATA_COLLECTION/aggregated_<AI_ID>_<SESSION>.json
+  DATA_COLLECTION/aggregated_<MANUAL_ID>.json \
+  DATA_COLLECTION/aggregated_<AI_ID>.json
 ```
 
-**Generate success criteria report:**
+**Generate comparison report:**
 ```bash
 python SCRIPTS/generate_success_criteria_report.py \
-  DATA_COLLECTION/aggregated_<MANUAL_ID>_<SESSION>.json \
-  DATA_COLLECTION/aggregated_<AI_ID>_<SESSION>.json
+  DATA_COLLECTION/aggregated_<MANUAL_ID>.json \
+  DATA_COLLECTION/aggregated_<AI_ID>.json
 ```
-Use your real participant IDs/session IDs, or rename files to `aggregated_manual_*.json`
-and `aggregated_ai_*.json` if that is easier.
 
 ---
 
@@ -131,7 +188,7 @@ and `aggregated_ai_*.json` if that is easier.
 
 - **System info:** CPU, memory, GPU, OS specs (BEFORE)
 - **Resource usage:** CPU%, memory, network, disk I/O (ON - every 60 seconds)
-- **Task timing:** Time spent per task, idle time (ON - optional)
+- **Checkpoint/task test results:** per checkpoint/task pass/fail JSON outputs (AFTER, from final codebase)
 - **Git activity:** Commits, lines changed, branch activity (AFTER)
 - **CI/CD:** Pipeline runs, test times, pass/fail rates (AFTER; GitLab config/API only)
 - **Q Developer:** AI queries, suggestions accepted/rejected (AFTER; best-effort from VS Code logs)
@@ -146,16 +203,20 @@ and `aggregated_ai_*.json` if that is easier.
 
 All data saved to `DATA_COLLECTION/`:
 - `system_info_<ID>.json` (BEFORE)
-- `resource_usage_<ID>_<SESSION>.jsonl` (ON)
-- `task_timing_<ID>_<SESSION>.json` (ON - optional)
+- `resource_usage_<ID>.jsonl` (ON, single-run default)
+- `Task1_cp1_<ID>.json` (AFTER, single-run default)
+- `Task1_cp2_<ID>.json` (AFTER, single-run default)
+- `Task1_cp3_<ID>.json` (AFTER, single-run default)
+- `Task2_<ID>.json` (AFTER, single-run default)
+- `Task3_<ID>.json` (AFTER, single-run default)
 - `git_activity_<ID>.json` (AFTER)
 - `cicd_metrics_<ID>.json` (AFTER)
-- `q_developer_metrics_<ID>_<SESSION>.json` (AFTER)
-- `test_metrics_<ID>_<SESSION>.json` (AFTER)
+- `q_developer_metrics_<ID>.json` (AFTER, single-run default)
+- `test_metrics_<ID>.json` (AFTER, optional aggregate single-run default)
 - `code_quality_<ID>.json` (AFTER)
 - `energy_estimate_<ID>.json` (AFTER)
 - `carbon_footprint_<ID>.json` (AFTER)
-- `aggregated_<ID>_<SESSION>.json` (AFTER)
+- `aggregated_<ID>.json` (AFTER, single-run default)
 - `gocodegreen_data.csv` (AFTER - final output for GoCodeGreen)
 
 ---

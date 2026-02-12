@@ -22,10 +22,7 @@
 ### If you are in the AI-ASSISTED coding condition:
 **✅ YOU CAN USE:**
 - **Amazon Q Developer AI assistant** in VS Code (installed and ready to use)
-- **AI chatbots** (ChatGPT, Claude, Gemini, etc.) - if you want
-- Google search
-- Stack Overflow
-- Any online tutorials or guides
+- **AI chatbots** (ChatGPT, Claude, Gemini, etc.) 
 
 
 ## What This System Does
@@ -50,164 +47,150 @@ Imagine you have a company that sends engineers to customers' homes or offices t
 
 
 
-## Setup Instructions
+## Getting Started
 
-### Step 1: Activate the Conda Environment
-
-The project uses a conda environment called `genius_pilot`. Activate it:
+Activate the conda environment:
 
 ```bash
 conda activate genius_pilot
 ```
 
-If you see `(genius_pilot)` at the start of your terminal prompt, you're ready!
+### Git Setup
 
-## Quick Start - Verify Setup and See the System Work
+Run this command to confirm you are on your participant branch:
+```bash
+git branch --show-current
+```
+Expected output:
+```bash
+participant/<ID>
+```
 
-### 1. Verify Setup by Running the Demo
+> **Note:** A resource monitoring script is running in a separate terminal. Please use **your own terminal** for all your work — do not close or interfere with the other terminal.
 
-Run the demo to verify everything works:
+
+### Project Structure
+
+```
+├── src/                    # Main source code
+│   ├── models/            # Data classes (Engineer, Job)
+│   ├── optimization/      # Algorithms for matching and routing
+│   ├── scheduling/        # High-level scheduler
+│   └── features/          # Reports, data loading, etc.
+├── data/                   # Sample data and benchmark files
+├── tests/                  # Unit tests and performance tests
+│   └── performance/       # Scalability tests
+└── reports/                # Generated CSV reports
+```
+
+Take a few minutes to explore the code.
+
+### Task 1 quick check: demo, then tests
 
 ```bash
-python -m src.demo
+python -c "from src.models.engineer import Engineer; from src.models.job import Job; from src.scheduling.scheduler import Scheduler; engineers=[Engineer(1,'Alice','A',['repair'],8.0),Engineer(2,'Bob','B',['install'],8.0)]; jobs=[Job(1,'A','09:00',['repair'],1.0),Job(2,'B','10:00',['install'],1.0),Job(3,'B','11:00',['repair'],1.0)]; travel={'A':{'A':0.0,'B':0.5},'B':{'A':0.5,'B':0.0}}; a,r,u=Scheduler(engineers,jobs,travel).create_schedule(); print('Assignments:', {k:[j.id for j in v] for k,v in a.items()}); print('Routes:', r); print('Unassigned:', [j.id for j in u])"
 ```
+This shows:
+- job assignments
+- routes
+- any unassigned jobs
 
-**What you'll see:**
-- A list of engineers and which jobs they're assigned
-- The travel route for each engineer
-- Any jobs that couldn't be assigned
-
-**Example output:**
-```
-Engineer 1 (Alice) assigned jobs: [1, 3]
-  Job time: 3.0h, Travel time: 0.0h
-  Total: 3.0h / 8.0h working hours
-  Optimal route: A -> A -> A (total travel time 0.0h)
-```
-
-If you see output like this, your setup is working! If you see errors, ask for help.
-
-### 2. Try Examples
-
-**Generate a CSV Report:**
 ```bash
-python -c "
-from src.features.report import generate_report
-from src.scheduling.scheduler import Scheduler
-from data.sample_data import engineers, jobs
-from data.travel_matrix import travel_matrix
-
-scheduler = Scheduler(engineers, jobs, travel_matrix)
-assignments, routes, unassigned = scheduler.create_schedule()
-generate_report(engineers, assignments, routes, travel_matrix)
-print('Reports generated in reports/ directory')
-"
+python -m unittest tests.test_matching tests.test_routing tests.test_benchmarks -v
 ```
 
-Check the `reports/` folder - you'll see CSV files like `engineer_1_schedule.csv` with detailed timing information.
+- `ok` means that part works
+- `FAIL` or `ERROR` means that part still needs to be fixed
 
-**Load Data from a JSON File:**
+### Task 2 quick check: demo, then tests
+
 ```bash
-python -c "
-from src.features.data_loader import load_data
-from src.scheduling.scheduler import Scheduler
+python -c "from data.sample_data import engineers,jobs; from data.travel_matrix import travel_matrix; from src.scheduling.scheduler import Scheduler; from src.features.report import generate_report; a,r,u=Scheduler(engineers,jobs,travel_matrix).create_schedule(); generate_report(engineers,a,r,travel_matrix); print('Report files created in reports/')"
+```
+This shows:
+- report CSV files are created in `reports/`
 
-engineers, jobs, travel_matrix = load_data('data/benchmarks/benchmark_small_01.json')
-scheduler = Scheduler(engineers, jobs, travel_matrix)
-assignments, routes, unassigned = scheduler.create_schedule()
-print(f'Loaded {len(engineers)} engineers, {len(jobs)} jobs')
-print(f'Assigned {sum(len(jobs) for jobs in assignments.values())} jobs')
-"
+```bash
+python -m unittest tests.test_report_correctness -v
 ```
 
-This loads data from a JSON file instead of hardcoded sample data, then runs the scheduler and prints a summary.
+- `ok` means reporting works
+- `FAIL` or `ERROR` means reporting logic is wrong or missing
+
+### Task 3 quick check: demo, then tests
+
+```bash
+python -c "from src.features.data_loader import load_data; e,j,t=load_data('data/external/example_data.json'); print(f'Loaded {len(e)} engineers, {len(j)} jobs, {len(t)} locations')"
+```
+This shows:
+- external data can be loaded
+- how many engineers, jobs, and locations were loaded
+
+```bash
+python -m unittest tests.test_data_loader -v
+```
+
+- `ok` means input handling is correct
+- `FAIL` or `ERROR` means validation is missing or incorrect
+
+Read error messages carefully. They tell you what to fix.
 
 
 
 ## The Three Tasks
 
-### Task 1: Optimization of Scheduling / Routing
+### Task 1: Improve Matching & Routing
 
 **What you need to do:**
-Improve how jobs are assigned to engineers and how travel routes are calculated. The current system is slow and doesn't always find the best solution.
-
-**Where to look:**
-- `src/optimization/routing.py` - The routing algorithm (brute-force TSP)
-- `src/optimization/matching.py` - The job matching algorithm (greedy assignment)
+Improve how jobs are assigned/matched to engineers and how travel routes are calculated. 
+The current system is slow and doesn't always find the best solution.
 
 **What's the problem?**
 1. **Routing:** The system tries every possible route (brute-force), which is very slow when there are many jobs
 2. **Matching:** Jobs are assigned one-by-one to the closest engineer, which can overload some engineers and leave others with no work
 
-**Example of current behavior:**
-```python
-# Current routing: tries all permutations (slow!)
-# For 5 jobs, it tries 5! = 120 different routes
-# For 10 jobs, it tries 10! = 3,628,800 routes!
-
-# Current matching: assigns job to closest engineer
-# Problem: Engineer A might get 10 jobs while Engineer B gets 0
-```
-
 **What you should do:**
-1. Read the code in `src/optimization/routing.py` and `src/optimization/matching.py`
-2. Understand what they do and why they're slow
-3. Improve them using better algorithms (e.g., nearest neighbor, 2-opt for TSP; better matching strategies)
-4. Test your changes using the commands below
-
+1. Explore the codebase to find the routing and matching code
+2. Understand what the algorithms do and why they're slow
+3. Improve routing code, run and pass Checkpoint A below
+4. Improve matching code, run and pass Checkpoint B below
+5. Run Checkpoint C below, and make sure Checkpoint A and B tests still pass
 
 
 ## ✅ Success Criteria
 
-### 1. Correctness Tests
+### 1. Checkpoint A (Routing)
 
-```bash
-python -m unittest tests.test_matching tests.test_routing -v
-```
-
-**What you'll see:** All tests show `ok` (pass) or `FAIL` (fail)
-
-**Pass:** All tests must pass - this means your code follows all rules (skills, working hours, constraints)
+**To pass Checkpoint A:**
+- Run `python -m unittest tests.test_routing tests.test_routing_checkpoint_a tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_01 tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_02 tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_03 tests.test_benchmarks.TestBenchmarksWithOptimal.test_brute_force_routing_optimal -v`, and:
+  - every test shows `ok`
+  - route quality is reasonable in benchmark output (`travel_time_ratio <= 1.5`)
 
 ---
 
-### 2. Quality Benchmarks
+### 2. Checkpoint B (Matching)
 
-```bash
-python -m unittest tests.test_benchmarks -v
-```
-
-**Look for printed metrics:** The tests will print `assignment_accuracy` and `travel_time_ratio`
-
-**Target for all benchmarks:**
-- `assignment_accuracy = 1.0`
-- `travel_time_ratio ≤ 1.5` (optimal = 1.0)
-
-**Note:** Benchmarks 1-3 should pass with the original code. Benchmarks 4 and 5 require improving the matching algorithm — the current greedy matcher does not assign jobs optimally in all cases. Read the test output to understand what goes wrong.
-
-**Example output:**
-```
-Benchmark 1 Metrics:
-  assignment_accuracy: 1.000 (target: 1.0)
-  travel_time_ratio: 1.000 (target: ≤ 1.5)
-```
+**To pass Checkpoint B:**
+- Run `python -m unittest tests.test_matching tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_04 tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_05 tests.test_routing -v`, and:
+  - every test shows `ok`
+  - printed benchmark metrics meet:
+    - `assignment_accuracy = 1.0`
+    - `travel_time_ratio <= 1.5`
+  - all jobs are assigned in both tests (no unassigned jobs)
 
 ---
 
-### 3. Scalability Tests 
+### 3. Checkpoint C (Scalability)
 
-```bash
-python -m unittest discover -s tests/performance -v
-```
-
-**Pass:**
-- **Test 1 (EASY):** Should pass with original code (< 10s)
-- **Test 2 (MODERATE):** Needs some optimization (~50-60s original, < 5s optimized)
-- **Test 3 (HARD):** Needs significant optimization (> 10 minutes original, < 10s optimized)
-- **Test 4 (VERY HARD):** Needs major optimization (> 30 minutes original, < 15s optimized)
-- **Test 5 (EXTREMELY HARD):** Requires full optimization (> 1 hour original, < 30s optimized)
-
-**Your target:** Optimize routing progressively so all tests pass in reasonable time
+**To pass Checkpoint C:**
+- Run `python -m unittest tests.performance.test_scalability tests.test_routing tests.test_matching tests.test_benchmarks -v`, and:
+    - **Test 1 (EASY):** Should pass with original code (by default finish < 3s)
+    - **Test 2 (MODERATE):** Needs some optimization (finish < 5s to pass)
+    - **Test 3 (HARD):** Needs significant optimization (finish < 10s to pass)
+    - **Test 4 (VERY HARD):** Needs major optimization (finish < 15s to pass)
+    - **Test 5 (EXTREMELY HARD):** Requires full optimization (finish < 30s to pass)
+  - **Your target:** pass at least three tests
+  - this command also confirms your scalability changes did not break routing, matching, and benchmark behavior
 
 ---
 
@@ -216,35 +199,17 @@ python -m unittest discover -s tests/performance -v
 **What you need to do:**
 The CSV report code has bugs and a missing feature. Some tests will fail. Fix the code so all tests pass.
 
-**Where to look:**
-- `src/features/report.py` - The report generation code (has bugs)
-- `tests/test_report_correctness.py` - Tests that define correct behavior
-
 **Start by running the tests to see what fails:**
 ```bash
 python -m unittest tests.test_report_correctness -v
 ```
 
-Read the failure messages to understand what is wrong.
-
-**What needs fixing:**
-- `travel_time_minutes` should be the travel time to the next job (not always 0)
-- `total_time_minutes` should equal `job_duration_minutes + travel_time_minutes` (not always 0)
-- Each CSV should end with a summary row where `job_id` is `TOTAL`, summing up `job_duration_minutes`, `travel_time_minutes`, and `total_time_minutes`
-- Jobs in each CSV should be ordered by `job_time` (chronological order), not by route order
-
-**Example of a correct CSV:**
-```csv
-engineer_id,engineer_name,job_id,job_location,job_time,required_skills,job_start_time_minutes,job_end_time_minutes,job_duration_minutes,travel_time_minutes,total_time_minutes
-1,Alice,1,A,09:00,repair,0.0,120.0,120.0,30.0,150.0
-1,Alice,3,B,11:00,install,150.0,210.0,60.0,30.0,90.0
-1,Alice,TOTAL,,,,0.0,0.0,180.0,60.0,240.0
-```
+Read the failure messages carefully — they tell you what is wrong and will guide you to the relevant code.
 
 **Steps:**
 1. Run the tests to see which ones fail
-2. Read `src/features/report.py` to find the bugs
-3. Fix the bugs and add the missing summary row
+2. Read the error messages to understand what behavior is expected
+3. Find and fix the bugs in the report code
 4. Run the tests again until all pass
 
 ## ✅ Success Criteria
@@ -261,32 +226,17 @@ python -m unittest tests.test_report_correctness -v
 **What you need to do:**
 The data loader is missing some input validation. Some tests will fail. Add the missing validation so all tests pass.
 
-**Where to look:**
-- `src/features/data_loader.py` - The data loading code (missing validation)
-- `tests/test_data_loader.py` - Tests that define what validation is needed
-- The docstring at the top of `data_loader.py` describes all the rules the data must follow
-
 **Start by running the tests to see what fails:**
 ```bash
 python -m unittest tests.test_data_loader -v
 ```
 
-Read the failure messages to understand what validation is missing.
-
-**What needs to be added:**
-The loader should raise a `ValueError` when:
-- A job's location is not in the travel matrix
-- A job's time is not in valid `HH:MM` format (hours 0-23, minutes 0-59)
-- The travel matrix is not symmetric (A→B should equal B→A)
-- The travel matrix diagonal is not zero (A→A should be 0.0)
-- An engineer's working hours are negative or greater than 24
-
-The docstring in `data_loader.py` explains all these rules in detail.
+Read the failure messages carefully — they tell you what validation is missing and will guide you to the relevant code.
 
 **Steps:**
 1. Run the tests to see which ones fail
-2. Read the docstring in `src/features/data_loader.py` for the full data format rules
-3. Add the missing validation checks (raise `ValueError` with a clear message)
+2. Read the error messages to understand what validation is expected
+3. Find the data loading code and add the missing validation checks
 4. Run the tests again until all pass
 
 ## ✅ Success Criteria
@@ -296,5 +246,13 @@ python -m unittest tests.test_data_loader -v
 ```
 **Pass:** All tests show `ok`
 
----
+## Final Submission
 
+After you finish all tasks and all test commands, submit your work:
+```bash
+git add .
+git commit -m "Final submission"
+git push
+```
+
+---

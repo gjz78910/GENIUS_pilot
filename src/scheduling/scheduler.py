@@ -12,7 +12,7 @@ from typing import Dict, List, Tuple
 from src.models.engineer import Engineer
 from src.models.job import Job
 from src.optimization.matching import assign_jobs
-from src.optimization.routing import brute_force_tsp
+from src.optimization.routing import find_optimal_route
 
 
 class Scheduler:
@@ -55,7 +55,7 @@ class Scheduler:
                 # No jobs assigned; skip route optimisation
                 continue
             job_locations: List[str] = [job.location for job in assigned_jobs]
-            route, distance = brute_force_tsp(engineer.location, job_locations, self.travel_matrix)
+            route, distance = find_optimal_route(engineer.location, job_locations, self.travel_matrix)
             routes[engineer.id] = (route, distance)
 
         return assignments, routes, unassigned

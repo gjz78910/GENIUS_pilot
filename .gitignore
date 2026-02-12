@@ -48,6 +48,7 @@ htmlcov/
 coverage.xml
 
 # Internal documents (not for participants)
+DESIGN_DOCUMENTS/
 MEETING_AGENDA.md
 Experiment_design.md
 

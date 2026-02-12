@@ -23,7 +23,7 @@ from typing import Dict, List
 
 from src.models.engineer import Engineer
 from src.models.job import Job
-from src.optimization.routing import brute_force_tsp
+from src.optimization.routing import find_optimal_route
 
 
 def assign_jobs(
@@ -80,7 +80,7 @@ def assign_jobs(
             # Calculate optimized travel time if we add this job
             test_jobs = current_jobs + [job]
             job_locations = [j.location for j in test_jobs]
-            _, estimated_travel_time = brute_force_tsp(engineer.location, job_locations, travel_matrix)
+            _, estimated_travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
             
             # Check if engineer has capacity for jobs + optimized travel
             if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:

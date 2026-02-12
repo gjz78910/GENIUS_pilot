@@ -49,9 +49,10 @@
 - [ ] **Test Files Ready**
   - [ ] Benchmark files exist: `data/benchmarks/benchmark_small_*.json`
   - [ ] Test files exist: `tests/test_*.py`
-  - [ ] Participant instructions ready:
+  - [ ] Session documents ready:
     - [ ] `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md`
-    - [ ] Manual vs AI sections are clearly marked for participants
+    - [ ] `EXPERIMENT_DOCUMENTS/DATA_COLLECTION.md`
+  - [ ] Manual vs AI sections are clearly marked for participants
 
 ### Data Collection Setup (BEFORE experiment day)
 
@@ -98,6 +99,13 @@
   - [ ] Both should see output (engineers, jobs, routes)
   - [ ] If errors, fix them before starting tasks
 
+- [ ] **Familiarization (5-10 minutes per participant)**
+  - [ ] Walk participant through the codebase structure (`src/`, `data/`, `tests/`)
+  - [ ] Show them the demo output and explain what it means
+  - [ ] Point out that tests define correct behavior — running tests is the key workflow
+  - [ ] Show how to run all tests: `python -m unittest discover -s tests -v`
+  - [ ] Let them browse the code briefly before starting tasks
+
 ---
 
 ## DURING THE SESSION
@@ -105,16 +113,19 @@
 ### Task Assignment
 
 - [ ] **Give both participants the same task**
-  - [ ] Confirm they understand there are three tasks and the order is up to them
+  - [ ] Confirm they understand Task 1 must be done in order: `Task 1A (routing)` then `Task 1B (matching)`
+  - [ ] Confirm they know checkpoint tests are required at 1A and 1B
+  - [ ] Confirm they can then continue with Task 2 and Task 3
   - [ ] Set a time limit
   - [ ] Tell them to start
 
 ### Data Collection (DURING session)
 
-- [ ] **Start resource monitoring (run in background):**
-  - [ ] `python SCRIPTS/monitor_resources.py --participant-id <ID> --session-id <SESSION> -i 60 &`
-- [ ] **Track tasks (optional):**
-  - [ ] `python SCRIPTS/task_timer.py --participant-id <ID> --session-id <SESSION> -i`
+- [ ] **Start resource monitoring in a SEPARATE terminal** (so the participant's terminal stays free):
+  - [ ] Open a new terminal window/tab
+  - [ ] `conda activate genius_pilot`
+  - [ ] `python SCRIPTS/monitor_resources.py --participant-id <ID> --session-id <SESSION> -i 60`
+  - [ ] Leave this running in the background until the session ends
 
 ### Monitor Participants (One at a Time)
 
@@ -136,6 +147,19 @@
   - [ ] Tests failing? (Note which tests)
   - [ ] Code not running? (Note the error)
   - [ ] Screen recording still working? (Check periodically)
+
+### Task 1 Checkpoint Tracking (Important for Manual Group)
+
+- [ ] **Checkpoint 1A (Routing) completed**
+  - [ ] Participant ran: `python -m unittest tests.test_routing -v`
+  - [ ] Participant ran: `python -m unittest tests.test_matching tests.test_benchmarks -v`
+  - [ ] Pass/fail and time recorded in `EXPERIMENT_DOCUMENTS/DATA_COLLECTION.md` checkpoint log
+
+- [ ] **Checkpoint 1B (Matching) completed**
+  - [ ] Participant ran: `python -m unittest tests.test_matching -v`
+  - [ ] Participant ran: `python -m unittest tests.test_benchmarks -v`
+  - [ ] Participant ran: `python -m unittest tests.test_routing -v`
+  - [ ] Pass/fail and time recorded in `EXPERIMENT_DOCUMENTS/DATA_COLLECTION.md` checkpoint log
 
 ---
 
@@ -177,13 +201,15 @@
     - [ ] Run: `./SCRIPTS/restore_participant_work.sh P001 SESSION1 --separate-dir`
     - [ ] Or switch to their branch: `git checkout participant-P001`
     - [ ] Run tests: `python -m unittest discover -s tests -p "test_*.py" -v`
-    - [ ] Check success criteria: See `EXPERIMENT_DOCUMENTS/SUCCESS_CRITERIA.md`
+    - [ ] Check expected outcomes in `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md`
+    - [ ] Check organizer logs in `EXPERIMENT_DOCUMENTS/DATA_COLLECTION.md`
     - [ ] Note which tests pass/fail
   - [ ] **Restore Participant 2's work:**
     - [ ] Run: `./SCRIPTS/restore_participant_work.sh P002 SESSION1 --separate-dir`
     - [ ] Or switch to their branch: `git checkout participant-P002`
     - [ ] Run tests: `python -m unittest discover -s tests -p "test_*.py" -v`
-    - [ ] Check success criteria: See `EXPERIMENT_DOCUMENTS/SUCCESS_CRITERIA.md`
+    - [ ] Check expected outcomes in `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md`
+    - [ ] Check organizer logs in `EXPERIMENT_DOCUMENTS/DATA_COLLECTION.md`
     - [ ] Note which tests pass/fail
   - [ ] **Compare solutions:**
     - [ ] Note differences in approach
@@ -333,10 +359,19 @@ python -m src.demo
 
 **Run tests:**
 ```bash
+# Task 1 checkpoint 1A
+python -m unittest tests.test_routing -v
+python -m unittest tests.test_matching tests.test_benchmarks -v
+
+# Task 1 checkpoint 1B
+python -m unittest tests.test_matching -v
+python -m unittest tests.test_benchmarks -v
+python -m unittest tests.test_routing -v
+
+# Other task checks
 python -m unittest tests.test_matching tests.test_routing -v
 python -m unittest tests.test_report_correctness -v
 python -m unittest tests.test_data_loader -v
-python -m unittest tests.test_benchmarks -v
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
 

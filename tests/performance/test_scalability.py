@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import math
 import random
+import signal
 import time
 import unittest
 from typing import Dict, List, Sequence, Tuple
@@ -150,6 +151,53 @@ class TestScalability(unittest.TestCase):
     participants need to optimise routing.
     """
 
+    LEVEL_TIME_LIMITS = {
+        1: 3.0,
+        2: 5.0,
+        3: 10.0,
+        4: 15.0,
+        5: 30.0,
+    }
+
+    def _run_with_timeout(self, seconds: float, fn):
+        """Run `fn` with a hard timeout in seconds."""
+        if not hasattr(signal, "SIGALRM"):
+            return fn()
+
+        class _Timeout(Exception):
+            pass
+
+        def _handler(signum, frame):
+            raise _Timeout()
+
+        old_handler = signal.getsignal(signal.SIGALRM)
+        signal.signal(signal.SIGALRM, _handler)
+        signal.setitimer(signal.ITIMER_REAL, seconds)
+        try:
+            return fn()
+        except _Timeout:
+            raise AssertionError(f"Timed out after {seconds:.0f}s.") from None
+        finally:
+            signal.setitimer(signal.ITIMER_REAL, 0.0)
+            signal.signal(signal.SIGALRM, old_handler)
+
+    def _run_scalability_case(self, level: int, label: str, scheduler: Scheduler):
+        limit = self.LEVEL_TIME_LIMITS[level]
+        t0 = time.time()
+        assignments, routes, unassigned = self._run_with_timeout(
+            limit, scheduler.create_schedule
+        )
+        elapsed = time.time() - t0
+
+        _print_result(label, elapsed, assignments, unassigned)
+        if elapsed >= limit:
+            self.fail(
+                f"Test {level} exceeded time limit: {elapsed:.2f}s "
+                f"(target < {limit:.0f}s)."
+            )
+        self.assertGreater(sum(len(j) for j in assignments.values()), 0)
+        print(f"Test {level} passed in {elapsed:.2f}s (target < {limit:.0f}s).")
+
     # ------------------------------------------------------------------
     # Test 1 — Small HVAC company
     # ------------------------------------------------------------------
@@ -166,13 +214,7 @@ class TestScalability(unittest.TestCase):
         jobs = _create_jobs(250, 30, length_range=(0.5, 1.5), skills_per_job=(1, 2))
 
         scheduler = Scheduler(engineers, jobs, tm)
-        t0 = time.time()
-        assignments, routes, unassigned = scheduler.create_schedule()
-        elapsed = time.time() - t0
-
-        _print_result("Test 1 — Small HVAC company", elapsed, assignments, unassigned)
-        self.assertLess(elapsed, 120.0, f"Took {elapsed:.2f}s — target < 10s")
-        self.assertGreater(sum(len(j) for j in assignments.values()), 0)
+        self._run_scalability_case(1, "Test 1 — Small HVAC company", scheduler)
 
     # ------------------------------------------------------------------
     # Test 2 — Mid-size telecom installer
@@ -190,13 +232,7 @@ class TestScalability(unittest.TestCase):
         jobs = _create_jobs(1000, 60, length_range=(0.3, 1.0), skills_per_job=(1, 2))
 
         scheduler = Scheduler(engineers, jobs, tm)
-        t0 = time.time()
-        assignments, routes, unassigned = scheduler.create_schedule()
-        elapsed = time.time() - t0
-
-        _print_result("Test 2 — Regional telecom", elapsed, assignments, unassigned)
-        self.assertLess(elapsed, 300.0, f"Took {elapsed:.2f}s — target < 5s")
-        self.assertGreater(sum(len(j) for j in assignments.values()), 0)
+        self._run_scalability_case(2, "Test 2 — Regional telecom", scheduler)
 
     # ------------------------------------------------------------------
     # Test 3 — Regional utility company (inspections)
@@ -214,13 +250,7 @@ class TestScalability(unittest.TestCase):
         jobs = _create_jobs(3000, 140, length_range=(0.2, 0.6), skills_per_job=(1, 3))
 
         scheduler = Scheduler(engineers, jobs, tm)
-        t0 = time.time()
-        assignments, routes, unassigned = scheduler.create_schedule()
-        elapsed = time.time() - t0
-
-        _print_result("Test 3 — Utility inspections", elapsed, assignments, unassigned)
-        self.assertLess(elapsed, 600.0, f"Took {elapsed:.2f}s — target < 10s")
-        self.assertGreater(sum(len(j) for j in assignments.values()), 0)
+        self._run_scalability_case(3, "Test 3 — Utility inspections", scheduler)
 
     # ------------------------------------------------------------------
     # Test 4 — Large facilities company (long shifts, many short tasks)
@@ -239,13 +269,7 @@ class TestScalability(unittest.TestCase):
         jobs = _create_jobs(3800, 160, length_range=(0.2, 1.0), skills_per_job=(1, 3))
 
         scheduler = Scheduler(engineers, jobs, tm)
-        t0 = time.time()
-        assignments, routes, unassigned = scheduler.create_schedule()
-        elapsed = time.time() - t0
-
-        _print_result("Test 4 — Large facilities (10h shifts)", elapsed, assignments, unassigned)
-        self.assertLess(elapsed, 1800.0, f"Took {elapsed:.2f}s — target < 15s")
-        self.assertGreater(sum(len(j) for j in assignments.values()), 0)
+        self._run_scalability_case(4, "Test 4 — Large facilities (10h shifts)", scheduler)
 
     # ------------------------------------------------------------------
     # Test 5 — National field-service operation
@@ -264,13 +288,7 @@ class TestScalability(unittest.TestCase):
         jobs = _create_jobs(4000, 180, length_range=(0.3, 1.5), skills_per_job=(1, 3))
 
         scheduler = Scheduler(engineers, jobs, tm)
-        t0 = time.time()
-        assignments, routes, unassigned = scheduler.create_schedule()
-        elapsed = time.time() - t0
-
-        _print_result("Test 5 — National operation", elapsed, assignments, unassigned)
-        self.assertLess(elapsed, 3600.0, f"Took {elapsed:.2f}s — target < 30s")
-        self.assertGreater(sum(len(j) for j in assignments.values()), 0)
+        self._run_scalability_case(5, "Test 5 — National operation", scheduler)
 
 
 if __name__ == "__main__":

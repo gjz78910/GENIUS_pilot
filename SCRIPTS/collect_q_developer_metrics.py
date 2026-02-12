@@ -1,299 +1,259 @@
 #!/usr/bin/env python3
-"""Collect Amazon Q Developer telemetry metrics.
+"""Precise Amazon Q Developer metrics collection focusing on actual user interactions.
 
-This script attempts to collect metrics from Amazon Q Developer plugin including:
-- AI query frequency
-- Suggestions accepted/rejected count
-- AI interaction timestamps
-- Compute cycles (if available)
-
-Note: This requires investigation of Q Developer plugin logs/API.
+This script looks for specific user interaction patterns rather than all log messages.
 """
 
 import json
 import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
 
 
-def find_vscode_logs():
-    """Find VS Code extension logs directory.
-    
-    Returns:
-        Path to VS Code logs directory or None
-    """
-    system = os.name
+def find_latest_vscode_logs():
+    """Find the most recent VS Code logs directory."""
     home = Path.home()
     
-    if system == "nt":  # Windows
+    if os.name == "nt":  # Windows
         vscode_logs = home / "AppData" / "Roaming" / "Code" / "logs"
-    elif system == "darwin":  # macOS
+    elif sys.platform == "darwin":  # macOS
         vscode_logs = home / "Library" / "Application Support" / "Code" / "logs"
     else:  # Linux
         vscode_logs = home / ".config" / "Code" / "logs"
     
-    if vscode_logs.exists():
-        return vscode_logs
+    if not vscode_logs.exists():
+        return None
     
-    return None
+    # Find the most recent log directory
+    log_dirs = [d for d in vscode_logs.iterdir() if d.is_dir()]
+    if not log_dirs:
+        return None
+    
+    # Sort by modification time, get most recent
+    latest_dir = max(log_dirs, key=lambda d: d.stat().st_mtime)
+    return latest_dir
 
 
-def find_q_developer_logs(vscode_logs=None):
-    """Find Q Developer specific log files.
-    
-    Args:
-        vscode_logs: Path to VS Code logs directory
-    
-    Returns:
-        List of potential Q Developer log files
-    """
-    if not vscode_logs:
-        vscode_logs = find_vscode_logs()
-    
-    if not vscode_logs:
+def find_q_developer_logs(vscode_logs_dir):
+    """Find Amazon Q Developer log files."""
+    if not vscode_logs_dir:
         return []
     
     q_logs = []
     
-    # Common extension log locations
-    potential_paths = [
-        vscode_logs / "exthost" / "*" / "Amazon.q-developer*",
-        vscode_logs / "exthost" / "*" / "*q-developer*",
-        vscode_logs / "exthost" / "*" / "*q*",
-        vscode_logs / "*" / "*q-developer*",
-    ]
-    
-    for pattern in potential_paths:
-        try:
-            q_logs.extend(Path(vscode_logs).parent.glob(str(pattern.relative_to(vscode_logs))))
-        except Exception:
-            pass
+    # Look for Amazon Q logs in all windows
+    for window_dir in vscode_logs_dir.glob("window*"):
+        exthost_dir = window_dir / "exthost"
+        if exthost_dir.exists():
+            # Look for Amazon Q extension logs
+            q_ext_dir = exthost_dir / "amazonwebservices.amazon-q-vscode"
+            if q_ext_dir.exists():
+                for log_file in q_ext_dir.glob("*.log"):
+                    q_logs.append(log_file)
     
     return q_logs
 
 
-def parse_log_file(log_file):
-    """Parse a log file for Q Developer metrics.
-    
-    Args:
-        log_file: Path to log file
-    
-    Returns:
-        Dictionary with parsed metrics
-    """
+def parse_q_developer_log_precise(log_file):
+    """Parse Amazon Q Developer log file for precise user interaction metrics."""
     metrics = {
-        "queries": 0,
-        "suggestions_accepted": 0,
-        "suggestions_rejected": 0,
+        "chat_messages_sent": 0,
+        "chat_conversations": 0,
+        "code_suggestions_shown": 0,
+        "code_suggestions_accepted": 0,
+        "code_suggestions_rejected": 0,
+        "inline_completions": 0,
+        "tool_uses": 0,
         "interactions": [],
     }
     
     try:
         with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
-            for line in f:
+            content = f.read()
+            lines = content.split('\n')
+            
+            conversation_ids = set()
+            
+            for line in lines:
+                if not line.strip():
+                    continue
+                
                 line_lower = line.lower()
                 
-                # Count queries (heuristic: look for API calls or chat messages)
-                if any(keyword in line_lower for keyword in ["query", "request", "chat", "completion"]):
-                    metrics["queries"] += 1
+                # Extract timestamp if available
+                timestamp_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
+                timestamp = timestamp_match.group(1) if timestamp_match else None
                 
-                # Count accepted suggestions
-                if any(keyword in line_lower for keyword in ["accept", "accepted", "applied"]):
-                    metrics["suggestions_accepted"] += 1
+                # Count actual chat messages sent by user
+                if "sendchatprompt" in line_lower and "received" in line_lower:
+                    metrics["chat_messages_sent"] += 1
+                    if timestamp:
+                        metrics["interactions"].append({
+                            "type": "chat_message_sent",
+                            "timestamp": timestamp,
+                            "details": "User sent chat message"
+                        })
                 
-                # Count rejected suggestions
-                if any(keyword in line_lower for keyword in ["reject", "rejected", "dismiss", "dismissed"]):
-                    metrics["suggestions_rejected"] += 1
+                # Count unique conversations
+                conv_match = re.search(r'"cwsprChatConversationId":"([^"]+)"', line)
+                if conv_match and conv_match.group(1) not in ["", "undefined"]:
+                    conversation_ids.add(conv_match.group(1))
                 
-                # Extract timestamps
-                # This is a simplified parser - actual log format may vary
-                if "timestamp" in line_lower or "time" in line_lower:
-                    metrics["interactions"].append({
-                        "line": line.strip()[:200],  # First 200 chars
-                        "timestamp": datetime.now().isoformat(),  # Approximate
-                    })
+                # Count code suggestions/completions shown to user
+                if "codewhisperer" in line_lower and any(keyword in line_lower for keyword in [
+                    "suggestion", "completion", "recommend"
+                ]) and "shown" not in line_lower:  # Avoid double counting
+                    metrics["code_suggestions_shown"] += 1
+                    if timestamp:
+                        metrics["interactions"].append({
+                            "type": "code_suggestion_shown",
+                            "timestamp": timestamp,
+                            "details": "Code suggestion displayed"
+                        })
+                
+                # Count inline completions (actual code completions)
+                if "inline" in line_lower and "completion" in line_lower and "server" not in line_lower:
+                    metrics["inline_completions"] += 1
+                    if timestamp:
+                        metrics["interactions"].append({
+                            "type": "inline_completion",
+                            "timestamp": timestamp,
+                            "details": "Inline code completion"
+                        })
+                
+                # Count tool uses (when Q Developer uses tools like file operations)
+                if "tooluse" in line_lower and "suggested" in line_lower:
+                    metrics["tool_uses"] += 1
+                    if timestamp:
+                        metrics["interactions"].append({
+                            "type": "tool_use",
+                            "timestamp": timestamp,
+                            "details": "Q Developer used a tool"
+                        })
+                
+                # Count button clicks (user accepting suggestions)
+                if "buttonclick" in line_lower and "run-" in line_lower:
+                    metrics["code_suggestions_accepted"] += 1
+                    if timestamp:
+                        metrics["interactions"].append({
+                            "type": "suggestion_accepted",
+                            "timestamp": timestamp,
+                            "details": "User accepted suggestion via button click"
+                        })
+                
+                # Count explicit accepts/rejects
+                if "accept" in line_lower and "telemetry" in line_lower:
+                    metrics["code_suggestions_accepted"] += 1
+                    if timestamp:
+                        metrics["interactions"].append({
+                            "type": "suggestion_accepted",
+                            "timestamp": timestamp,
+                            "details": "Code suggestion accepted"
+                        })
+                
+                if "reject" in line_lower and "telemetry" in line_lower:
+                    metrics["code_suggestions_rejected"] += 1
+                    if timestamp:
+                        metrics["interactions"].append({
+                            "type": "suggestion_rejected",
+                            "timestamp": timestamp,
+                            "details": "Code suggestion rejected"
+                        })
+            
+            metrics["chat_conversations"] = len(conversation_ids)
+    
     except Exception as e:
         print(f"Warning: Could not parse log file {log_file}: {e}", file=sys.stderr)
     
     return metrics
 
 
-def check_q_developer_api():
-    """Check if Q Developer API is accessible.
+def check_chat_history():
+    """Check Amazon Q chat history files for additional context."""
+    home = Path.home()
+    chat_history_dir = home / ".aws" / "amazonq" / "history"
     
-    Returns:
-        Dictionary with API availability info
-    """
-    # Q Developer may expose metrics through:
-    # 1. VS Code extension API
-    # 2. Local HTTP endpoint
-    # 3. Configuration file
-    
-    api_info = {
-        "available": False,
-        "method": None,
-        "endpoint": None,
+    chat_data = {
+        "history_files_found": 0,
+        "total_conversations": 0,
+        "total_messages": 0
     }
     
-    # Check for local API endpoint (common ports)
-    try:
-        import socket
-        test_ports = [8080, 8888, 3000, 5000]
-        for port in test_ports:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(0.1)
-            result = sock.connect_ex(("localhost", port))
-            sock.close()
-            if result == 0:
-                api_info["available"] = True
-                api_info["method"] = "http"
-                api_info["endpoint"] = f"http://localhost:{port}"
-                break
-    except Exception:
-        pass
+    if chat_history_dir.exists():
+        for history_file in chat_history_dir.glob("chat-history-*.json"):
+            chat_data["history_files_found"] += 1
+            try:
+                with open(history_file, 'r', encoding='utf-8') as f:
+                    history = json.load(f)
+                    if isinstance(history, dict) and "conversations" in history:
+                        conversations = history["conversations"]
+                        chat_data["total_conversations"] += len(conversations)
+                        for conv in conversations:
+                            if "messages" in conv:
+                                chat_data["total_messages"] += len(conv["messages"])
+            except Exception as e:
+                print(f"Warning: Could not read chat history {history_file}: {e}", file=sys.stderr)
     
-    return api_info
+    return chat_data
 
 
 def collect_q_developer_metrics():
-    """Collect all Q Developer metrics.
-    
-    Returns:
-        Dictionary with all collected metrics
-    """
+    """Collect precise Amazon Q Developer metrics."""
     metrics = {
         "collection_timestamp": datetime.now().isoformat(),
-        "collection_method": "log_analysis",
+        "collection_method": "precise_interaction_analysis",
         "plugin_installed": False,
         "logs_found": False,
-        "api_available": False,
         "data": {
-            "queries": 0,
-            "suggestions_accepted": 0,
-            "suggestions_rejected": 0,
+            "chat_messages_sent": 0,
+            "chat_conversations": 0,
+            "code_suggestions_shown": 0,
+            "code_suggestions_accepted": 0,
+            "code_suggestions_rejected": 0,
+            "inline_completions": 0,
+            "tool_uses": 0,
             "total_interactions": 0,
             "interactions": [],
         },
+        "chat_history": {}
     }
     
-    # Check for VS Code logs
-    vscode_logs = find_vscode_logs()
+    # Find VS Code logs
+    vscode_logs = find_latest_vscode_logs()
     if vscode_logs:
         metrics["vscode_logs_path"] = str(vscode_logs)
-        metrics["plugin_installed"] = True
         
         # Find Q Developer logs
         q_logs = find_q_developer_logs(vscode_logs)
+        
         if q_logs:
             metrics["logs_found"] = True
-            metrics["log_files"] = [str(log) for log in q_logs]
+            metrics["plugin_installed"] = True
             
-            # Parse log files
+            # Parse each log file
             for log_file in q_logs:
-                log_metrics = parse_log_file(log_file)
-                metrics["data"]["queries"] += log_metrics["queries"]
-                metrics["data"]["suggestions_accepted"] += log_metrics["suggestions_accepted"]
-                metrics["data"]["suggestions_rejected"] += log_metrics["suggestions_rejected"]
+                log_metrics = parse_q_developer_log_precise(log_file)
+                
+                # Aggregate metrics
+                for key in ["chat_messages_sent", "chat_conversations", "code_suggestions_shown",
+                           "code_suggestions_accepted", "code_suggestions_rejected", 
+                           "inline_completions", "tool_uses"]:
+                    metrics["data"][key] += log_metrics[key]
+                
+                # Combine interactions
                 metrics["data"]["interactions"].extend(log_metrics["interactions"])
-            
-            metrics["data"]["total_interactions"] = len(metrics["data"]["interactions"])
     
-    # Check for API access
-    api_info = check_q_developer_api()
-    if api_info["available"]:
-        metrics["api_available"] = True
-        metrics["api_info"] = api_info
+    # Check chat history
+    metrics["chat_history"] = check_chat_history()
+    
+    # Calculate total interactions
+    metrics["data"]["total_interactions"] = len(metrics["data"]["interactions"])
     
     return metrics
 
 
-def main():
-    """Main function."""
-    import argparse
-    
-    parser = argparse.ArgumentParser(
-        description="Collect Amazon Q Developer telemetry metrics"
-    )
-    parser.add_argument(
-        "-o", "--output",
-        type=str,
-        default="DATA_COLLECTION/q_developer_metrics.json",
-        help="Output JSON file path"
-    )
-    parser.add_argument(
-        "--participant-id",
-        type=str,
-        help="Participant ID to include in filename"
-    )
-    parser.add_argument(
-        "--session-id",
-        type=str,
-        help="Session ID to include in filename"
-    )
-    parser.add_argument(
-        "--vscode-logs",
-        type=str,
-        help="Path to VS Code logs directory (auto-detected if not specified)"
-    )
-    
-    args = parser.parse_args()
-    
-    # Determine output path
-    output_path = Path(args.output)
-    if args.participant_id and args.session_id:
-        output_path = Path(
-            f"DATA_COLLECTION/q_developer_metrics_{args.participant_id}_{args.session_id}.json"
-        )
-    elif args.participant_id:
-        output_path = Path(f"DATA_COLLECTION/q_developer_metrics_{args.participant_id}.json")
-    
-    # Create output directory if needed
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    # Collect metrics
-    print("Collecting Q Developer metrics...")
-    print("Note: This is an investigation script. Actual telemetry collection method may vary.")
-    print()
-    
-    metrics = collect_q_developer_metrics()
-    
-    # Write to file
-    with open(output_path, "w") as f:
-        json.dump(metrics, f, indent=2)
-    
-    # Print summary
-    print("=== Q Developer Metrics Summary ===")
-    print(f"Plugin installed: {metrics['plugin_installed']}")
-    print(f"Logs found: {metrics['logs_found']}")
-    print(f"API available: {metrics['api_available']}")
-    
-    if metrics["logs_found"]:
-        print(f"\nData from logs:")
-        print(f"  Queries: {metrics['data']['queries']}")
-        print(f"  Suggestions accepted: {metrics['data']['suggestions_accepted']}")
-        print(f"  Suggestions rejected: {metrics['data']['suggestions_rejected']}")
-        print(f"  Total interactions: {metrics['data']['total_interactions']}")
-    
-    if not metrics["plugin_installed"]:
-        print("\nWarning: Q Developer plugin not detected.")
-        print("  - Make sure VS Code is installed")
-        print("  - Make sure Q Developer extension is installed")
-        print("  - Check VS Code logs directory manually")
-    
-    if not metrics["logs_found"] and metrics["plugin_installed"]:
-        print("\nWarning: Q Developer logs not found.")
-        print("  - Logs may be in a different location")
-        print("  - Extension may use different logging mechanism")
-        print("  - Consider using screen recording analysis as fallback")
-    
-    print(f"\nData saved to: {output_path}")
-    print("\nNote: This script provides basic log analysis.")
-    print("For accurate metrics, check:")
-    print("  1. Q Developer extension settings for telemetry options")
-    print("  2. VS Code output panel for Q Developer channel")
-    print("  3. Amazon Q Developer documentation for API access")
-
-
 if __name__ == "__main__":
-    main()
+    metrics = collect_q_developer_metrics()
+    print(json.dumps(metrics, indent=2))
