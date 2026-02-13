@@ -44,16 +44,18 @@ git checkout main
 git pull
 rm -rf .git
 git init
-git checkout -b participant/<ID>
+git checkout -b participant-<ID>
 git add .
 git commit -m "Start point for <ID>"
 git remote add origin <YOUR_REPO_URL>
-git push -u origin participant/<ID>
+git push -u origin participant-<ID>
 ```
 This gives the participant:
 - latest code from `main`
 - a clean Git history for this participant only
 - a separate branch that does not affect `main`
+
+If you use a custom session branch (for example `KCL-01`), keep that name consistent across setup and data files.
 
 **1. Collect system info:**
 ```bash

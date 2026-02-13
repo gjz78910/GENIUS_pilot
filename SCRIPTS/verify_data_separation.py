@@ -1,128 +1,129 @@
 #!/usr/bin/env python3
-"""Verify that data is stored separately for each participant.
+"""Verify that experiment data is separated per participant/session."""
 
-This script checks:
-- All data files have participant IDs in their names
-- No cross-contamination between participants
-- File naming is consistent
-- Required data files exist
-"""
+from __future__ import annotations
 
 import json
+import re
 import sys
-from pathlib import Path
 from collections import defaultdict
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, Iterable, List, Optional
 
 
-def find_data_files(data_dir="DATA_COLLECTION"):
-    """Find all data collection files."""
+@dataclass(frozen=True)
+class FileMeta:
+    """Parsed metadata from a data-collection filename."""
+
+    participant_id: str
+    session_id: str | None
+    kind: str
+
+
+# Ordered from specific to broad.
+FILE_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    ("task_checkpoint", re.compile(r"^Task1_cp[123]_(?P<pid>[A-Za-z0-9-]+)(?:_(?P<sid>.+))?$")),
+    ("task_checkpoint", re.compile(r"^Task[23]_(?P<pid>[A-Za-z0-9-]+)(?:_(?P<sid>.+))?$")),
+    ("resource_usage", re.compile(r"^resource_usage_(?P<pid>[A-Za-z0-9-]+)(?:_(?P<sid>.+))?$")),
+    ("q_developer_metrics", re.compile(r"^q_developer_metrics_(?P<pid>[A-Za-z0-9-]+)(?:_(?P<sid>.+))?$")),
+    ("test_metrics", re.compile(r"^test_metrics_(?P<pid>[A-Za-z0-9-]+)(?:_(?P<sid>.+))?$")),
+    ("task_timing", re.compile(r"^task_timing_(?P<pid>[A-Za-z0-9-]+)(?:_(?P<sid>.+))?$")),
+    ("aggregated", re.compile(r"^aggregated_(?P<pid>[A-Za-z0-9-]+)(?:_(?P<sid>.+))?$")),
+    ("system_info", re.compile(r"^system_info_(?P<pid>[A-Za-z0-9-]+)$")),
+    ("survey", re.compile(r"^survey_(?P<pid>[A-Za-z0-9-]+)$")),
+    ("git_activity", re.compile(r"^git_activity_(?P<pid>[A-Za-z0-9-]+)$")),
+    ("cicd_metrics", re.compile(r"^cicd_metrics_(?P<pid>[A-Za-z0-9-]+)$")),
+    ("code_quality", re.compile(r"^code_quality_(?P<pid>[A-Za-z0-9-]+)$")),
+    ("energy_estimate", re.compile(r"^energy_estimate_(?P<pid>[A-Za-z0-9-]+)$")),
+    ("carbon_footprint", re.compile(r"^carbon_footprint_(?P<pid>[A-Za-z0-9-]+)$")),
+]
+
+
+def parse_metadata(path: Path) -> Optional[FileMeta]:
+    """Parse participant/session metadata from filename stem."""
+    stem = path.stem
+    for kind, pattern in FILE_PATTERNS:
+        match = pattern.match(stem)
+        if not match:
+            continue
+        participant_id = match.group("pid")
+        session_id = match.groupdict().get("sid")
+        return FileMeta(participant_id=participant_id, session_id=session_id, kind=kind)
+    return None
+
+
+def find_data_files(data_dir: str = "DATA_COLLECTION") -> List[Path]:
     data_path = Path(data_dir)
     if not data_path.exists():
         print(f"ERROR: Data directory not found: {data_dir}")
         return []
-    
-    # Find all JSON, JSONL, and MD files
-    files = []
-    for pattern in ["*.json", "*.jsonl", "*.md"]:
+    files: list[Path] = []
+    for pattern in ("*.json", "*.jsonl", "*.md"):
         files.extend(data_path.glob(pattern))
-    
     return sorted(files)
 
 
-def extract_participant_id(filename):
-    """Extract participant ID from filename.
-    
-    Expected patterns:
-    - system_info_<ID>.json
-    - resource_usage_<ID>_<SESSION>.jsonl
-    - survey_<ID>.md
-    """
-    name = filename.stem  # filename without extension
-    
-    # Pattern: <prefix>_<ID> or <prefix>_<ID>_<SESSION>
-    parts = name.split('_')
-    
-    # Look for participant ID patterns
-    # Usually the last part before session ID, or just the last part
-    if len(parts) >= 2:
-        # Check if last part looks like a session ID (SESSION1, SESSION2, etc.)
-        if parts[-1].startswith('SESSION') or parts[-1].isdigit():
-            # Second to last is likely the participant ID
-            if len(parts) >= 3:
-                return parts[-2]
-        else:
-            # Last part is the participant ID
-            return parts[-1]
-    
-    return None
+def verify_file_naming(
+    files: Iterable[Path],
+) -> tuple[Dict[str, List[Path]], Dict[Path, FileMeta], List[str]]:
+    participant_files: Dict[str, List[Path]] = defaultdict(list)
+    metadata_by_file: Dict[Path, FileMeta] = {}
+    issues: List[str] = []
 
-
-def verify_file_naming(files):
-    """Verify file naming is consistent."""
-    issues = []
-    participant_files = defaultdict(list)
-    
-    for file in files:
-        # Skip template files
-        if 'template' in file.name.lower() or 'pre_experiment_survey' in file.name:
+    for file_path in files:
+        lower_name = file_path.name.lower()
+        if "template" in lower_name or "pre_experiment_survey" in lower_name:
             continue
-        
-        # Skip backup directories
-        if 'participant_backups' in str(file):
+
+        metadata = parse_metadata(file_path)
+        if metadata is None:
+            # Keep auxiliary notes but flag unfamiliar naming.
+            if lower_name.startswith("q-dev-chat"):
+                continue
+            issues.append(f"⚠️  Unrecognized data filename pattern: {file_path.name}")
             continue
-        
-        participant_id = extract_participant_id(file)
-        
-        if participant_id:
-            participant_files[participant_id].append(file)
-        else:
-            issues.append(f"⚠️  Could not extract participant ID from: {file.name}")
-    
-    return participant_files, issues
+
+        participant_files[metadata.participant_id].append(file_path)
+        metadata_by_file[file_path] = metadata
+
+    return participant_files, metadata_by_file, issues
 
 
-def check_cross_contamination(participant_files):
-    """Check for cross-contamination between participants."""
-    issues = []
-    
-    # Check if any files reference multiple participants
-    for file in sum(participant_files.values(), []):
+def check_cross_contamination(metadata_by_file: Dict[Path, FileMeta]) -> List[str]:
+    """Check explicit participant fields inside JSON files."""
+    issues: List[str] = []
+    for file_path, metadata in metadata_by_file.items():
+        if file_path.suffix != ".json":
+            continue
         try:
-            if file.suffix == '.json':
-                with open(file, 'r') as f:
-                    data = json.load(f)
-                    # Check if data contains participant IDs
-                    data_str = json.dumps(data)
-                    for pid in participant_files.keys():
-                        if pid in data_str and pid != extract_participant_id(file):
-                            issues.append(f"⚠️  Possible cross-contamination: {file.name} may contain data for participant {pid}")
-        except (json.JSONDecodeError, IOError):
-            # Skip files that can't be read
-            pass
-    
+            with open(file_path, "r", encoding="utf-8") as handle:
+                content = json.load(handle)
+        except Exception:
+            continue
+
+        if isinstance(content, dict):
+            explicit_participant = content.get("participant_id")
+            if explicit_participant and explicit_participant != metadata.participant_id:
+                issues.append(
+                    "⚠️  Participant ID mismatch: "
+                    f"{file_path.name} filename={metadata.participant_id}, json={explicit_participant}"
+                )
     return issues
 
 
-def check_required_files(participant_id, data_dir="DATA_COLLECTION"):
-    """Check if required data files exist for a participant."""
+def check_required_files(participant_id: str, data_dir: str = "DATA_COLLECTION") -> List[str]:
     data_path = Path(data_dir)
-    required_patterns = [
+    required = [
         f"system_info_{participant_id}.json",
         f"survey_{participant_id}.md",
     ]
-    
-    missing = []
-    for pattern in required_patterns:
-        if not (data_path / pattern).exists():
-            missing.append(pattern)
-    
-    return missing
+    return [name for name in required if not (data_path / name).exists()]
 
 
-def main():
-    """Main function."""
+def main() -> int:
     import argparse
-    
+
     parser = argparse.ArgumentParser(
         description="Verify data separation between participants"
     )
@@ -130,46 +131,41 @@ def main():
         "--data-dir",
         type=str,
         default="DATA_COLLECTION",
-        help="Data collection directory (default: DATA_COLLECTION)"
+        help="Data collection directory (default: DATA_COLLECTION)",
     )
     parser.add_argument(
         "--participant-id",
         type=str,
-        help="Check specific participant ID"
+        help="Check specific participant ID",
     )
     parser.add_argument(
         "--list-participants",
         action="store_true",
-        help="List all participants found in data files"
+        help="List all participants found in data files",
     )
-    
     args = parser.parse_args()
-    
+
     print("Verifying data separation...")
     print("=" * 80)
     print()
-    
-    # Find all data files
+
     files = find_data_files(args.data_dir)
     if not files:
         print("No data files found.")
-        return
-    
+        return 1
+
     print(f"Found {len(files)} data files")
     print()
-    
-    # Verify file naming
-    participant_files, naming_issues = verify_file_naming(files)
-    
+
+    participant_files, metadata_by_file, naming_issues = verify_file_naming(files)
+
     if args.list_participants:
         print("Participants found in data files:")
-        for pid in sorted(participant_files.keys()):
-            file_count = len(participant_files[pid])
-            print(f"  - {pid}: {file_count} files")
+        for participant_id in sorted(participant_files.keys()):
+            print(f"  - {participant_id}: {len(participant_files[participant_id])} files")
         print()
-        return
-    
-    # Report naming issues
+        return 0
+
     if naming_issues:
         print("FILE NAMING ISSUES:")
         for issue in naming_issues:
@@ -178,10 +174,8 @@ def main():
     else:
         print("✅ File naming is consistent")
         print()
-    
-    # Check cross-contamination
-    contamination_issues = check_cross_contamination(participant_files)
-    
+
+    contamination_issues = check_cross_contamination(metadata_by_file)
     if contamination_issues:
         print("CROSS-CONTAMINATION WARNINGS:")
         for issue in contamination_issues:
@@ -190,52 +184,47 @@ def main():
     else:
         print("✅ No cross-contamination detected")
         print()
-    
-    # Check specific participant or all
+
     if args.participant_id:
         participants_to_check = [args.participant_id]
     else:
         participants_to_check = sorted(participant_files.keys())
-    
+
     if not participants_to_check:
         print("⚠️  No participants found in data files")
-        return
-    
-    # Check required files for each participant
+        return 1
+
     print("REQUIRED FILES CHECK:")
     print("-" * 80)
     all_good = True
-    
-    for pid in participants_to_check:
-        missing = check_required_files(pid, args.data_dir)
-        file_count = len(participant_files.get(pid, []))
-        
+
+    for participant_id in participants_to_check:
+        missing = check_required_files(participant_id, args.data_dir)
+        file_count = len(participant_files.get(participant_id, []))
         if missing:
-            print(f"❌ {pid}: Missing {len(missing)} required file(s)")
-            for m in missing:
-                print(f"     - {m}")
+            print(f"❌ {participant_id}: Missing {len(missing)} required file(s)")
+            for item in missing:
+                print(f"     - {item}")
             all_good = False
         else:
-            print(f"✅ {pid}: All required files present ({file_count} total files)")
-    
+            print(f"✅ {participant_id}: All required files present ({file_count} total files)")
+
     print()
-    
-    # Summary
     print("=" * 80)
     print("SUMMARY:")
     print(f"  Total participants: {len(participant_files)}")
     print(f"  Total data files: {len(files)}")
     print(f"  Naming issues: {len(naming_issues)}")
     print(f"  Contamination warnings: {len(contamination_issues)}")
-    
+
     if all_good and not naming_issues and not contamination_issues:
         print()
         print("✅ All checks passed! Data is properly separated.")
         return 0
-    else:
-        print()
-        print("⚠️  Some issues found. Review warnings above.")
-        return 1
+
+    print()
+    print("⚠️  Some issues found. Review warnings above.")
+    return 1
 
 
 if __name__ == "__main__":

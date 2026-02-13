@@ -1,0 +1,873 @@
+{
+  "aggregation_timestamp": "2026-02-13T00:42:19.384516",
+  "participant_id": "Jing",
+  "session_id": "pilot-test-1",
+  "data_sources": {
+    "system_info": "DATA_COLLECTION/system_info_Jing.json",
+    "git_activity": "DATA_COLLECTION/git_activity_Jing.json",
+    "cicd_metrics": "DATA_COLLECTION/cicd_metrics_Jing.json",
+    "q_developer_metrics": "DATA_COLLECTION/q_developer_metrics_Jing_pilot-test-1.json",
+    "test_metrics": "DATA_COLLECTION/test_metrics_Jing_pilot-test-1.json",
+    "code_quality": "DATA_COLLECTION/code_quality_Jing.json",
+    "energy_estimate": "DATA_COLLECTION/energy_estimate_Jing.json",
+    "carbon_footprint": "DATA_COLLECTION/carbon_footprint_Jing.json",
+    "resource_usage": "DATA_COLLECTION/resource_usage_Jing_pilot-test-1.jsonl"
+  },
+  "data": {
+    "system_info": {
+      "timestamp": "2026-02-13T00:32:50.480572",
+      "cpu": {
+        "model": "Apple M4 Pro",
+        "cores_physical": 14,
+        "cores_logical": 14,
+        "frequency_mhz": 4
+      },
+      "memory": {
+        "total_gb": 24.0,
+        "available_gb": 7.51,
+        "used_gb": 9.66,
+        "percent_used": 68.7
+      },
+      "gpu": {
+        "present": true,
+        "model": "Apple Integrated GPU"
+      },
+      "storage": {
+        "total_gb": 460.43,
+        "used_gb": 10.49,
+        "free_gb": 330.39,
+        "percent_used": 3.1
+      },
+      "os": {
+        "system": "Darwin",
+        "release": "24.6.0",
+        "version": "Darwin Kernel Version 24.6.0: Wed Nov  5 21:30:44 PST 2025; root:xnu-11417.140.69.705.2~1/RELEASE_ARM64_T6041",
+        "architecture": "arm64",
+        "platform": "macOS-15.7.3-arm64-arm-64bit"
+      },
+      "python": {
+        "version": "3.11.14",
+        "implementation": "CPython",
+        "compiler": "Clang 20.1.8 "
+      }
+    },
+    "git_activity": {
+      "analysis_timestamp": "2026-02-13T00:40:07.453358",
+      "repository_path": "/private/tmp/GENIUS_pilot_KCL-01",
+      "time_range": {
+        "since": null,
+        "until": null
+      },
+      "summary": {
+        "total_commits": 17,
+        "commits_per_hour": 0.02003796736430662,
+        "total_lines_added": 0,
+        "total_lines_removed": 0,
+        "total_files_changed": 0,
+        "average_commit_size": {
+          "lines_added": 0.0,
+          "lines_removed": 0.0,
+          "files_changed": 0.0
+        }
+      },
+      "branch_activity": {
+        "total_branches": 4,
+        "current_branch": "KCL-01",
+        "branches": [
+          "* KCL-01",
+          "remotes/origin/HEAD -> origin/main",
+          "remotes/origin/KCL-01",
+          "remotes/origin/main"
+        ]
+      },
+      "merge_events": [
+        {
+          "hash": "dab95917325a37fc6a941ed9980405765966557a",
+          "timestamp": 1769736863,
+          "author": "Jingzhi Gong",
+          "message": "Merge branch 'main' of https://github.com/gjz78910/GENIUS_pilot"
+        }
+      ],
+      "commits": [
+        {
+          "hash": "96c8d1d177b4444dcead6f71f09eb9f545df9df4",
+          "timestamp": 1770924940,
+          "author": "Jingzhi Gong",
+          "message": "Simplify source comments and add 2-hour participant limit",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "8ac737baad0c885e5c5a65d49bbbec7dbb8c3f5a",
+          "timestamp": 1770922688,
+          "author": "Jingzhi Gong",
+          "message": "Refine experiment workflow, checkpoints, and data collection docs",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "dcc8ec2c09782d0457bb8c270dd3d8c2f07eeeab",
+          "timestamp": 1769769303,
+          "author": "Jingzhi Gong",
+          "message": "Move pre-experiment survey to experiment docs",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "6b5ed8cdd870bbcb8058b972530ed55fc19edef6",
+          "timestamp": 1769769144,
+          "author": "Jingzhi Gong",
+          "message": "Remove design documents",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "51ee19da8c074ad1811ebe14e985e4026c03aa23",
+          "timestamp": 1769767898,
+          "author": "Jingzhi Gong",
+          "message": "Replace dry run checklist with experiment checklist",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "5d0411eeaa8e3025872dc1338274d5ac6c6ad6c4",
+          "timestamp": 1769759724,
+          "author": "Jingzhi Gong",
+          "message": "Align dry run checklist with participant instructions",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "4d846468a6dd0ab5596199e034cc9015891d6d2d",
+          "timestamp": 1769759184,
+          "author": "Jingzhi Gong",
+          "message": "Update experiment docs and report test coverage",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "fa1b93779dc463369371f09abb8178596aee5ba2",
+          "timestamp": 1769755785,
+          "author": "Jingzhi Gong",
+          "message": "Add harder quality benchmarks and update participant instructions",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "4c687729b63f3a1589813ac220aa942d6ef428d1",
+          "timestamp": 1769754074,
+          "author": "Jingzhi Gong",
+          "message": "Update existing report tests to handle TOTAL summary row",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "1ed997cfe922aaf013ce47d8a39e544a4be80126",
+          "timestamp": 1769739993,
+          "author": "Jingzhi Gong",
+          "message": "Make Task 2 and Task 3 harder with bugs and missing validations",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "5be470eaba61b7b3f478aa13e165cded04f47623",
+          "timestamp": 1769739089,
+          "author": "Jingzhi Gong",
+          "message": "Redesign scalability tests with realistic progressive scenarios",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "175fbc506d05de7e22d8188d7cc84a8618295592",
+          "timestamp": 1769737424,
+          "author": "Jingzhi Gong",
+          "message": "Simplify README to focus on essential setup and structure info",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "87afa6d4a9e111eac7ae59b053d89bbd22872f3d",
+          "timestamp": 1769736975,
+          "author": "Jingzhi Gong",
+          "message": "Remove PARTICIPANT_INSTRUCTIONS.md from root folder",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "dab95917325a37fc6a941ed9980405765966557a",
+          "timestamp": 1769736863,
+          "author": "Jingzhi Gong",
+          "message": "Merge branch 'main' of https://github.com/gjz78910/GENIUS_pilot",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "bbc6392d0d0538fed5616b16185d8b95277170eb",
+          "timestamp": 1769736835,
+          "author": "Jingzhi Gong",
+          "message": "Update codebase: add scalability tests, update participant instructions, and improve routing optimization",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "530a3149e1075a58df9fd4cca22e56232a307beb",
+          "timestamp": 1767876064,
+          "author": "Jingzhi Gong",
+          "message": "Remove IDE-specific files (.amazonq, .cursor) and GitLab CI config",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        },
+        {
+          "hash": "4ef5d82affbac00033a6356a26b989185430ce29",
+          "timestamp": 1767870738,
+          "author": "Jingzhi Gong",
+          "message": "Update to new version: add features, tests, and documentation",
+          "files_changed": 0,
+          "lines_added": 0,
+          "lines_removed": 0
+        }
+      ]
+    },
+    "cicd_metrics": {
+      "analysis_timestamp": "2026-02-13T00:40:11.806827",
+      "repository_path": "/private/tmp/GENIUS_pilot_KCL-01",
+      "ci_environment": {
+        "is_ci": false,
+        "ci_project_id": null,
+        "ci_pipeline_id": null,
+        "ci_job_id": null
+      },
+      "ci_configuration": null,
+      "test_execution": {
+        "correctness_tests": null,
+        "benchmark_tests": null,
+        "performance_tests": null,
+        "total_time": null
+      },
+      "git_activity": {
+        "ci_related_commits": 10,
+        "commits": [
+          {
+            "hash": "96c8d1d177b4444dcead6f71f09eb9f545df9df4",
+            "timestamp": 1770924940,
+            "message": "Simplify source comments and add 2-hour participant limit"
+          },
+          {
+            "hash": "5d0411eeaa8e3025872dc1338274d5ac6c6ad6c4",
+            "timestamp": 1769759724,
+            "message": "Align dry run checklist with participant instructions"
+          },
+          {
+            "hash": "fa1b93779dc463369371f09abb8178596aee5ba2",
+            "timestamp": 1769755785,
+            "message": "Add harder quality benchmarks and update participant instructions"
+          },
+          {
+            "hash": "4c687729b63f3a1589813ac220aa942d6ef428d1",
+            "timestamp": 1769754074,
+            "message": "Update existing report tests to handle TOTAL summary row"
+          },
+          {
+            "hash": "1ed997cfe922aaf013ce47d8a39e544a4be80126",
+            "timestamp": 1769739993,
+            "message": "Make Task 2 and Task 3 harder with bugs and missing validations"
+          },
+          {
+            "hash": "5be470eaba61b7b3f478aa13e165cded04f47623",
+            "timestamp": 1769739089,
+            "message": "Redesign scalability tests with realistic progressive scenarios"
+          },
+          {
+            "hash": "87afa6d4a9e111eac7ae59b053d89bbd22872f3d",
+            "timestamp": 1769736975,
+            "message": "Remove PARTICIPANT_INSTRUCTIONS.md from root folder"
+          },
+          {
+            "hash": "bbc6392d0d0538fed5616b16185d8b95277170eb",
+            "timestamp": 1769736835,
+            "message": "Update codebase: add scalability tests, update participant instructions, and improve routing optimization"
+          },
+          {
+            "hash": "530a3149e1075a58df9fd4cca22e56232a307beb",
+            "timestamp": 1767876064,
+            "message": "Remove IDE-specific files (.amazonq, .cursor) and GitLab CI config"
+          },
+          {
+            "hash": "4ef5d82affbac00033a6356a26b989185430ce29",
+            "timestamp": 1767870738,
+            "message": "Update to new version: add features, tests, and documentation"
+          }
+        ]
+      },
+      "pipelines": {
+        "note": "API access not requested. Use --use-api flag to fetch pipeline data."
+      }
+    },
+    "q_developer_metrics": {
+      "collection_timestamp": "2026-02-13T00:40:16.402978",
+      "collection_method": "precise_interaction_analysis",
+      "plugin_installed": true,
+      "logs_found": true,
+      "data": {
+        "chat_messages_sent": 0,
+        "chat_conversations": 0,
+        "code_suggestions_shown": 0,
+        "code_suggestions_accepted": 0,
+        "code_suggestions_rejected": 0,
+        "inline_completions": 0,
+        "tool_uses": 0,
+        "total_interactions": 0,
+        "interactions": []
+      },
+      "chat_history": {
+        "history_files_found": 16,
+        "total_conversations": 0,
+        "total_messages": 0
+      },
+      "vscode_logs_path": "/Users/k2589922/Library/Application Support/Code/logs/20260211T124709"
+    },
+    "test_metrics": {
+      "collection_timestamp": "2026-02-13T00:42:00.605740",
+      "test_path": "/private/tmp/GENIUS_pilot_KCL-01/tests",
+      "test_pattern": "test_*.py",
+      "execution": {
+        "success": true,
+        "duration_seconds": 0.07
+      },
+      "test_statistics": {
+        "tests_run": 71,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "success": true
+      },
+      "resource_usage": {
+        "initial_memory_mb": 17.95,
+        "peak_memory_mb": 18.12,
+        "memory_delta_mb": 0.17,
+        "initial_cpu_percent": null,
+        "peak_cpu_percent": null
+      },
+      "coverage": null
+    },
+    "code_quality": {
+      "analysis_timestamp": "2026-02-13T00:40:42.237112",
+      "source_path": "/private/tmp/GENIUS_pilot_KCL-01/src",
+      "code_statistics": {
+        "total_files": 13,
+        "total_lines": 1013,
+        "total_functions": 27,
+        "total_classes": 3,
+        "files": [
+          {
+            "path": "src/__init__.py",
+            "lines": 15,
+            "functions": 0,
+            "classes": 0
+          },
+          {
+            "path": "src/demo.py",
+            "lines": 62,
+            "functions": 1,
+            "classes": 0
+          },
+          {
+            "path": "src/scheduling/__init__.py",
+            "lines": 5,
+            "functions": 0,
+            "classes": 0
+          },
+          {
+            "path": "src/scheduling/scheduler.py",
+            "lines": 61,
+            "functions": 2,
+            "classes": 1
+          },
+          {
+            "path": "src/optimization/__init__.py",
+            "lines": 6,
+            "functions": 0,
+            "classes": 0
+          },
+          {
+            "path": "src/optimization/matching.py",
+            "lines": 170,
+            "functions": 6,
+            "classes": 0
+          },
+          {
+            "path": "src/optimization/routing.py",
+            "lines": 174,
+            "functions": 8,
+            "classes": 0
+          },
+          {
+            "path": "src/features/data_loader.py",
+            "lines": 200,
+            "functions": 3,
+            "classes": 0
+          },
+          {
+            "path": "src/features/__init__.py",
+            "lines": 6,
+            "functions": 0,
+            "classes": 0
+          },
+          {
+            "path": "src/features/report.py",
+            "lines": 208,
+            "functions": 3,
+            "classes": 0
+          },
+          {
+            "path": "src/models/engineer.py",
+            "lines": 51,
+            "functions": 2,
+            "classes": 1
+          },
+          {
+            "path": "src/models/job.py",
+            "lines": 49,
+            "functions": 2,
+            "classes": 1
+          },
+          {
+            "path": "src/models/__init__.py",
+            "lines": 6,
+            "functions": 0,
+            "classes": 0
+          }
+        ]
+      },
+      "pylint": {
+        "available": false,
+        "error": "pylint not installed"
+      },
+      "radon": {
+        "available": false,
+        "error": "radon not installed"
+      },
+      "pydocstyle": {
+        "available": false,
+        "error": "pydocstyle not installed"
+      }
+    },
+    "energy_estimate": {
+      "estimation_timestamp": "2026-02-13T00:40:47.851197",
+      "resource_file": "/private/tmp/GENIUS_pilot_KCL-01/DATA_COLLECTION/resource_usage_Jing_pilot-test-1.jsonl",
+      "system_info_file": "/private/tmp/GENIUS_pilot_KCL-01/DATA_COLLECTION/system_info_Jing.json",
+      "duration": {
+        "total_hours": 0.102,
+        "active_hours": 0.015,
+        "idle_hours": 0.087
+      },
+      "resource_usage": {
+        "avg_cpu_percent": 7.69,
+        "avg_memory_gb": 9.76
+      },
+      "energy_breakdown": {
+        "cpu_wh": 3.72,
+        "memory_wh": 1.22,
+        "gpu_wh": 0.02,
+        "system_wh": 1.09
+      },
+      "total_energy": {
+        "wh": 6.05,
+        "kwh": 0.0061
+      },
+      "notes": [
+        "Energy estimates are approximations based on typical hardware power consumption",
+        "Actual energy consumption may vary based on specific hardware",
+        "GPU usage is estimated from CPU usage (may not be accurate)",
+        "Calibration with actual power measurements recommended for accuracy"
+      ]
+    },
+    "carbon_footprint": {
+      "calculation_timestamp": "2026-02-13T00:40:53.178940",
+      "location": "UK",
+      "grid_emission_factor": 0.233,
+      "energy": {
+        "kwh": 0.0061,
+        "emissions_kg_co2": 0.0014
+      },
+      "network": {
+        "data_gb": 0,
+        "emissions_kg_co2": 0.0
+      },
+      "travel": {
+        "emissions_kg_co2": 0.0,
+        "data": {}
+      },
+      "total": {
+        "emissions_kg_co2": 0.0014,
+        "emissions_g_co2": 1.42
+      },
+      "compute": {
+        "estimated_cycles": 21960,
+        "cycles_per_kwh": 3600000
+      },
+      "breakdown_percent": {
+        "energy": 100.0,
+        "network": 0.0,
+        "travel": 0.0
+      },
+      "notes": [
+        "Emission factors are approximate and may vary by region and time",
+        "Network emissions are estimates based on data center and infrastructure",
+        "Travel emissions depend on actual distances traveled",
+        "Compute cycles are rough approximations"
+      ]
+    },
+    "resource_usage": [
+      {
+        "timestamp": "2026-02-13T00:33:43.096947",
+        "elapsed_seconds": 0.00023603439331054688,
+        "cpu": {
+          "per_core": [
+            27.0,
+            22.4,
+            12.0,
+            8.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            0.0,
+            2.0
+          ],
+          "average": 5.3,
+          "count": 14
+        },
+        "memory": {
+          "used_gb": 9.74,
+          "available_gb": 7.46,
+          "total_gb": 24.0,
+          "percent": 68.9
+        },
+        "network": {
+          "bytes_sent_per_min": 13889716,
+          "bytes_recv_per_min": 3411509,
+          "total_bytes_sent": 3586967552,
+          "total_bytes_recv": 4599404544,
+          "packets_sent": 31554297,
+          "packets_recv": 58129609
+        },
+        "disk_io": {
+          "read_ops_per_min": 0,
+          "write_ops_per_min": 59,
+          "read_bytes_per_min": 0,
+          "write_bytes_per_min": 243571,
+          "total_read_count": 52513575,
+          "total_write_count": 44238317
+        }
+      },
+      {
+        "timestamp": "2026-02-13T00:34:44.109987",
+        "elapsed_seconds": 61.01391100883484,
+        "cpu": {
+          "per_core": [
+            26.3,
+            23.2,
+            11.0,
+            7.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ],
+          "average": 5.035714285714286,
+          "count": 14
+        },
+        "memory": {
+          "used_gb": 9.68,
+          "available_gb": 7.52,
+          "total_gb": 24.0,
+          "percent": 68.7
+        },
+        "network": {
+          "bytes_sent_per_min": 926497,
+          "bytes_recv_per_min": 414909,
+          "total_bytes_sent": 3587909632,
+          "total_bytes_recv": 4599826432,
+          "packets_sent": 31555320,
+          "packets_recv": 58130443
+        },
+        "disk_io": {
+          "read_ops_per_min": 1139,
+          "write_ops_per_min": 981,
+          "read_bytes_per_min": 8374736,
+          "write_bytes_per_min": 8012193,
+          "total_read_count": 52514734,
+          "total_write_count": 44239315
+        }
+      },
+      {
+        "timestamp": "2026-02-13T00:35:45.118926",
+        "elapsed_seconds": 122.02319288253784,
+        "cpu": {
+          "per_core": [
+            42.4,
+            36.4,
+            22.2,
+            19.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            3.0,
+            1.0,
+            3.0,
+            0.0,
+            4.0
+          ],
+          "average": 9.357142857142858,
+          "count": 14
+        },
+        "memory": {
+          "used_gb": 9.75,
+          "available_gb": 7.55,
+          "total_gb": 24.0,
+          "percent": 68.5
+        },
+        "network": {
+          "bytes_sent_per_min": 120841,
+          "bytes_recv_per_min": 535731,
+          "total_bytes_sent": 3588032512,
+          "total_bytes_recv": 4600371200,
+          "packets_sent": 31556485,
+          "packets_recv": 58131864
+        },
+        "disk_io": {
+          "read_ops_per_min": 371,
+          "write_ops_per_min": 1637,
+          "read_bytes_per_min": 10279481,
+          "write_bytes_per_min": 24840736,
+          "total_read_count": 52515112,
+          "total_write_count": 44240980
+        }
+      },
+      {
+        "timestamp": "2026-02-13T00:36:46.132126",
+        "elapsed_seconds": 183.03619408607483,
+        "cpu": {
+          "per_core": [
+            24.5,
+            20.4,
+            12.0,
+            7.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            4.0,
+            2.0,
+            3.0,
+            0.0,
+            3.0
+          ],
+          "average": 5.421428571428572,
+          "count": 14
+        },
+        "memory": {
+          "used_gb": 9.93,
+          "available_gb": 7.39,
+          "total_gb": 24.0,
+          "percent": 69.2
+        },
+        "network": {
+          "bytes_sent_per_min": 1050305,
+          "bytes_recv_per_min": 1362477,
+          "total_bytes_sent": 3589100544,
+          "total_bytes_recv": 4601756672,
+          "packets_sent": 31559618,
+          "packets_recv": 58135190
+        },
+        "disk_io": {
+          "read_ops_per_min": 3128,
+          "write_ops_per_min": 4601,
+          "read_bytes_per_min": 32082854,
+          "write_bytes_per_min": 34531866,
+          "total_read_count": 52518293,
+          "total_write_count": 44245659
+        }
+      },
+      {
+        "timestamp": "2026-02-13T00:37:47.142928",
+        "elapsed_seconds": 244.04697585105896,
+        "cpu": {
+          "per_core": [
+            24.0,
+            18.0,
+            11.9,
+            7.9,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            4.0,
+            10.9,
+            7.0,
+            0.0,
+            7.0
+          ],
+          "average": 6.478571428571429,
+          "count": 14
+        },
+        "memory": {
+          "used_gb": 9.91,
+          "available_gb": 7.41,
+          "total_gb": 24.0,
+          "percent": 69.1
+        },
+        "network": {
+          "bytes_sent_per_min": 1478329,
+          "bytes_recv_per_min": 1715990,
+          "total_bytes_sent": 3590603776,
+          "total_bytes_recv": 4603501568,
+          "packets_sent": 31564242,
+          "packets_recv": 58139876
+        },
+        "disk_io": {
+          "read_ops_per_min": 68,
+          "write_ops_per_min": 883,
+          "read_bytes_per_min": 1325282,
+          "write_bytes_per_min": 10711023,
+          "total_read_count": 52518363,
+          "total_write_count": 44246557
+        }
+      },
+      {
+        "timestamp": "2026-02-13T00:38:48.155139",
+        "elapsed_seconds": 305.05882692337036,
+        "cpu": {
+          "per_core": [
+            40.0,
+            38.4,
+            24.2,
+            25.0,
+            0.0,
+            1.0,
+            1.0,
+            0.0,
+            2.0,
+            19.8,
+            25.0,
+            17.0,
+            22.2,
+            13.0
+          ],
+          "average": 16.32857142857143,
+          "count": 14
+        },
+        "memory": {
+          "used_gb": 9.79,
+          "available_gb": 7.17,
+          "total_gb": 24.0,
+          "percent": 70.1
+        },
+        "network": {
+          "bytes_sent_per_min": 1801605,
+          "bytes_recv_per_min": 1910366,
+          "total_bytes_sent": 3592435712,
+          "total_bytes_recv": 4605444096,
+          "packets_sent": 31569188,
+          "packets_recv": 58144271
+        },
+        "disk_io": {
+          "read_ops_per_min": 19963,
+          "write_ops_per_min": 4180,
+          "read_bytes_per_min": 972330723,
+          "write_bytes_per_min": 78780142,
+          "total_read_count": 52538662,
+          "total_write_count": 44250808
+        }
+      },
+      {
+        "timestamp": "2026-02-13T00:39:49.162414",
+        "elapsed_seconds": 366.0661098957062,
+        "cpu": {
+          "per_core": [
+            18.2,
+            16.3,
+            8.1,
+            6.9,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            2.0,
+            11.0,
+            8.9,
+            0.0,
+            10.9
+          ],
+          "average": 5.878571428571429,
+          "count": 14
+        },
+        "memory": {
+          "used_gb": 9.53,
+          "available_gb": 7.45,
+          "total_gb": 24.0,
+          "percent": 68.9
+        },
+        "network": {
+          "bytes_sent_per_min": 3355584,
+          "bytes_recv_per_min": 1382718,
+          "total_bytes_sent": 3595847680,
+          "total_bytes_recv": 4606850048,
+          "packets_sent": 31572863,
+          "packets_recv": 58147322
+        },
+        "disk_io": {
+          "read_ops_per_min": 1530,
+          "write_ops_per_min": 2957,
+          "read_bytes_per_min": 31183016,
+          "write_bytes_per_min": 54337645,
+          "total_read_count": 52540218,
+          "total_write_count": 44253815
+        }
+      }
+    ]
+  },
+  "summary": {
+    "total_commits": 17,
+    "commits_per_hour": 0.02003796736430662,
+    "code_quality_score": null,
+    "code_files": 13,
+    "total_energy_kwh": 0.0061,
+    "total_emissions_kg_co2": 0.0014,
+    "ai_queries": 0,
+    "ai_suggestions_accepted": 0,
+    "ai_suggestions_rejected": 0
+  }
+}

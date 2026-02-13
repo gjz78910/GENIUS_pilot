@@ -1,0 +1,102 @@
+{
+  "analysis_timestamp": "2026-02-13T00:40:42.237112",
+  "source_path": "/private/tmp/GENIUS_pilot_KCL-01/src",
+  "code_statistics": {
+    "total_files": 13,
+    "total_lines": 1013,
+    "total_functions": 27,
+    "total_classes": 3,
+    "files": [
+      {
+        "path": "src/__init__.py",
+        "lines": 15,
+        "functions": 0,
+        "classes": 0
+      },
+      {
+        "path": "src/demo.py",
+        "lines": 62,
+        "functions": 1,
+        "classes": 0
+      },
+      {
+        "path": "src/scheduling/__init__.py",
+        "lines": 5,
+        "functions": 0,
+        "classes": 0
+      },
+      {
+        "path": "src/scheduling/scheduler.py",
+        "lines": 61,
+        "functions": 2,
+        "classes": 1
+      },
+      {
+        "path": "src/optimization/__init__.py",
+        "lines": 6,
+        "functions": 0,
+        "classes": 0
+      },
+      {
+        "path": "src/optimization/matching.py",
+        "lines": 170,
+        "functions": 6,
+        "classes": 0
+      },
+      {
+        "path": "src/optimization/routing.py",
+        "lines": 174,
+        "functions": 8,
+        "classes": 0
+      },
+      {
+        "path": "src/features/data_loader.py",
+        "lines": 200,
+        "functions": 3,
+        "classes": 0
+      },
+      {
+        "path": "src/features/__init__.py",
+        "lines": 6,
+        "functions": 0,
+        "classes": 0
+      },
+      {
+        "path": "src/features/report.py",
+        "lines": 208,
+        "functions": 3,
+        "classes": 0
+      },
+      {
+        "path": "src/models/engineer.py",
+        "lines": 51,
+        "functions": 2,
+        "classes": 1
+      },
+      {
+        "path": "src/models/job.py",
+        "lines": 49,
+        "functions": 2,
+        "classes": 1
+      },
+      {
+        "path": "src/models/__init__.py",
+        "lines": 6,
+        "functions": 0,
+        "classes": 0
+      }
+    ]
+  },
+  "pylint": {
+    "available": false,
+    "error": "pylint not installed"
+  },
+  "radon": {
+    "available": false,
+    "error": "radon not installed"
+  },
+  "pydocstyle": {
+    "available": false,
+    "error": "pydocstyle not installed"
+  }
+}

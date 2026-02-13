@@ -19,59 +19,51 @@ def _calculate_job_timings(
     route: Tuple[str, ...],
     travel_matrix: Dict[str, Dict[str, float]],
 ) -> List[Dict[str, Any]]:
-    """Calculate start/end times for jobs based on route order.
+    """Calculate per-job timing fields in chronological job order.
 
     Returns list of job records with timing information in minutes.
     """
-    # Create mapping from location to jobs at that location
-    location_to_jobs: Dict[str, List[Job]] = {}
-    for job in jobs:
-        if job.location not in location_to_jobs:
-            location_to_jobs[job.location] = []
-        location_to_jobs[job.location].append(job)
+    del route  # Route can be optimal for travel but report requires chronological rows.
 
-    # Track current time in minutes (start at 0 = beginning of day)
+    # Chronological order is required by report correctness tests.
+    def sort_key(job: Job) -> Tuple[int, int]:
+        try:
+            hours, minutes = job.time.split(":", 1)
+            as_minutes = int(hours) * 60 + int(minutes)
+        except Exception:
+            as_minutes = 24 * 60
+        return as_minutes, job.id
+
+    ordered_jobs = sorted(jobs, key=sort_key)
+
     current_time_minutes = 0.0
-    job_records = []
-    processed_jobs = set()
+    previous_location = engineer.location
+    job_records: List[Dict[str, Any]] = []
 
-    # Process route (starts and ends at engineer.location)
-    # Route format: (engineer.location, job1.location, job2.location, ..., engineer.location)
-    for i in range(1, len(route) - 1):  # Skip first and last (engineer home)
-        current_loc = route[i]
-        prev_loc = route[i - 1]
-
-        # Travel time from previous location to current (convert hours to minutes)
-        travel_hours = travel_matrix.get(prev_loc, {}).get(current_loc, 0.0)
+    for job in ordered_jobs:
+        travel_hours = travel_matrix.get(previous_location, {}).get(job.location, 0.0)
         travel_minutes = travel_hours * 60.0
+        job_start_minutes = current_time_minutes + travel_minutes
+        job_duration_minutes = job.length * 60.0
+        job_end_minutes = job_start_minutes + job_duration_minutes
+        total_time_minutes = job_duration_minutes + travel_minutes
 
-        # Add travel time
-        current_time_minutes += travel_minutes
+        job_records.append(
+            {
+                "job_id": job.id,
+                "job_location": job.location,
+                "job_time": job.time,
+                "required_skills": ",".join(job.required_skills),
+                "job_start_time_minutes": job_start_minutes,
+                "job_end_time_minutes": job_end_minutes,
+                "job_duration_minutes": job_duration_minutes,
+                "travel_time_minutes": travel_minutes,
+                "total_time_minutes": total_time_minutes,
+            }
+        )
 
-        # Process jobs at this location
-        if current_loc in location_to_jobs:
-            for job in location_to_jobs[current_loc]:
-                if job.id in processed_jobs:
-                    continue  # Skip if already processed
-                processed_jobs.add(job.id)
-
-                job_start_minutes = current_time_minutes
-                job_duration_minutes = job.length * 60.0
-                job_end_minutes = job_start_minutes + job_duration_minutes
-
-                job_records.append({
-                    "job_id": job.id,
-                    "job_location": job.location,
-                    "job_time": job.time,
-                    "required_skills": ",".join(job.required_skills),
-                    "job_start_time_minutes": job_start_minutes,
-                    "job_end_time_minutes": job_end_minutes,
-                    "job_duration_minutes": job_duration_minutes,
-                    "travel_time_minutes": 0.0,
-                })
-
-                # Update current time after job completion
-                current_time_minutes = job_end_minutes
+        current_time_minutes = job_end_minutes
+        previous_location = job.location
 
     return job_records
 
@@ -128,19 +120,33 @@ def generate_report(
         if route and travel_matrix:
             job_records = _calculate_job_timings(engineer, jobs, route, travel_matrix)
         else:
-            # No route info, create basic records without timing
+            # No route info, still create rows chronologically with local travel.
             job_records = []
-            for job in jobs:
+            current_time_minutes = 0.0
+            previous_location = engineer.location
+            for job in sorted(jobs, key=lambda value: (value.time, value.id)):
+                travel_minutes = (
+                    travel_matrix.get(previous_location, {}).get(job.location, 0.0) * 60.0
+                    if travel_matrix
+                    else 0.0
+                )
+                start_minutes = current_time_minutes + travel_minutes
+                duration_minutes = job.length * 60.0
+                end_minutes = start_minutes + duration_minutes
+                total_minutes = duration_minutes + travel_minutes
                 job_records.append({
                     "job_id": job.id,
                     "job_location": job.location,
                     "job_time": job.time,
                     "required_skills": ",".join(job.required_skills),
-                    "job_start_time_minutes": 0.0,
-                    "job_end_time_minutes": job.length * 60.0,
-                    "job_duration_minutes": job.length * 60.0,
-                    "travel_time_minutes": 0.0,
+                    "job_start_time_minutes": start_minutes,
+                    "job_end_time_minutes": end_minutes,
+                    "job_duration_minutes": duration_minutes,
+                    "travel_time_minutes": travel_minutes,
+                    "total_time_minutes": total_minutes,
                 })
+                current_time_minutes = end_minutes
+                previous_location = job.location
 
         # Write CSV file
         file_path = os.path.join(output_dir, f"engineer_{engineer_id}_schedule.csv")
@@ -163,8 +169,16 @@ def generate_report(
             )
             writer.writeheader()
 
+            total_duration = 0.0
+            total_travel = 0.0
+            total_total = 0.0
             for record in job_records:
-                total_time = 0.0
+                row_duration = float(record["job_duration_minutes"])
+                row_travel = float(record["travel_time_minutes"])
+                row_total = float(record.get("total_time_minutes", row_duration + row_travel))
+                total_duration += row_duration
+                total_travel += row_travel
+                total_total += row_total
                 writer.writerow({
                     "engineer_id": engineer_id,
                     "engineer_name": engineer.name,
@@ -174,7 +188,21 @@ def generate_report(
                     "required_skills": record["required_skills"],
                     "job_start_time_minutes": round(record["job_start_time_minutes"], 2),
                     "job_end_time_minutes": round(record["job_end_time_minutes"], 2),
-                    "job_duration_minutes": round(record["job_duration_minutes"], 2),
-                    "travel_time_minutes": round(record["travel_time_minutes"], 2),
-                    "total_time_minutes": round(total_time, 2),
+                    "job_duration_minutes": round(row_duration, 2),
+                    "travel_time_minutes": round(row_travel, 2),
+                    "total_time_minutes": round(row_total, 2),
                 })
+
+            writer.writerow({
+                "engineer_id": engineer_id,
+                "engineer_name": engineer.name,
+                "job_id": "TOTAL",
+                "job_location": "",
+                "job_time": "",
+                "required_skills": "",
+                "job_start_time_minutes": "",
+                "job_end_time_minutes": "",
+                "job_duration_minutes": round(total_duration, 2),
+                "travel_time_minutes": round(total_travel, 2),
+                "total_time_minutes": round(total_total, 2),
+            })

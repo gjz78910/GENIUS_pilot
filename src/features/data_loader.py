@@ -9,10 +9,77 @@ Expected top-level keys:
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, Dict, List, Tuple
 
 from src.models.engineer import Engineer
 from src.models.job import Job
+
+
+_TIME_PATTERN = re.compile(r"^\d{2}:\d{2}$")
+
+
+def _validate_time_value(time_value: Any) -> None:
+    """Validate time format HH:MM and range."""
+    if not isinstance(time_value, str) or not _TIME_PATTERN.match(time_value):
+        raise ValueError(f"Invalid time format: {time_value!r}. Expected HH:MM")
+    hour_str, minute_str = time_value.split(":", 1)
+    hour = int(hour_str)
+    minute = int(minute_str)
+    if hour < 0 or hour > 23 or minute < 0 or minute > 59:
+        raise ValueError(f"Invalid time value: {time_value!r}")
+
+
+def _validate_travel_matrix(
+    travel_matrix: Dict[str, Dict[str, float]]
+) -> set[str]:
+    """Validate shape, values, symmetry and diagonal constraints."""
+    if not isinstance(travel_matrix, dict):
+        raise ValueError("travel_matrix must be a dictionary")
+
+    all_locations = set(travel_matrix.keys())
+    for source, destinations in travel_matrix.items():
+        if not isinstance(destinations, dict):
+            raise ValueError(f"travel_matrix[{source}] must be a dictionary")
+        all_locations.update(destinations.keys())
+        for dest, travel_time in destinations.items():
+            if not isinstance(travel_time, (int, float)) or travel_time < 0:
+                raise ValueError(
+                    f"travel_matrix[{source}][{dest}] must be a non-negative number"
+                )
+
+    # Ensure all locations have full rows/columns.
+    for source in all_locations:
+        if source not in travel_matrix:
+            raise ValueError(
+                f"travel_matrix missing row for location '{source}'"
+            )
+        row = travel_matrix[source]
+        for dest in all_locations:
+            if dest not in row:
+                raise ValueError(
+                    f"travel_matrix missing value for pair '{source}' -> '{dest}'"
+                )
+
+    # Diagonal must be zero.
+    for location in all_locations:
+        diagonal = float(travel_matrix[location][location])
+        if abs(diagonal) > 1e-12:
+            raise ValueError(
+                f"travel_matrix diagonal at '{location}' must be 0.0"
+            )
+
+    # Matrix must be symmetric.
+    for source in all_locations:
+        for dest in all_locations:
+            a_to_b = float(travel_matrix[source][dest])
+            b_to_a = float(travel_matrix[dest][source])
+            if abs(a_to_b - b_to_a) > 1e-9:
+                raise ValueError(
+                    "travel_matrix must be symmetric"
+                )
+
+    return all_locations
 
 
 def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict[str, float]]]:
@@ -53,21 +120,8 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
     if "travel_matrix" not in data:
         raise ValueError("Missing 'travel_matrix' key in JSON file")
 
-    # Load travel matrix
     travel_matrix = data["travel_matrix"]
-    if not isinstance(travel_matrix, dict):
-        raise ValueError("travel_matrix must be a dictionary")
-
-    # Validate travel matrix structure
-    all_locations = set()
-    for source, destinations in travel_matrix.items():
-        if not isinstance(destinations, dict):
-            raise ValueError(f"travel_matrix[{source}] must be a dictionary")
-        all_locations.add(source)
-        all_locations.update(destinations.keys())
-        for dest, time in destinations.items():
-            if not isinstance(time, (int, float)) or time < 0:
-                raise ValueError(f"travel_matrix[{source}][{dest}] must be a non-negative number")
+    all_locations = _validate_travel_matrix(travel_matrix)
 
     # Load engineers
     engineers = []
@@ -93,12 +147,18 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         if location not in all_locations:
             raise ValueError(f"Engineer location '{location}' not found in travel_matrix")
 
+        working_hours = e_data.get("working_hours", 8.0)
+        if not isinstance(working_hours, (int, float)) or working_hours <= 0 or working_hours > 24:
+            raise ValueError(
+                f"Invalid working_hours for engineer {eng_id}: {working_hours!r}"
+            )
+
         engineer = Engineer(
             id=eng_id,
             name=e_data["name"],
             location=location,
             skills=e_data.get("skills", []),
-            working_hours=e_data.get("working_hours", 8.0),
+            working_hours=float(working_hours),
         )
         engineers.append(engineer)
 
@@ -123,6 +183,10 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         job_ids.add(job_id)
 
         location = j_data["location"]
+        if location not in all_locations:
+            raise ValueError(f"Job location '{location}' not found in travel_matrix")
+
+        _validate_time_value(j_data["time"])
 
         job = Job(
             id=job_id,

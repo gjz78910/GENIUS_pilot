@@ -1,0 +1,24 @@
+{
+  "collection_timestamp": "2026-02-13T00:42:00.605740",
+  "test_path": "/private/tmp/GENIUS_pilot_KCL-01/tests",
+  "test_pattern": "test_*.py",
+  "execution": {
+    "success": true,
+    "duration_seconds": 0.07
+  },
+  "test_statistics": {
+    "tests_run": 71,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success": true
+  },
+  "resource_usage": {
+    "initial_memory_mb": 17.95,
+    "peak_memory_mb": 18.12,
+    "memory_delta_mb": 0.17,
+    "initial_cpu_percent": null,
+    "peak_cpu_percent": null
+  },
+  "coverage": null
+}

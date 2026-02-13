@@ -1,0 +1,29 @@
+{
+  "run_key": "task1_cp1",
+  "filename_prefix": "Task1_cp1",
+  "started_at": "2026-02-13T00:42:11.200691",
+  "finished_at": "2026-02-13T00:42:11.244737",
+  "duration_seconds": 0.044,
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "tests.test_routing",
+    "tests.test_routing_checkpoint_a",
+    "tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_01",
+    "tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_02",
+    "tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_03",
+    "tests.test_benchmarks.TestBenchmarksWithOptimal.test_brute_force_routing_optimal",
+    "-v"
+  ],
+  "return_code": 0,
+  "success": true,
+  "test_statistics": {
+    "tests_run": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success": true
+  },
+  "output": "\n  Benchmark 1 Metrics:\n    assignment_accuracy: 1.000 (target: 1.0)\n    travel_time_ratio: 1.000 (target: \u2264 1.5)\n    unassigned_penalty: 0\n\n  Benchmark 2 Metrics:\n    assignment_accuracy: 1.000 (target: 1.0)\n    travel_time_ratio: 1.000 (target: \u2264 1.5)\n    unassigned_penalty: 0\n\n  Benchmark 3 Metrics:\n    assignment_accuracy: 1.000 (target: 1.0)\n    unassigned_penalty: 0\ntest_all_destinations_visited (tests.test_routing.TestRouting.test_all_destinations_visited)\nTest that all destinations are visited exactly once. ... ok\ntest_empty_destinations (tests.test_routing.TestRouting.test_empty_destinations)\nTest routing with no destinations. ... ok\ntest_missing_travel_matrix_entry (tests.test_routing.TestRouting.test_missing_travel_matrix_entry)\nTest behavior with missing travel matrix entries. ... ok\ntest_optimal_route_selection (tests.test_routing.TestRouting.test_optimal_route_selection)\nTest that routing selects the optimal route. ... ok\ntest_route_starts_and_ends_at_start (tests.test_routing.TestRouting.test_route_starts_and_ends_at_start)\nTest that route always starts and ends at the starting location. ... ok\ntest_single_destination (tests.test_routing.TestRouting.test_single_destination)\nTest routing with a single destination. ... ok\ntest_three_destinations (tests.test_routing.TestRouting.test_three_destinations)\nTest routing with three destinations. ... ok\ntest_two_destinations (tests.test_routing.TestRouting.test_two_destinations)\nTest routing with two destinations. ... ok\ntest_route_valid_and_fast_for_10_destinations (tests.test_routing_checkpoint_a.TestRoutingCheckpointA.test_route_valid_and_fast_for_10_destinations) ... ok\ntest_benchmark_small_01 (tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_01)\nTest benchmark 1: Simple 2-engineer, 3-job case with known optimal solution. ... ok\ntest_benchmark_small_02 (tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_02)\nTest benchmark 2: 3-engineer, 5-job case with known optimal solution. ... ok\ntest_benchmark_small_03 (tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_03)\nTest benchmark 3: Case with unassignable jobs and known optimal solution. ... ok\ntest_brute_force_routing_optimal (tests.test_benchmarks.TestBenchmarksWithOptimal.test_brute_force_routing_optimal)\nTest that brute-force routing finds optimal routes for small instances. ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 0.005s\n\nOK\n"
+}

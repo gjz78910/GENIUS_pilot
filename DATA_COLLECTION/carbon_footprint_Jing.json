@@ -1,0 +1,36 @@
+{
+  "calculation_timestamp": "2026-02-13T00:40:53.178940",
+  "location": "UK",
+  "grid_emission_factor": 0.233,
+  "energy": {
+    "kwh": 0.0061,
+    "emissions_kg_co2": 0.0014
+  },
+  "network": {
+    "data_gb": 0,
+    "emissions_kg_co2": 0.0
+  },
+  "travel": {
+    "emissions_kg_co2": 0.0,
+    "data": {}
+  },
+  "total": {
+    "emissions_kg_co2": 0.0014,
+    "emissions_g_co2": 1.42
+  },
+  "compute": {
+    "estimated_cycles": 21960,
+    "cycles_per_kwh": 3600000
+  },
+  "breakdown_percent": {
+    "energy": 100.0,
+    "network": 0.0,
+    "travel": 0.0
+  },
+  "notes": [
+    "Emission factors are approximate and may vary by region and time",
+    "Network emissions are estimates based on data center and infrastructure",
+    "Travel emissions depend on actual distances traveled",
+    "Compute cycles are rough approximations"
+  ]
+}

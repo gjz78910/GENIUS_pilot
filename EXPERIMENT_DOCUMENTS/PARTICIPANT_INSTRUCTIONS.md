@@ -70,8 +70,9 @@ git branch --show-current
 ```
 Expected output:
 ```bash
-participant/<ID>
+participant-<ID>
 ```
+For custom dry-run sessions, a dedicated branch name (for example `KCL-01`) is also valid if your organizer specifies it.
 
 > **Note:** A resource monitoring script is running in a separate terminal. Please use **your own terminal** for all your work — do not close or interfere with the other terminal.
 

@@ -1,0 +1,24 @@
+{
+  "run_key": "task2",
+  "filename_prefix": "Task2",
+  "started_at": "2026-02-13T00:42:18.237578",
+  "finished_at": "2026-02-13T00:42:18.295925",
+  "duration_seconds": 0.058,
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "tests.test_report_correctness",
+    "-v"
+  ],
+  "return_code": 0,
+  "success": true,
+  "test_statistics": {
+    "tests_run": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success": true
+  },
+  "output": "test_csv_format (tests.test_report_correctness.TestReportCorrectness.test_csv_format)\nTest that CSV files have correct format and data types. ... ok\ntest_jobs_ordered_by_time (tests.test_report_correctness.TestReportCorrectness.test_jobs_ordered_by_time)\nTest that jobs in the CSV are ordered by job_time (chronological). ... ok\ntest_no_duplicate_jobs (tests.test_report_correctness.TestReportCorrectness.test_no_duplicate_jobs)\nTest that no job appears twice in a report. ... ok\ntest_no_missing_jobs (tests.test_report_correctness.TestReportCorrectness.test_no_missing_jobs)\nTest that all assigned jobs appear in the report. ... ok\ntest_sequential_timing_no_overlap (tests.test_report_correctness.TestReportCorrectness.test_sequential_timing_no_overlap)\nTest that jobs don't overlap in time. ... ok\ntest_summary_row (tests.test_report_correctness.TestReportCorrectness.test_summary_row)\nTest that each CSV ends with a TOTAL summary row with correct aggregates. ... ok\ntest_time_calculations (tests.test_report_correctness.TestReportCorrectness.test_time_calculations)\nTest that time calculations are correct (end = start + duration). ... ok\ntest_total_time_is_duration_plus_travel (tests.test_report_correctness.TestReportCorrectness.test_total_time_is_duration_plus_travel)\nTest that total_time_minutes = job_duration_minutes + travel_time_minutes. ... ok\ntest_travel_time_between_jobs (tests.test_report_correctness.TestReportCorrectness.test_travel_time_between_jobs)\nTest that travel_time_minutes > 0 when consecutive jobs are at different locations. ... ok\ntest_working_hours_window (tests.test_report_correctness.TestReportCorrectness.test_working_hours_window)\nTest that all jobs fit within engineer's working hours. ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.005s\n\nOK\n"
+}
