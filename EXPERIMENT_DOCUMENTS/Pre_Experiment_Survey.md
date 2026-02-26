@@ -72,6 +72,24 @@ Please select your primary role:
 
 ---
 
+## AI Tooling Usage
+
+**Is AI Tooling used in Engineering and Testing?**
+- [ ] Yes
+- [ ] No
+
+**IF AI is used, is it used extensively?** (i.e., used for 40%+ of all engineering and testing activities)
+- [ ] Yes
+- [ ] No
+- [ ] N/A (AI is not used)
+
+**IF AI is used, how frequently is AI deliberately used?** (i.e., is it used regularly and frequently during delivery work?)
+- [ ] Yes
+- [ ] No
+- [ ] N/A (AI is not used)
+
+---
+
 ## Sustainability Assessments
 
 ### Self-Assessment Completion
