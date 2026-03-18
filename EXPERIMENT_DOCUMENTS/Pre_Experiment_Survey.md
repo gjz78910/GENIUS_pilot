@@ -10,29 +10,39 @@
 
 ### Role
 Please select your primary role:
+- [ ] Student
 - [ ] Developer/Engineer
 - [ ] Tester/QA
 - [ ] Architect
 - [ ] Analyst
 - [ ] Other: ___________
 
-### Experience Level
-- [ ] Student
+### Programming Experience Level
 - [ ] Junior (0-2 years)
 - [ ] Mid-level (3-5 years)
 - [ ] Senior (6+ years)
+
+### Academic Background (students only)
+**What is your major / degree programme?**
+- Major / degree: ___________
+
+### Technical Background
+**What is your main programming language?**
+- Main language: ___________
 
 ---
 
 ## Location Information
 
-### Experiment Location
-- [ ] UK
-- [ ] Europe (specify country): ___________
-- [ ] Other: ___________
+### City Information
+**Which city do you live in?**
+- City: ___________
+
+**Which city is your normal workplace in?**
+- Workplace city: ___________
 
 ### Commute Information
-**How do you typically commute to the experiment location?**
+**How do you typically commute to your normal workplace?**
 
 - [ ] Public transport (bus/train)
 - [ ] Car
@@ -47,20 +57,6 @@ Please select your primary role:
 
 ---
 
-## Equipment Information
-
-### Laptop Specifications
-*(If you don't know these details, we can collect them automatically)*
-
-- **CPU Model:** ___________ (e.g., Intel i7, Apple M1, AMD Ryzen)
-- **CPU Cores:** ___________
-- **Total RAM (GB):** ___________
-- **GPU:** [ ] Yes  [ ] No
-  - If yes, GPU Model: ___________
-- **Storage Type:** [ ] SSD  [ ] HDD  [ ] Unknown
-
----
-
 ## Working Schedule
 
 ### Expected Working Hours
@@ -72,24 +68,6 @@ Please select your primary role:
 
 ---
 
-## AI Tooling Usage
-
-**Is AI Tooling used in Engineering and Testing?**
-- [ ] Yes
-- [ ] No
-
-**IF AI is used, is it used extensively?** (i.e., used for 40%+ of all engineering and testing activities)
-- [ ] Yes
-- [ ] No
-- [ ] N/A (AI is not used)
-
-**IF AI is used, how frequently is AI deliberately used?** (i.e., is it used regularly and frequently during delivery work?)
-- [ ] Yes
-- [ ] No
-- [ ] N/A (AI is not used)
-
----
-
 ## Sustainability Assessments
 
 ### Self-Assessment Completion
@@ -98,7 +76,13 @@ Please select your primary role:
 - [ ] Yes
 - [ ] No
 
-**Have you completed the DevOps maturity self-assessment?**
+**Is your DevOps maturity above 4?**  
+*(1 = Initial, 2 = Developing, 3 = Defined, 4 = Managed/Optimised, 5 = Advanced)*
+- [ ] Yes
+- [ ] No
+
+**Is your MLOps maturity above 4?**  
+*(1 = Initial, 2 = Developing, 3 = Defined, 4 = Reliable/Scalable, 5 = Advanced)*
 - [ ] Yes
 - [ ] No
 
