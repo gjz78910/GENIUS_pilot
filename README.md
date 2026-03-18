@@ -6,14 +6,9 @@ Python system that assigns engineers to jobs and finds shortest travel routes.
 
 ## For Participants
 
-See `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md` for full instructions on setup, tasks, and success criteria.
+Open `EXPERIMENT_DOCUMENTS/EXPERIMENT_CHECKLIST.html` in a browser and follow the steps.
 
-**Quick start:**
-
-```bash
-conda activate genius_pilot
-python -m src.demo
-```
+It will guide you through everything: cloning the repo, setting up the environment, running the experiment, and submitting your work.
 
 ---
 
@@ -26,12 +21,13 @@ python -m src.demo
 3. Install dependencies: `pip install -r requirements.txt`
 4. Run demo to verify: `python -m src.demo`
 5. Run tests to confirm baseline: `python -m unittest tests.test_matching tests.test_routing tests.test_benchmarks tests.test_report_correctness tests.test_data_loader -v`
-6. Review `EXPERIMENT_DOCUMENTS/EXPERIMENT_CHECKLIST.md` for the full experiment protocol
+6. Review `EXPERIMENT_DOCUMENTS/EXPERIMENT_CHECKLIST.html` for the full experiment protocol
 7. Collect pre-experiment data (system info, survey) — see `EXPERIMENT_DOCUMENTS/DATA_COLLECTION.md`
 
 ### Key Documents
 
-- `EXPERIMENT_DOCUMENTS/EXPERIMENT_CHECKLIST.md` — Full experiment protocol
+- `EXPERIMENT_DOCUMENTS/EXPERIMENT_CHECKLIST.html` — Interactive experiment checklist (open in browser)
+- `EXPERIMENT_DOCUMENTS/EXPERIMENT_CHECKLIST.md` — Plain text version of the checklist
 - `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md` — What participants see
 - `EXPERIMENT_DOCUMENTS/DATA_COLLECTION.md` — Data collection guide
 
