@@ -253,13 +253,4 @@ python -m unittest tests.test_data_loader -v
 ```
 **Pass:** All tests show `ok`
 
-## Final Submission
 
-After you finish all tasks and all test commands, submit your work:
-```bash
-git add .
-git commit -m "Final submission"
-git push
-```
-
----

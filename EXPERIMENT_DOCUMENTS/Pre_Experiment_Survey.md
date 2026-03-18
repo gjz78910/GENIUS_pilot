@@ -1,7 +1,11 @@
-# Pre-Experiment Survey - GENIUS Pilot
+# Pre-Experiment Survey
 
-**Participant ID:** ___________  
-**Date:** ___________  
+**Note:** This information will be used solely for calculating the environmental impact of the experiment and will be kept confidential.
+
+---
+
+**Date:** ___________
+**Participant ID:** ___________
 **Session Type:** [ ] Manual Coding  [ ] AI-Assisted Coding
 
 ---
@@ -96,6 +100,3 @@ _________________________________________________________________
 _________________________________________________________________
 _________________________________________________________________
 
----
-
-**Note:** This information will be used solely for calculating the environmental impact of the experiment and will be kept confidential.
