@@ -1,0 +1,38 @@
+ami_id = "ami-0123456789abcdef0"
+
+dcv_allowed_cidrs = [
+  "203.0.113.10/32"
+]
+
+participant_roster = [
+  {
+    participant_id = "kcl-manual-01"
+    session_id     = "S1"
+    condition      = "manual"
+  },
+  {
+    participant_id = "kcl-ai-01"
+    session_id     = "S1"
+    condition      = "ai"
+  }
+]
+
+budget_email       = "organizer@example.com"
+monthly_budget_usd = 100
+auto_stop_hours    = 3
+shutdown_behavior  = "stop"
+
+enable_trusted_dcv_cert = true
+dynamic_dns_provider    = "duckdns"
+dcv_hostname_domain     = "duckdns.org"
+dcv_hostname_prefix     = "genius"
+letsencrypt_email       = "organizer@example.com"
+
+# Do not commit the real DuckDNS token.
+duckdns_token = "set-this-in-your-local-terraform.tfvars"
+
+# Optional: use exact names you created in DuckDNS.
+dcv_hostname_overrides = {
+  kcl-manual-01 = "genius-p01.duckdns.org"
+  kcl-ai-01     = "genius-p02.duckdns.org"
+}

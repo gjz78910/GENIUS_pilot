@@ -75,6 +75,24 @@ participant/<ID>
 
 > **Note:** A resource monitoring script is running in a separate terminal. Please use **your own terminal** for all your work — do not close or interfere with the other terminal.
 
+### Start Screen Recording
+
+Before you begin the tasks, start the screen recording:
+
+```bash
+/usr/local/bin/genius-screen-recorder start
+```
+
+You can check it is running at any time:
+
+```bash
+/usr/local/bin/genius-screen-recorder status
+```
+
+Expected output: `running`
+
+> **Note:** The recording captures your desktop for the duration of the experiment. Please do not stop it until you have completed the post-experiment survey. If it stops unexpectedly, just run the start command again.
+
 
 ### Project Structure
 
@@ -252,5 +270,20 @@ Read the failure messages carefully — they tell you what validation is missing
 python -m unittest tests.test_data_loader -v
 ```
 **Pass:** All tests show `ok`
+
+---
+
+## When You Are Done
+
+Once you have completed the tasks (or the 2-hour limit is reached):
+
+1. Complete the post-experiment survey given to you by the organiser.
+2. Stop the screen recording:
+
+```bash
+/usr/local/bin/genius-screen-recorder stop
+```
+
+3. Let the organiser know you are finished.
 
 

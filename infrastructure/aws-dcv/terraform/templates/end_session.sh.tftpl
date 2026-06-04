@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PARTICIPANT_ID="{{ participantId }}"
+SESSION_ID="{{ sessionId }}"
+ARTIFACT_BUCKET="${artifact_bucket}"
+PROJECT_DIR="/home/participant/GENIUS_pilot"
+RUNTIME_DIR="/home/participant/genius-runtime"
+ARCHIVE="/tmp/genius-$PARTICIPANT_ID-$SESSION_ID-$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
+
+systemctl stop genius-resource-monitor.service || true
+systemctl stop genius-monitor.service || true
+
+sudo -u participant -H bash -lc "
+  /usr/local/bin/genius-screen-recorder stop || true
+"
+
+if [ ! -d "$PROJECT_DIR" ]; then
+  echo "Project directory not found: $PROJECT_DIR" >&2
+  exit 1
+fi
+
+chown -R participant:participant "$PROJECT_DIR"
+
+sudo -u participant -H bash -lc "
+  set -e
+  cd '$PROJECT_DIR'
+  ./SCRIPTS/store_participant_work.sh '$PARTICIPANT_ID' '$SESSION_ID'
+"
+
+sudo -u participant -H bash -lc "
+  set -e
+  cd '$PROJECT_DIR'
+  mkdir -p DATA_COLLECTION
+  cp -a '$RUNTIME_DIR'/. DATA_COLLECTION/ 2>/dev/null || true
+  mkdir -p DATA_COLLECTION/screen_recordings
+  if [ -f /home/participant/Videos/GENIUS_'$PARTICIPANT_ID'_'$SESSION_ID'.mp4 ]; then
+    cp -a /home/participant/Videos/GENIUS_'$PARTICIPANT_ID'_'$SESSION_ID'.mp4 DATA_COLLECTION/screen_recordings/
+  fi
+  for recording in /home/participant/Videos/GENIUS_'$PARTICIPANT_ID'_'$SESSION_ID'_*.mp4; do
+    if [ -f \"\$recording\" ]; then
+      cp -a \"\$recording\" DATA_COLLECTION/screen_recordings/
+    fi
+  done
+  mkdir -p DATA_COLLECTION/kiro_history
+  for kiro_source in \
+    /home/participant/.config/Kiro/User/globalStorage/kiro.kiroagent \
+    /home/participant/.config/Kiro/logs \
+    /home/participant/.local/share/kiro-cli; do
+    if [ -e \"\$kiro_source\" ]; then
+      cp -a \"\$kiro_source\" DATA_COLLECTION/kiro_history/
+    fi
+  done
+  {
+    echo \"participant_id=$PARTICIPANT_ID\"
+    echo \"session_id=$SESSION_ID\"
+    echo \"collected_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+    find DATA_COLLECTION/kiro_history -type f | sed 's#^DATA_COLLECTION/kiro_history/##' | sort
+  } > DATA_COLLECTION/kiro_history/manifest.txt
+"
+
+sudo -u participant -H bash -lc "
+  cd '$PROJECT_DIR'
+  /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/run_experiment_test_checkpoints.py --participant-id '$PARTICIPANT_ID' --session-id '$SESSION_ID' || true
+"
+
+if [ -f "$PROJECT_DIR/SCRIPTS/collect_kiro_metrics.py" ]; then
+  sudo -u participant -H bash -lc "
+    cd '$PROJECT_DIR'
+    /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/collect_kiro_metrics.py --participant-id '$PARTICIPANT_ID' --session-id '$SESSION_ID' || true
+  "
+else
+  CONDITION="$(cat /etc/genius/condition 2>/dev/null || true)"
+  if [ "$CONDITION" = "ai" ]; then
+    echo "Missing Kiro metrics collector for AI participant: $PROJECT_DIR/SCRIPTS/collect_kiro_metrics.py" >&2
+    sudo -u participant -H bash -lc "
+      cd '$PROJECT_DIR'
+      mkdir -p DATA_COLLECTION
+      cat > DATA_COLLECTION/kiro_metrics_'$PARTICIPANT_ID'_'$SESSION_ID'.json <<JSON
+{
+  \"collection_timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
+  \"collection_method\": \"missing_collector\",
+  \"error\": \"SCRIPTS/collect_kiro_metrics.py was not present on the participant VM\",
+  \"data\": {
+    \"total_detected_events\": 0,
+    \"kiro_conversations\": 0,
+    \"kiro_requests\": 0,
+    \"kiro_responses\": 0,
+    \"kiro_credits_used\": 0,
+    \"kiro_estimated_input_tokens\": 0,
+    \"kiro_estimated_output_tokens\": 0
+  }
+}
+JSON
+    "
+  fi
+fi
+
+sudo -u participant -H bash -lc "
+  cd '$PROJECT_DIR'
+  /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/git_activity_logger.py --participant-id '$PARTICIPANT_ID' || true
+  /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/extract_cicd_metrics.py --participant-id '$PARTICIPANT_ID' || true
+  /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/collect_test_metrics.py --participant-id '$PARTICIPANT_ID' --session-id '$SESSION_ID' || true
+  /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/analyze_code_quality.py --participant-id '$PARTICIPANT_ID' || true
+  /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/estimate_energy.py DATA_COLLECTION/resource_usage_'$PARTICIPANT_ID'_'$SESSION_ID'.jsonl --system-info DATA_COLLECTION/system_info_'$PARTICIPANT_ID'.json --participant-id '$PARTICIPANT_ID' || true
+  /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/calculate_carbon_footprint.py DATA_COLLECTION/energy_estimate_'$PARTICIPANT_ID'.json --location UK --participant-id '$PARTICIPANT_ID' || true
+  /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/aggregate_experiment_data.py '$PARTICIPANT_ID' --session-id '$SESSION_ID' || true
+"
+
+tar -czf "$ARCHIVE" \
+  -C /home/participant \
+  GENIUS_pilot/DATA_COLLECTION \
+  GENIUS_pilot/.git \
+  GENIUS_pilot/src \
+  GENIUS_pilot/tests \
+  GENIUS_pilot/data \
+  GENIUS_pilot/README.md \
+  GENIUS_pilot/requirements.txt \
+  GENIUS_pilot/environment.yml
+
+aws s3 cp "$ARCHIVE" "s3://$ARTIFACT_BUCKET/$PARTICIPANT_ID/$SESSION_ID/"
+echo "Uploaded $ARCHIVE to s3://$ARTIFACT_BUCKET/$PARTICIPANT_ID/$SESSION_ID/"
