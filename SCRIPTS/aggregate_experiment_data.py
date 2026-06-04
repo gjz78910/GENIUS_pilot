@@ -73,6 +73,7 @@ def aggregate_experiment_data(
         "git_activity": f"git_activity_{participant_id}.json",
         "cicd_metrics": f"cicd_metrics_{participant_id}.json",
         "q_developer_metrics": f"q_developer_metrics_{participant_id}.json" if not session_id else f"q_developer_metrics_{participant_id}_{session_id}.json",
+        "kiro_metrics": f"kiro_metrics_{participant_id}.json" if not session_id else f"kiro_metrics_{participant_id}_{session_id}.json",
         "test_metrics": f"test_metrics_{participant_id}.json" if not session_id else f"test_metrics_{participant_id}_{session_id}.json",
         "code_quality": f"code_quality_{participant_id}.json",
         "energy_estimate": f"energy_estimate_{participant_id}.json",
@@ -158,13 +159,31 @@ def generate_summary(data):
         carbon = data["carbon_footprint"]
         summary["total_emissions_kg_co2"] = carbon.get("total", {}).get("emissions_kg_co2")
     
-    # Q Developer usage summary
+    # Legacy Amazon Q usage summary
     if "q_developer_metrics" in data:
         q_dev = data["q_developer_metrics"]
         if "data" in q_dev:
             summary["ai_queries"] = q_dev["data"].get("queries", 0)
             summary["ai_suggestions_accepted"] = q_dev["data"].get("suggestions_accepted", 0)
             summary["ai_suggestions_rejected"] = q_dev["data"].get("suggestions_rejected", 0)
+
+    if "kiro_metrics" in data:
+        kiro = data["kiro_metrics"]
+        if "data" in kiro:
+            summary["kiro_detected_events"] = kiro["data"].get("total_detected_events", 0)
+            summary["kiro_chat_messages"] = kiro["data"].get("chat_messages", 0)
+            summary["kiro_agent_actions"] = kiro["data"].get("agent_actions", 0)
+            summary["kiro_conversations"] = kiro["data"].get("kiro_conversations", 0)
+            summary["kiro_requests"] = kiro["data"].get("kiro_requests", 0)
+            summary["kiro_responses"] = kiro["data"].get("kiro_responses", 0)
+            summary["kiro_credits_used"] = kiro["data"].get("kiro_credits_used", 0)
+            summary["kiro_estimated_input_tokens"] = kiro["data"].get("kiro_estimated_input_tokens", 0)
+            summary["kiro_estimated_output_tokens"] = kiro["data"].get("kiro_estimated_output_tokens", 0)
+            summary["kiro_tool_use_events"] = kiro["data"].get("kiro_tool_use_events", 0)
+            summary["kiro_stream_events"] = kiro["data"].get("kiro_stream_events", 0)
+        if "chat_api" in kiro:
+            summary["kiro_request_models"] = kiro["chat_api"].get("request_models", {})
+            summary["kiro_response_models"] = kiro["chat_api"].get("response_models", {})
     
     return summary
 

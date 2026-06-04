@@ -42,10 +42,21 @@ ENV/
 reports/
 *.csv
 
+# Experiment data generated during runs
+DATA_COLLECTION/
+
 # Coverage
 .coverage
 htmlcov/
 coverage.xml
+
+# Terraform/Packer local state
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+crash.log
+crash.*.log
 
 # Internal documents (not for participants)
 DESIGN_DOCUMENTS/
