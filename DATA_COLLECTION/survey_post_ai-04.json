@@ -1,0 +1,14 @@
+{
+  "_metadata": {
+    "form": "post_experiment_survey",
+    "generated_at": "2026-06-09T23:53:11.601Z",
+    "participant_id": "ai-04"
+  },
+  "date": "2026-06-09",
+  "participant_id": "ai-04",
+  "session_type": "ai-assisted",
+  "ai_regular_use": "yes",
+  "ai_used_experiment": "yes",
+  "ai_used_extensively": "yes",
+  "notes": "I used the AI to pinpoint where errors were occurring, so relied on it more for the test failures tasks. I used it for ideas in the earlier tasks, and for longer explanations to help optimisation"
+}

@@ -1,0 +1,26 @@
+{
+  "_metadata": {
+    "form": "pre_experiment_survey",
+    "generated_at": "2026-06-09T23:53:00.506Z",
+    "participant_id": "ai-04"
+  },
+  "date": "2026-06-09",
+  "participant_id": "ai-04",
+  "session_type": "ai-assisted",
+  "role": "developer",
+  "experience_level": "mid",
+  "main_language": "python",
+  "city_home": "ipswich",
+  "city_work": "ipswich",
+  "commute_public_transport": false,
+  "commute_car": true,
+  "commute_active": false,
+  "commute_remote": false,
+  "car_trips_per_day": "2",
+  "hours_per_day": "7.5",
+  "start_time": "09:00",
+  "end_time": "17:00",
+  "sse_completed": "yes",
+  "devops_maturity": "1",
+  "mlops_maturity": "1"
+}
