@@ -1,0 +1,23 @@
+{
+  "_metadata": {
+    "form": "pre_experiment_survey",
+    "generated_at": "2026-06-09T13:19:04.462Z",
+    "participant_id": "ai-02"
+  },
+  "date": "2026-06-09",
+  "participant_id": "ai-02",
+  "session_type": "ai-assisted",
+  "role": "developer",
+  "experience_level": "senior",
+  "main_language": "Java",
+  "city_home": "London",
+  "city_work": "London",
+  "commute_public_transport": false,
+  "commute_car": false,
+  "commute_active": false,
+  "commute_remote": true,
+  "hours_per_day": "8",
+  "sse_completed": "yes",
+  "devops_maturity": "1",
+  "mlops_maturity": "1"
+}

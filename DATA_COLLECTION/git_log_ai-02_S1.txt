@@ -1,0 +1,34 @@
+* 45bb0ae (HEAD -> participant-ai-02, tag: participant-ai-02-S1-20260609-144438) Participant ai-02 work - S1 - 2026-06-09 14:44:38
+* c504492 (origin/main, origin/HEAD) Fix screen recorder: add flock, timestamped filenames, remove rm -f
+* 8f00509 Fix collect_kiro_metrics: include rotated Chat API log files (.1.log, .2.log, …)
+* 00da957 Make screen recording fully backend: remove start/stop from participant instructions
+* 8925dfc Add VM setup procedure and known issues to README and runbook
+* cd8fa34 Fix AI participant instructions: branch example shows ai-01 not manual-01
+* 793f4c4 Update runbook: post-launch patches, DCV session recreation, sequential SSM
+* f1bc878 (grafted, tag: initial) Restructure experiment docs: organiser subfolder, HTML participant instructions
+* 023395c (main) Add psutil to environment dependencies
+* ee608fc Update README to point participants to HTML checklist
+* 44d4349 Rewrite experiment checklist as interactive HTML and update survey docs
+* d2d3624 Add post-experiment survey and update pre-experiment survey
+* 8e97129 Add AI tooling usage questions to pre-experiment survey
+| * 8111f04 (origin/KCL-01) Complete Jing pilot-test-1 dry-run workflow on KCL-01
+|/  
+* 96c8d1d Simplify source comments and add 2-hour participant limit
+* 8ac737b Refine experiment workflow, checkpoints, and data collection docs
+* dcc8ec2 Move pre-experiment survey to experiment docs
+* 6b5ed8c Remove design documents
+* 51ee19d Replace dry run checklist with experiment checklist
+* 5d0411e Align dry run checklist with participant instructions
+* 4d84646 Update experiment docs and report test coverage
+* fa1b937 Add harder quality benchmarks and update participant instructions
+* 4c68772 Update existing report tests to handle TOTAL summary row
+* 1ed997c Make Task 2 and Task 3 harder with bugs and missing validations
+* 5be470e Redesign scalability tests with realistic progressive scenarios
+* 175fbc5 Simplify README to focus on essential setup and structure info
+* 87afa6d Remove PARTICIPANT_INSTRUCTIONS.md from root folder
+*   dab9591 Merge branch 'main' of https://github.com/gjz78910/GENIUS_pilot
+|\  
+| * 530a314 Remove IDE-specific files (.amazonq, .cursor) and GitLab CI config
+* | bbc6392 Update codebase: add scalability tests, update participant instructions, and improve routing optimization
+|/  
+* 4ef5d82 Update to new version: add features, tests, and documentation
