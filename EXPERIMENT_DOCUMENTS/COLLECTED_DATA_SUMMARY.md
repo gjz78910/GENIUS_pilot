@@ -16,9 +16,10 @@
 | ai-03 | DevOps Engineer | Mid | Python | 14:09 | 16:08 | 5/5 | 3/5 | Yes | Yes |
 | ai-04 | — | — | — | — | ~14:23 | — | — | **Not submitted** | **Not submitted** |
 | ai-05 | AI Researcher | Junior | Python | 14:00 | 16:00 | 1/5 | 2/5 | Yes | Yes |
-| ai-06 | — | — | — | — | ~14:03 | — | — | **Not submitted** | Yes |
+| ai-06 | Developer | Mid | Python | ~13:08 | ~14:03 | 1/5 | 4/5 | Yes | Yes |
 
-> ai-04 and ai-06 had the survey forms available but never submitted them. Data is unrecoverable.
+> ai-04 had the survey forms available but never submitted them. Data is unrecoverable.  
+> ai-06 pre-survey was recovered from the participant's Downloads folder on the VM.
 
 ---
 
@@ -58,7 +59,7 @@ Local clones: `~/Downloads/GENIUS_experiment_data/{id}/`
 | `kiro_metrics_{id}_S1.json` | Yes | Yes | Yes | Yes | Yes | Yes |
 | `participant_state_{id}_S1.json` | Yes | Yes | Yes | Yes | Yes | Yes |
 | `git_log_{id}_S1.txt` | Yes | Yes | Yes | Yes | Yes | Yes |
-| `survey_{id}.json` (pre) | Yes | Yes | Yes | **No** | Yes | **No** |
+| `survey_{id}.json` (pre) | Yes | Yes | Yes | **No** | Yes | Yes |
 | `survey_post_{id}.json` | Yes | Yes | Yes | **No** | Yes | Yes |
 | `participant_backups/*.tar.gz` | Yes | Yes | Yes | Yes | Yes | Yes |
 
@@ -99,7 +100,7 @@ Videos split into segments due to recording restarts — concatenate with `ffmpe
 
 | Data Type | Available For | What You Can Analyze |
 |-----------|--------------|----------------------|
-| Pre-experiment survey | ai-01, ai-02, ai-03, ai-05 (4/6) | Background, experience, commute, DevOps/MLOps maturity |
+| Pre-experiment survey | ai-01, ai-02, ai-03, ai-05, ai-06 (5/6) | Background, experience, commute, DevOps/MLOps maturity |
 | Post-experiment survey | ai-01, ai-02, ai-03, ai-05, ai-06 (5/6) | Kiro usage patterns, qualitative feedback |
 | Kiro chat history (raw) | All 6 | Prompt patterns, volume, conversation structure |
 | Kiro session JSONs | All 6 | Workspace sessions, agent task breakdown |
@@ -118,5 +119,4 @@ Videos split into segments due to recording restarts — concatenate with `ffmpe
 |------|-------------|--------|
 | `survey_ai-04.json` (pre) | ai-04 | Never submitted — unrecoverable |
 | `survey_post_ai-04.json` | ai-04 | Never submitted — unrecoverable |
-| `survey_ai-06.json` (pre) | ai-06 | Never submitted — unrecoverable |
 | Screen recording segments | ai-02–ai-06 | 19 segments (~2.5 GB) on S3, not downloaded locally |
