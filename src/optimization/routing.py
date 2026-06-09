@@ -59,6 +59,54 @@ def brute_force_tsp(
     return best_route, best_distance
 
 
+def nearest_neighbor_tsp(
+    start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> Tuple[Tuple[str, ...], float]:
+    """Construct a route using the nearest-neighbor heuristic.
+
+    Builds a tour by greedily selecting the closest unvisited destination
+    at each step, starting and ending at `start`.
+
+    Parameters
+    ----------
+    start : str
+        The starting (and ending) location for the route.
+    destinations : Sequence[str]
+        A sequence of destination locations that must be visited exactly once.
+    travel_matrix : Dict[str, Dict[str, float]]
+        A dictionary representing the travel distance between locations.
+
+    Returns
+    -------
+    Tuple[Tuple[str, ...], float]
+        A tuple containing the route (including start at the beginning
+        and end) and its total distance.
+    """
+    if not destinations:
+        return (start, start), 0.0
+
+    unvisited = set(destinations)
+    route = [start]
+    current = start
+    total_distance = 0.0
+
+    while unvisited:
+        # Find the closest unvisited destination
+        nearest = min(unvisited, key=lambda loc: travel_matrix[current][loc])
+        nearest_dist = travel_matrix[current][nearest]
+
+        route.append(nearest)
+        total_distance += nearest_dist
+        current = nearest
+        unvisited.remove(nearest)
+
+    # Return to start
+    total_distance += travel_matrix[current][start]
+    route.append(start)
+
+    return tuple(route), total_distance
+
+
 def _calculate_route_distance(
     route: Tuple[str, ...], travel_matrix: Dict[str, Dict[str, float]]
 ) -> float:

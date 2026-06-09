@@ -19,21 +19,21 @@ Implement a hybrid routing strategy in `src/optimization/routing.py` that preser
     - Test with asymmetric travel matrix
     - _Requirements: 5.1, 5.2, 5.3_
 
-- [ ] 2. Implement the `nearest_neighbor_tsp` function
-  - [ ] 2.1 Implement `nearest_neighbor_tsp` in `src/optimization/routing.py`
+- [x] 2. Implement the `nearest_neighbor_tsp` function
+  - [x] 2.1 Implement `nearest_neighbor_tsp` in `src/optimization/routing.py`
     - Construct a route by greedily selecting the closest unvisited destination at each step
     - Start from `start`, visit all destinations, return to `start`
     - Return `(route_tuple, total_distance)` matching the existing return format
     - Use `_calculate_route_distance` or accumulate distance during construction
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [ ]* 2.2 Write property test for nearest neighbor route completeness
+  - [x]* 2.2 Write property test for nearest neighbor route completeness
     - **Property 1: Route Completeness**
     - Generate random travel matrices and destination sets
     - Verify every destination appears exactly once in `route[1:-1]`
     - **Validates: Requirements 2.1, 4.3**
 
-  - [ ]* 2.3 Write property test for nearest neighbor greedy selection
+  - [x]* 2.3 Write property test for nearest neighbor greedy selection
     - **Property 7: Nearest Neighbor Greedy Selection**
     - Verify each successive destination is the closest unvisited from the previous position at time of selection
     - **Validates: Requirement 2.2**

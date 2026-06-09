@@ -202,3 +202,194 @@ class TestCalculateRouteDistance(unittest.TestCase):
         # A->B->C->D->A = 10 + 35 + 30 + 20 = 95
         route = ("A", "B", "C", "D", "A")
         self.assertEqual(self.calc(route, self.travel_matrix), 95.0)
+
+
+class TestNearestNeighborTSP(unittest.TestCase):
+    """Unit and property tests for the nearest_neighbor_tsp function."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        from src.optimization.routing import nearest_neighbor_tsp, _calculate_route_distance
+
+        self.nn_tsp = nearest_neighbor_tsp
+        self.calc_dist = _calculate_route_distance
+
+        # Symmetric matrix
+        self.travel_matrix = {
+            "A": {"A": 0.0, "B": 10.0, "C": 15.0, "D": 20.0},
+            "B": {"A": 10.0, "B": 0.0, "C": 35.0, "D": 25.0},
+            "C": {"A": 15.0, "B": 35.0, "C": 0.0, "D": 30.0},
+            "D": {"A": 20.0, "B": 25.0, "C": 30.0, "D": 0.0},
+        }
+
+        # Asymmetric matrix
+        self.asymmetric_matrix = {
+            "X": {"X": 0.0, "Y": 3.0, "Z": 7.0, "W": 12.0},
+            "Y": {"X": 5.0, "Y": 0.0, "Z": 2.0, "W": 8.0},
+            "Z": {"X": 4.0, "Y": 6.0, "Z": 0.0, "W": 1.0},
+            "W": {"X": 9.0, "Y": 11.0, "Z": 3.0, "W": 0.0},
+        }
+
+    # ========================================
+    # Route Completeness (Property 1)
+    # ========================================
+
+    def test_visits_all_destinations_exactly_once(self):
+        """Every destination appears exactly once in route[1:-1]."""
+        destinations = ["B", "C", "D"]
+        route, _ = self.nn_tsp("A", destinations, self.travel_matrix)
+        interior = list(route[1:-1])
+        self.assertEqual(sorted(interior), sorted(destinations))
+
+    def test_visits_all_destinations_asymmetric(self):
+        """Route completeness holds for asymmetric matrices."""
+        destinations = ["Y", "Z", "W"]
+        route, _ = self.nn_tsp("X", destinations, self.asymmetric_matrix)
+        interior = list(route[1:-1])
+        self.assertEqual(sorted(interior), sorted(destinations))
+
+    def test_single_destination(self):
+        """Single destination produces a valid round trip."""
+        route, distance = self.nn_tsp("A", ["B"], self.travel_matrix)
+        self.assertEqual(route, ("A", "B", "A"))
+        self.assertEqual(distance, 20.0)
+
+    def test_route_length(self):
+        """Route has exactly len(destinations) + 2 elements."""
+        destinations = ["B", "C", "D"]
+        route, _ = self.nn_tsp("A", destinations, self.travel_matrix)
+        self.assertEqual(len(route), len(destinations) + 2)
+
+    # ========================================
+    # Route Circularity (Property 2)
+    # ========================================
+
+    def test_starts_and_ends_at_start(self):
+        """Route starts and ends at the given start location."""
+        route, _ = self.nn_tsp("A", ["B", "C", "D"], self.travel_matrix)
+        self.assertEqual(route[0], "A")
+        self.assertEqual(route[-1], "A")
+
+    def test_different_start_location(self):
+        """Route circularity holds regardless of start location."""
+        route, _ = self.nn_tsp("C", ["A", "B", "D"], self.travel_matrix)
+        self.assertEqual(route[0], "C")
+        self.assertEqual(route[-1], "C")
+
+    # ========================================
+    # Distance Accuracy (Property 3)
+    # ========================================
+
+    def test_reported_distance_matches_calculation(self):
+        """Returned distance matches sum of consecutive edge weights."""
+        route, distance = self.nn_tsp("A", ["B", "C", "D"], self.travel_matrix)
+        expected = self.calc_dist(route, self.travel_matrix)
+        self.assertAlmostEqual(distance, expected)
+
+    def test_distance_matches_for_asymmetric_matrix(self):
+        """Distance accuracy holds for asymmetric matrices."""
+        route, distance = self.nn_tsp("X", ["Y", "Z", "W"], self.asymmetric_matrix)
+        expected = self.calc_dist(route, self.asymmetric_matrix)
+        self.assertAlmostEqual(distance, expected)
+
+    # ========================================
+    # Greedy Selection (Property 7)
+    # ========================================
+
+    def test_greedy_selects_nearest_unvisited(self):
+        """Each step picks the closest unvisited destination.
+
+        From A: closest is B (10), then from B: closest unvisited is D (25),
+        then from D: closest unvisited is C (30). Route: A->B->D->C->A.
+        """
+        route, _ = self.nn_tsp("A", ["B", "C", "D"], self.travel_matrix)
+        # From A: B=10, C=15, D=20 -> picks B
+        self.assertEqual(route[1], "B")
+        # From B: C=35, D=25 -> picks D
+        self.assertEqual(route[2], "D")
+        # From D: C=30 -> picks C (only one left)
+        self.assertEqual(route[3], "C")
+
+    def test_greedy_selection_asymmetric(self):
+        """Greedy selection verified on asymmetric matrix.
+
+        From X: Y=3, Z=7, W=12 -> picks Y
+        From Y: Z=2, W=8 -> picks Z
+        From Z: W=1 -> picks W
+        Route: X->Y->Z->W->X
+        """
+        route, _ = self.nn_tsp("X", ["Y", "Z", "W"], self.asymmetric_matrix)
+        self.assertEqual(route[1], "Y")
+        self.assertEqual(route[2], "Z")
+        self.assertEqual(route[3], "W")
+
+    # ========================================
+    # Property Tests with Randomized Inputs
+    # ========================================
+
+    def _generate_random_matrix(self, locations, seed=42):
+        """Helper to generate a random travel matrix."""
+        import random
+
+        rng = random.Random(seed)
+        matrix = {}
+        for a in locations:
+            matrix[a] = {}
+            for b in locations:
+                if a == b:
+                    matrix[a][b] = 0.0
+                else:
+                    matrix[a][b] = rng.uniform(1.0, 100.0)
+        return matrix
+
+    def test_property_completeness_random(self):
+        """Property: all destinations visited for random inputs."""
+        locations = [f"L{i}" for i in range(10)]
+        matrix = self._generate_random_matrix(locations)
+        start = "L0"
+        destinations = locations[1:]
+
+        route, _ = self.nn_tsp(start, destinations, matrix)
+        self.assertEqual(sorted(route[1:-1]), sorted(destinations))
+
+    def test_property_circularity_random(self):
+        """Property: route starts/ends at start for random inputs."""
+        locations = [f"L{i}" for i in range(10)]
+        matrix = self._generate_random_matrix(locations)
+        start = "L0"
+        destinations = locations[1:]
+
+        route, _ = self.nn_tsp(start, destinations, matrix)
+        self.assertEqual(route[0], start)
+        self.assertEqual(route[-1], start)
+
+    def test_property_distance_accuracy_random(self):
+        """Property: reported distance matches edge sum for random inputs."""
+        locations = [f"L{i}" for i in range(10)]
+        matrix = self._generate_random_matrix(locations)
+        start = "L0"
+        destinations = locations[1:]
+
+        route, distance = self.nn_tsp(start, destinations, matrix)
+        expected = self.calc_dist(route, matrix)
+        self.assertAlmostEqual(distance, expected)
+
+    def test_property_greedy_selection_random(self):
+        """Property: each step selects the nearest unvisited destination."""
+        locations = [f"L{i}" for i in range(8)]
+        matrix = self._generate_random_matrix(locations, seed=99)
+        start = "L0"
+        destinations = locations[1:]
+
+        route, _ = self.nn_tsp(start, destinations, matrix)
+
+        # Replay the greedy logic and verify route matches
+        unvisited = set(destinations)
+        current = start
+        for step in range(1, len(route) - 1):
+            # Find what nearest-neighbor should have picked
+            nearest = min(unvisited, key=lambda loc: matrix[current][loc])
+            self.assertEqual(route[step], nearest,
+                             f"At step {step}, expected {nearest} but got {route[step]}")
+            unvisited.remove(nearest)
+            current = nearest
