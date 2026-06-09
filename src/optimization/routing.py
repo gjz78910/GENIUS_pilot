@@ -4,59 +4,72 @@ The main entry point is `find_optimal_route`, which returns a route that:
 - starts at `start`
 - visits each destination once
 - returns to `start`
+
+Uses nearest-neighbour + 2-opt, exploiting symmetric distances.
 """
 
 from __future__ import annotations
 
-from itertools import permutations
-from typing import Sequence, Tuple, Dict
+from typing import Dict, List, Sequence, Tuple
 
 
-def brute_force_tsp(
+def _route_distance(
+    route: List[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> float:
+    """Calculate total distance for a given route."""
+    total = 0.0
+    for i in range(len(route) - 1):
+        total += travel_matrix[route[i]][route[i + 1]]
+    return total
+
+
+def _nearest_neighbour(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
-) -> Tuple[Tuple[str, ...], float]:
-    """Solve a travelling‑salesperson problem using brute force.
+) -> List[str]:
+    """Build an initial route using nearest-neighbour heuristic.
 
-    Parameters
-    ----------
-    start : str
-        The starting (and ending) location for the route.
-    destinations : Sequence[str]
-        A sequence of destination locations that must be visited exactly once.
-    travel_matrix : Dict[str, Dict[str, float]]
-        A dictionary representing the travel distance between locations.
-
-    Returns
-    -------
-    Tuple[Tuple[str, ...], float]
-        A tuple containing the best route (including the start location at
-        the beginning and end) and the total distance of that route.
+    Handles duplicate locations by tracking indices.
     """
-    # If there are no destinations, return a trivial route with zero cost
-    if not destinations:
-        return (start, start), 0.0
+    unvisited = list(range(len(destinations)))
+    route = [start]
+    current = start
 
-    best_distance: float = float("inf")
-    best_route: Tuple[str, ...] | None = None
+    while unvisited:
+        best_idx = min(unvisited, key=lambda idx: travel_matrix[current][destinations[idx]])
+        nearest = destinations[best_idx]
+        route.append(nearest)
+        unvisited.remove(best_idx)
+        current = nearest
 
-    # Iterate over all possible permutations of the destinations
-    for perm in permutations(destinations):
-        distance: float = 0.0
-        current = start
-        # travel from the start to the first destination
-        for loc in perm:
-            # accumulate distance from current location to next
-            distance += travel_matrix[current][loc]
-            current = loc
-        # finally return to the start
-        distance += travel_matrix[current][start]
-        if distance < best_distance:
-            best_distance = distance
-            # Build the full route including the start and end
-            best_route = (start,) + perm + (start,)
+    route.append(start)
+    return route
 
-    assert best_route is not None  # for type checker
-    return best_route, best_distance
+
+def _two_opt(
+    route: List[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> List[str]:
+    """Improve a route using 2-opt. Symmetric distances make reversal valid.
+
+    Limited to n passes to guarantee termination.
+    """
+    n = len(route)
+    max_passes = n * 2
+    for _ in range(max_passes):
+        improved = False
+        for i in range(1, n - 2):
+            for j in range(i + 1, n - 1):
+                # Current edge costs
+                d1 = travel_matrix[route[i - 1]][route[i]]
+                d2 = travel_matrix[route[j]][route[j + 1]]
+                # New edge costs after reversing segment [i..j]
+                d3 = travel_matrix[route[i - 1]][route[j]]
+                d4 = travel_matrix[route[i]][route[j + 1]]
+                if d3 + d4 < d1 + d2 - 1e-10:
+                    route[i : j + 1] = route[i : j + 1][::-1]
+                    improved = True
+        if not improved:
+            break
+    return route
 
 
 def find_optimal_route(
@@ -64,19 +77,14 @@ def find_optimal_route(
 ) -> Tuple[Tuple[str, ...], float]:
     """Find a route visiting all destinations and returning to start.
 
-    Parameters
-    ----------
-    start : str
-        The starting (and ending) location for the route.
-    destinations : Sequence[str]
-        A sequence of destination locations that must be visited exactly once.
-    travel_matrix : Dict[str, Dict[str, float]]
-        A dictionary representing the travel distance between locations.
-
-    Returns
-    -------
-    Tuple[Tuple[str, ...], float]
-        A tuple containing the route (including start at the beginning
-        and end) and its total distance.
+    Uses nearest-neighbour + 2-opt. Symmetric distances make segment
+    reversal a valid improvement move.
     """
-    return brute_force_tsp(start, destinations, travel_matrix)
+    if not destinations:
+        return (start, start), 0.0
+
+    route = _nearest_neighbour(start, destinations, travel_matrix)
+    route = _two_opt(route, travel_matrix)
+
+    distance = _route_distance(route, travel_matrix)
+    return tuple(route), distance
