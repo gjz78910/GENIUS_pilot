@@ -1,0 +1,13 @@
+{
+  "_metadata": {
+    "form": "post_experiment_survey",
+    "generated_at": "2026-06-09T14:15:55.539Z",
+    "participant_id": "ai-05"
+  },
+  "date": "2026-06-09",
+  "participant_id": "ai-05",
+  "session_type": "ai-assisted",
+  "ai_regular_use": "yes",
+  "ai_used_experiment": "yes",
+  "ai_used_extensively": "yes"
+}
