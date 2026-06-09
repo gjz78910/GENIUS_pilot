@@ -648,9 +648,14 @@ PY
 
 case "$${1:-}" in
   start)
+    # Enable watchdog so recording auto-restarts if ffmpeg crashes
+    echo '* * * * * root /usr/local/bin/genius-recorder-watchdog' >/etc/cron.d/genius-recorder-watchdog
+    chmod 0644 /etc/cron.d/genius-recorder-watchdog
     start_recording
     ;;
   stop)
+    # Disable watchdog so recording stays stopped
+    rm -f /etc/cron.d/genius-recorder-watchdog
     stop_recording
     ;;
   status)
@@ -676,8 +681,7 @@ cat >/usr/local/bin/genius-recorder-watchdog <<'EOF'
 sudo -u participant /usr/local/bin/genius-screen-recorder start 2>/dev/null || true
 EOF
 chmod 0755 /usr/local/bin/genius-recorder-watchdog
-echo '* * * * * root /usr/local/bin/genius-recorder-watchdog' >/etc/cron.d/genius-recorder-watchdog
-chmod 0644 /etc/cron.d/genius-recorder-watchdog
+# Watchdog cron is NOT installed at boot — it is enabled/disabled by genius-screen-recorder start/stop
 
 cat >/usr/local/bin/genius-dcv-init <<'EOF'
 #!/usr/bin/env bash
@@ -738,10 +742,6 @@ dcv create-session \
   --max-concurrent-clients 2 \
   --init /usr/local/bin/genius-dcv-init \
   genius
-
-# Start recording in background; ignore if display not ready yet (watchdog will retry)
-sleep 5
-sudo -u participant /usr/local/bin/genius-screen-recorder start 2>/dev/null || true
 EOF
 chmod 0755 /usr/local/bin/genius-ensure-dcv-session
 
