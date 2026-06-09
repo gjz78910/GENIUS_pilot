@@ -9,10 +9,63 @@ Expected top-level keys:
 from __future__ import annotations
 
 import json
+import re
 from typing import Any, Dict, List, Tuple
 
 from src.models.engineer import Engineer
 from src.models.job import Job
+
+# Regex for valid HH:MM time (00:00 - 23:59)
+_TIME_PATTERN = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
+
+
+def _validate_time_format(time_str: str) -> None:
+    """Validate that a time string is in HH:MM format (00:00-23:59).
+
+    Raises
+    ------
+    ValueError
+        If the time format is invalid.
+    """
+    if not isinstance(time_str, str) or not _TIME_PATTERN.match(time_str):
+        raise ValueError(
+            f"Invalid time format '{time_str}'. "
+            "Time must be in HH:MM format (00:00-23:59)."
+        )
+
+
+def _validate_travel_matrix(travel_matrix: Dict[str, Dict[str, float]]) -> None:
+    """Validate travel matrix constraints.
+
+    Checks:
+    - Non-zero diagonal entries (distance from a location to itself must be 0)
+    - Asymmetric entries (distance A->B must equal B->A)
+
+    Raises
+    ------
+    ValueError
+        If the travel matrix violates constraints.
+    """
+    # Check diagonal is zero
+    for loc, destinations in travel_matrix.items():
+        if loc in destinations and destinations[loc] != 0.0:
+            raise ValueError(
+                f"Non-zero diagonal in travel_matrix: "
+                f"travel_matrix['{loc}']['{loc}'] = {destinations[loc]} (must be 0.0)."
+            )
+
+    # Check symmetry
+    for src, destinations in travel_matrix.items():
+        for dst, dist in destinations.items():
+            if dst in travel_matrix and src in travel_matrix[dst]:
+                reverse_dist = travel_matrix[dst][src]
+                if abs(dist - reverse_dist) > 1e-9:
+                    raise ValueError(
+                        f"Asymmetric travel_matrix: "
+                        f"travel_matrix['{src}']['{dst}'] = {dist} but "
+                        f"travel_matrix['{dst}']['{src}'] = {reverse_dist}. "
+                        f"Matrix must be symmetric."
+                    )
 
 
 def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict[str, float]]]:
@@ -69,6 +122,9 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
             if not isinstance(time, (int, float)) or time < 0:
                 raise ValueError(f"travel_matrix[{source}][{dest}] must be a non-negative number")
 
+    # Validate diagonal and symmetry
+    _validate_travel_matrix(travel_matrix)
+
     # Load engineers
     engineers = []
     engineer_ids = set()
@@ -93,12 +149,20 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         if location not in all_locations:
             raise ValueError(f"Engineer location '{location}' not found in travel_matrix")
 
+        # Validate working_hours
+        working_hours = e_data.get("working_hours", 8.0)
+        if not isinstance(working_hours, (int, float)) or working_hours <= 0 or working_hours > 24:
+            raise ValueError(
+                f"Invalid working_hours ({working_hours}) for engineer '{e_data['name']}'. "
+                "working_hours must be > 0 and <= 24."
+            )
+
         engineer = Engineer(
             id=eng_id,
             name=e_data["name"],
             location=location,
             skills=e_data.get("skills", []),
-            working_hours=e_data.get("working_hours", 8.0),
+            working_hours=working_hours,
         )
         engineers.append(engineer)
 
@@ -122,7 +186,15 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
             raise ValueError(f"Duplicate job ID: {job_id}")
         job_ids.add(job_id)
 
+        # Validate time format
+        _validate_time_format(j_data["time"])
+
+        # Validate job location is in travel matrix
         location = j_data["location"]
+        if location not in all_locations:
+            raise ValueError(
+                f"Job location '{location}' not found in travel_matrix"
+            )
 
         job = Job(
             id=job_id,

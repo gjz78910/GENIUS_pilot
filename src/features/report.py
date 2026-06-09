@@ -19,59 +19,49 @@ def _calculate_job_timings(
     route: Tuple[str, ...],
     travel_matrix: Dict[str, Dict[str, float]],
 ) -> List[Dict[str, Any]]:
-    """Calculate start/end times for jobs based on route order.
+    """Calculate start/end times for jobs ordered chronologically by job_time.
+
+    Jobs are sorted by their scheduled time (job.time) and travel time is
+    computed sequentially: engineer home -> first job -> second job -> ...
 
     Returns list of job records with timing information in minutes.
     """
-    # Create mapping from location to jobs at that location
-    location_to_jobs: Dict[str, List[Job]] = {}
-    for job in jobs:
-        if job.location not in location_to_jobs:
-            location_to_jobs[job.location] = []
-        location_to_jobs[job.location].append(job)
+    # Sort jobs by scheduled time (chronological order)
+    sorted_jobs = sorted(jobs, key=lambda j: j.time)
 
     # Track current time in minutes (start at 0 = beginning of day)
     current_time_minutes = 0.0
+    current_location = engineer.location
     job_records = []
-    processed_jobs = set()
 
-    # Process route (starts and ends at engineer.location)
-    # Route format: (engineer.location, job1.location, job2.location, ..., engineer.location)
-    for i in range(1, len(route) - 1):  # Skip first and last (engineer home)
-        current_loc = route[i]
-        prev_loc = route[i - 1]
-
-        # Travel time from previous location to current (convert hours to minutes)
-        travel_hours = travel_matrix.get(prev_loc, {}).get(current_loc, 0.0)
+    for job in sorted_jobs:
+        # Travel time from current location to this job (convert hours to minutes)
+        travel_hours = travel_matrix.get(current_location, {}).get(job.location, 0.0)
         travel_minutes = travel_hours * 60.0
 
-        # Add travel time
+        # Add travel time to reach the job
         current_time_minutes += travel_minutes
 
-        # Process jobs at this location
-        if current_loc in location_to_jobs:
-            for job in location_to_jobs[current_loc]:
-                if job.id in processed_jobs:
-                    continue  # Skip if already processed
-                processed_jobs.add(job.id)
+        job_start_minutes = current_time_minutes
+        job_duration_minutes = job.length * 60.0
+        job_end_minutes = job_start_minutes + job_duration_minutes
+        total_time_minutes = job_duration_minutes + travel_minutes
 
-                job_start_minutes = current_time_minutes
-                job_duration_minutes = job.length * 60.0
-                job_end_minutes = job_start_minutes + job_duration_minutes
+        job_records.append({
+            "job_id": job.id,
+            "job_location": job.location,
+            "job_time": job.time,
+            "required_skills": ",".join(job.required_skills),
+            "job_start_time_minutes": job_start_minutes,
+            "job_end_time_minutes": job_end_minutes,
+            "job_duration_minutes": job_duration_minutes,
+            "travel_time_minutes": travel_minutes,
+            "total_time_minutes": total_time_minutes,
+        })
 
-                job_records.append({
-                    "job_id": job.id,
-                    "job_location": job.location,
-                    "job_time": job.time,
-                    "required_skills": ",".join(job.required_skills),
-                    "job_start_time_minutes": job_start_minutes,
-                    "job_end_time_minutes": job_end_minutes,
-                    "job_duration_minutes": job_duration_minutes,
-                    "travel_time_minutes": 0.0,
-                })
-
-                # Update current time after job completion
-                current_time_minutes = job_end_minutes
+        # Update current location and time after job completion
+        current_location = job.location
+        current_time_minutes = job_end_minutes
 
     return job_records
 
@@ -105,12 +95,29 @@ def generate_report(
     with columns: engineer_id, engineer_name, job_id, job_location, job_time,
     required_skills, job_start_time_minutes, job_end_time_minutes, job_duration_minutes,
     travel_time_minutes, total_time_minutes.
+
+    Jobs are ordered chronologically by job_time. A TOTAL summary row is appended
+    at the end with aggregate values for duration, travel, and total time.
     """
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
 
     # Create engineer lookup
     engineer_lookup = {e.id: e for e in engineers}
+
+    fieldnames = [
+        "engineer_id",
+        "engineer_name",
+        "job_id",
+        "job_location",
+        "job_time",
+        "required_skills",
+        "job_start_time_minutes",
+        "job_end_time_minutes",
+        "job_duration_minutes",
+        "travel_time_minutes",
+        "total_time_minutes",
+    ]
 
     for engineer_id, jobs in assignments.items():
         if not jobs:
@@ -125,46 +132,46 @@ def generate_report(
         route = route_info[0] if route_info else ()
 
         # Calculate job timings
-        if route and travel_matrix:
+        if travel_matrix:
             job_records = _calculate_job_timings(engineer, jobs, route, travel_matrix)
         else:
-            # No route info, create basic records without timing
+            # No travel matrix, create basic records without timing
+            sorted_jobs = sorted(jobs, key=lambda j: j.time)
             job_records = []
-            for job in jobs:
+            for job in sorted_jobs:
+                duration = job.length * 60.0
                 job_records.append({
                     "job_id": job.id,
                     "job_location": job.location,
                     "job_time": job.time,
                     "required_skills": ",".join(job.required_skills),
                     "job_start_time_minutes": 0.0,
-                    "job_end_time_minutes": job.length * 60.0,
-                    "job_duration_minutes": job.length * 60.0,
+                    "job_end_time_minutes": duration,
+                    "job_duration_minutes": duration,
                     "travel_time_minutes": 0.0,
+                    "total_time_minutes": duration,
                 })
 
         # Write CSV file
         file_path = os.path.join(output_dir, f"engineer_{engineer_id}_schedule.csv")
         with open(file_path, "w", newline="") as f:
-            writer = csv.DictWriter(
-                f,
-                fieldnames=[
-                    "engineer_id",
-                    "engineer_name",
-                    "job_id",
-                    "job_location",
-                    "job_time",
-                    "required_skills",
-                    "job_start_time_minutes",
-                    "job_end_time_minutes",
-                    "job_duration_minutes",
-                    "travel_time_minutes",
-                    "total_time_minutes",
-                ],
-            )
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
 
+            # Write detail rows
+            total_duration = 0.0
+            total_travel = 0.0
+            total_total = 0.0
+
             for record in job_records:
-                total_time = 0.0
+                duration = record["job_duration_minutes"]
+                travel = record["travel_time_minutes"]
+                total = record["total_time_minutes"]
+
+                total_duration += duration
+                total_travel += travel
+                total_total += total
+
                 writer.writerow({
                     "engineer_id": engineer_id,
                     "engineer_name": engineer.name,
@@ -174,7 +181,22 @@ def generate_report(
                     "required_skills": record["required_skills"],
                     "job_start_time_minutes": round(record["job_start_time_minutes"], 2),
                     "job_end_time_minutes": round(record["job_end_time_minutes"], 2),
-                    "job_duration_minutes": round(record["job_duration_minutes"], 2),
-                    "travel_time_minutes": round(record["travel_time_minutes"], 2),
-                    "total_time_minutes": round(total_time, 2),
+                    "job_duration_minutes": round(duration, 2),
+                    "travel_time_minutes": round(travel, 2),
+                    "total_time_minutes": round(total, 2),
                 })
+
+            # Write TOTAL summary row
+            writer.writerow({
+                "engineer_id": engineer_id,
+                "engineer_name": engineer.name,
+                "job_id": "TOTAL",
+                "job_location": "",
+                "job_time": "",
+                "required_skills": "",
+                "job_start_time_minutes": "",
+                "job_end_time_minutes": "",
+                "job_duration_minutes": round(total_duration, 2),
+                "travel_time_minutes": round(total_travel, 2),
+                "total_time_minutes": round(total_total, 2),
+            })
