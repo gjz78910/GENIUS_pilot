@@ -67,11 +67,21 @@ def _calculate_job_timings(
                     "job_start_time_minutes": job_start_minutes,
                     "job_end_time_minutes": job_end_minutes,
                     "job_duration_minutes": job_duration_minutes,
-                    "travel_time_minutes": 0.0,
+                    # Record the actual travel time to reach this job from
+                    # the previous location (converted from hours to minutes).
+                    "travel_time_minutes": travel_minutes,
                 })
+
+                # Only the first job at this location incurs the travel cost;
+                # subsequent jobs at the same stop have zero additional travel.
+                travel_minutes = 0.0
 
                 # Update current time after job completion
                 current_time_minutes = job_end_minutes
+
+    # Sort records by job_time so the CSV output is in chronological order
+    # rather than the TSP route order used for timing calculations.
+    job_records.sort(key=lambda r: r["job_time"])
 
     return job_records
 
@@ -164,7 +174,9 @@ def generate_report(
             writer.writeheader()
 
             for record in job_records:
-                total_time = 0.0
+                # Calculate total_time as the sum of travel to the job plus
+                # the job's own duration (both in minutes).
+                total_time = record["travel_time_minutes"] + record["job_duration_minutes"]
                 writer.writerow({
                     "engineer_id": engineer_id,
                     "engineer_name": engineer.name,
@@ -178,3 +190,22 @@ def generate_report(
                     "travel_time_minutes": round(record["travel_time_minutes"], 2),
                     "total_time_minutes": round(total_time, 2),
                 })
+
+            # Write TOTAL summary row aggregating all job durations, travel
+            # times, and combined totals across this engineer's schedule.
+            total_duration = sum(r["job_duration_minutes"] for r in job_records)
+            total_travel = sum(r["travel_time_minutes"] for r in job_records)
+            total_total = total_duration + total_travel
+            writer.writerow({
+                "engineer_id": engineer_id,
+                "engineer_name": engineer.name,
+                "job_id": "TOTAL",
+                "job_location": "",
+                "job_time": "",
+                "required_skills": "",
+                "job_start_time_minutes": "",
+                "job_end_time_minutes": "",
+                "job_duration_minutes": round(total_duration, 2),
+                "travel_time_minutes": round(total_travel, 2),
+                "total_time_minutes": round(total_total, 2),
+            })

@@ -10,7 +10,7 @@ from __future__ import annotations
 import time
 import unittest
 
-from src.optimization.routing import find_optimal_route
+from src.optimization.new_alg_route import find_optimal_route
 
 
 class TestRoutingCheckpointA(unittest.TestCase):

@@ -31,6 +31,8 @@ class Engineer:
         A list of skills (strings) that this engineer possesses.
     working_hours: float
         Maximum hours available for job assignments.
+    max_jobs: int
+        Maximum number of jobs that can be assigned to this engineer.
     """
 
     id: int
@@ -38,14 +40,18 @@ class Engineer:
     location: Location
     skills: List[str] = field(default_factory=list)
     working_hours: float = 8.0
+    max_jobs: int = 10
 
     def __post_init__(self) -> None:
         # normalise skills to lower case for consistency
         self.skills = [skill.lower() for skill in self.skills]
+        if self.max_jobs < 0:
+            raise ValueError("max_jobs must be non-negative")
 
     def __repr__(self) -> str:
         return (
             f"Engineer(id={self.id!r}, name={self.name!r}, "
             f"location={self.location!r}, skills={self.skills!r}, "
-            f"working_hours={self.working_hours!r})"
-            )
+            f"working_hours={self.working_hours!r}, "
+            f"max_jobs={self.max_jobs!r})"
+        )

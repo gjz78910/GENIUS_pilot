@@ -11,13 +11,50 @@ from typing import Dict, List
 
 from src.models.engineer import Engineer
 from src.models.job import Job
-from src.optimization.routing import find_optimal_route
+from src.optimization.new_alg_route import find_optimal_route
+
+
+def _identify_exclusive_jobs(
+    engineers: List[Engineer], jobs: List[Job]
+) -> List[Job]:
+    """Identify jobs where only a single engineer has the required skills.
+
+    These jobs must be assigned first to avoid the greedy algorithm filling
+    that engineer's capacity with shared-skill jobs, leaving the exclusive
+    job unassignable.
+
+    Parameters
+    ----------
+    engineers : List[Engineer]
+        The available field engineers.
+    jobs : List[Job]
+        All jobs to consider.
+
+    Returns
+    -------
+    List[Job]
+        Jobs that can only be performed by exactly one engineer, sorted so
+        the most constrained (fewest qualified engineers) come first.
+    """
+    exclusive: List[Job] = []
+    for job in jobs:
+        qualified = [
+            e for e in engineers
+            if all(skill in e.skills for skill in job.required_skills)
+        ]
+        if len(qualified) == 1:
+            exclusive.append(job)
+    return exclusive
 
 
 def assign_jobs(
     engineers: List[Engineer], jobs: List[Job], travel_matrix: Dict[str, Dict[str, float]]
 ) -> tuple[Dict[int, List[Job]], List[Job]]:
     """Assign jobs to engineers based on skills, distance, and capacity.
+
+    Uses a two-pass strategy:
+    1. First, assign jobs that only one engineer can perform (exclusive skills).
+    2. Then, assign remaining jobs using greedy closest-first with capacity checks.
 
     Parameters
     ----------
@@ -41,7 +78,44 @@ def assign_jobs(
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
-    for job in jobs:
+    # --- Pass 1: Assign exclusive-skill jobs first ---
+    exclusive_jobs = _identify_exclusive_jobs(engineers, jobs)
+    exclusive_job_ids = set()
+
+    for job in exclusive_jobs:
+        # Find the single qualified engineer
+        qualified = [
+            e for e in engineers
+            if all(skill in e.skills for skill in job.required_skills)
+        ]
+        engineer = qualified[0]
+        current_jobs = assignments[engineer.id]
+
+        # Check max_jobs limit
+        if len(current_jobs) >= engineer.max_jobs:
+            unassigned.append(job)
+            exclusive_job_ids.add(job.id)
+            continue
+
+        # Check capacity (working hours)
+        total_job_time = sum(j.length for j in current_jobs)
+        test_jobs = current_jobs + [job]
+        job_locations = [j.location for j in test_jobs]
+        _, estimated_travel_time = find_optimal_route(
+            engineer.location, job_locations, travel_matrix
+        )
+
+        if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:
+            assignments[engineer.id].append(job)
+        else:
+            unassigned.append(job)
+
+        exclusive_job_ids.add(job.id)
+
+    # --- Pass 2: Assign remaining jobs using greedy closest-first ---
+    remaining_jobs = [j for j in jobs if j.id not in exclusive_job_ids]
+
+    for job in remaining_jobs:
         # Filter engineers who possess all required skills
         skilled_candidates: List[Engineer] = [
             engineer
@@ -63,7 +137,12 @@ def assign_jobs(
         assigned = False
         for engineer in skilled_candidates:
             current_jobs = assignments[engineer.id]
+            # skip engineers who already have the max jobs at that time
+            if len(current_jobs) >= engineer.max_jobs:
+                continue
+            
             total_job_time = sum(j.length for j in current_jobs)
+        
             
             # Estimate travel time if this job is added
             test_jobs = current_jobs + [job]

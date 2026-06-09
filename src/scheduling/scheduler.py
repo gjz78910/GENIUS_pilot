@@ -12,7 +12,7 @@ from typing import Dict, List, Tuple
 from src.models.engineer import Engineer
 from src.models.job import Job
 from src.optimization.matching import assign_jobs
-from src.optimization.routing import find_optimal_route
+from src.optimization.new_alg_route import find_optimal_route
 
 
 class Scheduler:
