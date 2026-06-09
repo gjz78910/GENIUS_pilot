@@ -115,11 +115,14 @@ def check_cross_contamination(metadata_by_file: Dict[Path, FileMeta]) -> List[st
 
 def check_required_files(participant_id: str, data_dir: str = "DATA_COLLECTION") -> List[str]:
     data_path = Path(data_dir)
-    required = [
-        f"system_info_{participant_id}.json",
-        f"survey_{participant_id}.md",
-    ]
-    return [name for name in required if not (data_path / name).exists()]
+    missing = []
+    if not (data_path / f"system_info_{participant_id}.json").exists():
+        missing.append(f"system_info_{participant_id}.json")
+    # Accept survey as .json (from HTML form) or .md (legacy manual fill)
+    if not (data_path / f"survey_{participant_id}.json").exists() and \
+       not (data_path / f"survey_{participant_id}.md").exists():
+        missing.append(f"survey_{participant_id}.json")
+    return missing
 
 
 def main() -> int:

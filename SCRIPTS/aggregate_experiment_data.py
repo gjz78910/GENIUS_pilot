@@ -68,6 +68,7 @@ def aggregate_experiment_data(
     
     # Build file paths
     file_patterns = {
+        "survey": f"survey_{participant_id}.json",
         "system_info": f"system_info_{participant_id}.json",
         "task_timing": f"task_timing_{participant_id}.json" if not session_id else f"task_timing_{participant_id}_{session_id}.json",
         "git_activity": f"git_activity_{participant_id}.json",

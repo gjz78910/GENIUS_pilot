@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GENIUS Pilot — AI Group Instructions</title>
+<script src="organiser/session_config.js" onerror="window.GENIUS_SESSION=null;"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --border: #dee2e6;
+    --border-strong: #adb5bd;
+    --text: #212529;
+    --text-muted: #6c757d;
+    --accent: #2563eb;
+    --accent-light: #eff6ff;
+    --accent-border: #bfdbfe;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --green-border: #bbf7d0;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --red-border: #fecaca;
+    --amber: #d97706;
+    --amber-light: #fffbeb;
+    --amber-border: #fde68a;
+    --code-bg: #1e1e2e;
+    --code-text: #cdd6f4;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    padding-bottom: 80px;
+  }
+
+  /* ── STICKY HEADER ── */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .top-bar-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .top-bar-badge {
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+
+  .progress-wrap {
+    flex: 1;
+    max-width: 340px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .progress-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 99px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 56px;
+    text-align: right;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 24px 24px;
+    max-width: 1160px;
+    margin: 0 auto;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .page-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ── LAYOUT ── */
+  .layout {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  /* ── SIDEBAR NAV ── */
+  .sidebar {
+    position: sticky;
+    top: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 10px 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    transition: background 0.12s, color 0.12s;
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover {
+    background: #f1f4ff;
+    color: var(--accent);
+    border-color: var(--accent-border);
+  }
+
+  .nav-item.active {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 600;
+    border-color: var(--accent-border);
+  }
+
+  .nav-item.done {
+    color: var(--green);
+  }
+
+  .nav-item.done:hover, .nav-item.done.active {
+    background: var(--green-light);
+    border-color: var(--green-border);
+    color: var(--green);
+  }
+
+  .nav-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .nav-item.active .nav-num {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .nav-item.done .nav-num {
+    background: var(--green);
+    color: #fff;
+  }
+
+  .nav-text { flex: 1; line-height: 1.3; }
+
+  .nav-progress {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .nav-item.done .nav-progress { color: var(--green); }
+  .nav-item.active .nav-progress { color: var(--accent); }
+
+  .nav-mini-bar {
+    height: 3px;
+    background: #e9ecef;
+    border-radius: 99px;
+    margin-top: 2px;
+    overflow: hidden;
+  }
+
+  .nav-mini-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  .nav-item.done .nav-mini-fill { background: var(--green); }
+
+  @media (max-width: 780px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  /* ── TOOL RULES ── */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  @media (max-width: 600px) {
+    .rules-grid { grid-template-columns: 1fr; }
+  }
+
+  .rule-box {
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 13px;
+  }
+
+  .rule-box.allowed {
+    background: #f6fef9;
+    border: 1px solid var(--green-border);
+    border-left: 4px solid var(--green);
+  }
+
+  .rule-box.blocked {
+    background: #fff8f8;
+    border: 1px solid var(--red-border);
+    border-left: 4px solid var(--red);
+  }
+
+  .rule-box h3 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .rule-box.allowed h3 { color: var(--green); }
+  .rule-box.blocked h3 { color: var(--red); }
+
+  .rule-box ul {
+    padding-left: 16px;
+    color: var(--text);
+    line-height: 2;
+    font-size: 13px;
+  }
+
+  /* ── SECTION CARDS ── */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .section-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid transparent;
+    transition: background 0.15s;
+    background: linear-gradient(180deg, #fff 0%, #fafbfc 100%);
+  }
+
+  .section-header:hover { background: linear-gradient(180deg, #f5f7ff 0%, #eef1fb 100%); }
+
+  .section-header.open {
+    border-bottom-color: var(--border);
+    background: linear-gradient(180deg, #f5f7ff 0%, #eef1fb 100%);
+  }
+
+  .section-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .section-num.done {
+    background: var(--green);
+  }
+
+  .section-title {
+    flex: 1;
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .section-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-progress {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .section-chevron {
+    color: var(--text-muted);
+    transition: transform 0.2s;
+    font-size: 12px;
+  }
+
+  .section-header.open .section-chevron { transform: rotate(180deg); }
+
+  .section-body {
+    display: none;
+    padding: 20px;
+  }
+
+  .section-body.open { display: block; }
+
+  /* ── TIME GUIDANCE ── */
+  .time-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+
+  .time-table th {
+    text-align: left;
+    padding: 8px 12px;
+    background: #f1f3f5;
+    border: 1px solid var(--border);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .time-table td {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .time-table tr:last-child td { border-bottom: 1px solid var(--border); }
+
+  .time-badge {
+    display: inline-block;
+    background: var(--amber-light);
+    color: var(--amber);
+    border: 1px solid var(--amber-border);
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ── CHECKLIST ITEMS ── */
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+  }
+
+  .check-item:hover { background: #f9fafb; border-color: var(--border-strong); }
+
+  .check-item.checked {
+    background: var(--green-light);
+    border-color: var(--green-border);
+  }
+
+  .check-item input[type="checkbox"] {
+    margin-top: 2px;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: var(--green);
+  }
+
+  .check-item label {
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .check-item.checked label {
+    text-decoration: line-through;
+    color: var(--text-muted);
+  }
+
+  /* ── CODE BLOCKS ── */
+  .code-block {
+    position: relative;
+    margin: 12px 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid #313244;
+  }
+
+  .code-label {
+    background: #313244;
+    color: #a6adc8;
+    font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .copy-btn {
+    background: transparent;
+    border: 1px solid #45475a;
+    color: #cdd6f4;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+
+  .copy-btn:hover { background: #45475a; }
+  .copy-btn.copied { color: #a6e3a1; border-color: #a6e3a1; }
+
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 14px 16px;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* ── INLINE CODE ── */
+  code {
+    background: #e9ecef;
+    color: #c7254e;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: var(--radius);
+    padding: 11px 16px;
+    font-size: 13px;
+    margin: 12px 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border-left: 4px solid;
+    background: transparent;
+  }
+
+  .callout.info  { border-color: var(--accent); background: var(--accent-light); color: #1e3a8a; }
+  .callout.warn  { border-color: var(--amber);  background: var(--amber-light);  color: #78350f; }
+  .callout.success { border-color: var(--green); background: var(--green-light); color: #14532d; }
+
+  .callout-icon { display: none; }
+
+  /* ── LUCIDE ICONS ── */
+  i[data-lucide] {
+    width: 16px; height: 16px;
+    stroke-width: 2;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  .rule-box h3 i[data-lucide]  { width: 14px; height: 14px; }
+  .task-badge i[data-lucide]   { width: 13px; height: 13px; }
+  .checkpoint h4 i[data-lucide]{ width: 15px; height: 15px; }
+  .session-icon i[data-lucide] { width: 20px; height: 20px; }
+
+  /* ── CHECKPOINT BOXES ── */
+  .checkpoint {
+    border-radius: var(--radius);
+    border: 1px solid #c7d7fd;
+    background: #fff;
+    margin: 16px 0;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(37,99,235,0.07);
+  }
+
+  .checkpoint h4 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    background: linear-gradient(90deg, var(--accent) 0%, #3b82f6 100%);
+    padding: 9px 16px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .checkpoint ul {
+    padding: 12px 16px 12px 32px;
+    font-size: 13px;
+    line-height: 2;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .checkpoint ul li::marker { color: var(--accent); }
+
+  /* ── SUBSECTION HEADINGS ── */
+  .subsection-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 20px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .subsection-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── FILE TREE ── */
+  .file-tree {
+    background: #f8f9fa;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-top: 8px;
+    overflow-x: auto;
+  }
+
+  .file-tree pre {
+    background: transparent;
+    color: var(--text);
+    padding: 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    white-space: pre;
+  }
+
+  /* ── PROSE ── */
+  .prose { font-size: 14px; line-height: 1.7; color: var(--text); }
+  .prose + .prose { margin-top: 8px; }
+  .prose p { margin-bottom: 8px; }
+  .prose ul { padding-left: 18px; margin-bottom: 8px; }
+  .prose li { margin-bottom: 3px; }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  /* ── TASK HEADER BADGE ── */
+  .task-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f1f5f9;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 14px;
+    letter-spacing: 0.03em;
+  }
+</style>
+</head>
+<body>
+
+<!-- STICKY TOP BAR -->
+<div class="top-bar">
+  <span class="top-bar-title">GENIUS Pilot</span>
+  <div class="progress-wrap">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-label" id="progressLabel">0 / 0</span>
+  </div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>Participant Instructions — AI Group</h1>
+  <p>Use the left sidebar to jump between sections. Check off each step as you go.</p>
+  <div id="sessionInfoBanner" style="display:none;margin-top:12px;background:var(--green-light);border:1px solid var(--green-border);border-radius:var(--radius);padding:12px 16px;font-size:13px;color:#14532d;display:none;align-items:center;gap:12px;">
+    <span class="session-icon"><i data-lucide="badge"></i></span>
+    <div>
+      <strong id="sessionInfoText">Loading session…</strong>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- ── SIDEBAR ── -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-label">Sections</div>
+  <a class="nav-item" data-section-nav="0" href="#sec-0" onclick="navClick(event,0)">
+    <div class="nav-num" id="nav-num-0">!</div>
+    <div class="nav-text">
+      Tool Rules
+      <div class="nav-mini-bar"><div class="nav-mini-fill" id="nav-fill-0"></div></div>
+    </div>
+    <span class="nav-progress" id="nav-prog-0"></span>
+  </a>
+  <a class="nav-item" data-section-nav="2" href="#sec-2" onclick="navClick(event,2)">
+    <div class="nav-num" id="nav-num-2">2</div>
+    <div class="nav-text">
+      Before the Task
+      <div class="nav-mini-bar"><div class="nav-mini-fill" id="nav-fill-2"></div></div>
+    </div>
+    <span class="nav-progress" id="nav-prog-2"></span>
+  </a>
+  <a class="nav-item" data-section-nav="3" href="#sec-3" onclick="navClick(event,3)">
+    <div class="nav-num" id="nav-num-3">3</div>
+    <div class="nav-text">
+      Time &amp; Overview
+      <div class="nav-mini-bar"><div class="nav-mini-fill" id="nav-fill-3"></div></div>
+    </div>
+    <span class="nav-progress" id="nav-prog-3"></span>
+  </a>
+  <a class="nav-item" data-section-nav="4" href="#sec-4" onclick="navClick(event,4)">
+    <div class="nav-num" id="nav-num-4">4</div>
+    <div class="nav-text">
+      Task 1
+      <div class="nav-mini-bar"><div class="nav-mini-fill" id="nav-fill-4"></div></div>
+    </div>
+    <span class="nav-progress" id="nav-prog-4"></span>
+  </a>
+  <a class="nav-item" data-section-nav="5" href="#sec-5" onclick="navClick(event,5)">
+    <div class="nav-num" id="nav-num-5">5</div>
+    <div class="nav-text">
+      Task 2
+      <div class="nav-mini-bar"><div class="nav-mini-fill" id="nav-fill-5"></div></div>
+    </div>
+    <span class="nav-progress" id="nav-prog-5"></span>
+  </a>
+  <a class="nav-item" data-section-nav="6" href="#sec-6" onclick="navClick(event,6)">
+    <div class="nav-num" id="nav-num-6">6</div>
+    <div class="nav-text">
+      Task 3
+      <div class="nav-mini-bar"><div class="nav-mini-fill" id="nav-fill-6"></div></div>
+    </div>
+    <span class="nav-progress" id="nav-prog-6"></span>
+  </a>
+  <a class="nav-item" data-section-nav="7" href="#sec-7" onclick="navClick(event,7)">
+    <div class="nav-num" id="nav-num-7">7</div>
+    <div class="nav-text">
+      After the Task
+      <div class="nav-mini-bar"><div class="nav-mini-fill" id="nav-fill-7"></div></div>
+    </div>
+    <span class="nav-progress" id="nav-prog-7"></span>
+  </a>
+</nav>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="content">
+
+  <!-- ═══════════════════════════════════════════════
+       TOOL RULES
+  ════════════════════════════════════════════════ -->
+  <div class="section-card" id="sec-0">
+    <div class="section-header open" onclick="toggleSection(this)">
+      <div class="section-num" id="num-0">!</div>
+      <span class="section-title">Tool Rules</span>
+      <div class="section-meta">
+        <span class="section-progress" id="prog-0"></span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body open">
+      <div class="rules-grid" style="grid-template-columns:1fr;max-width:480px;">
+        <div class="rule-box allowed">
+          <h3><i data-lucide="check-circle"></i> You CAN use</h3>
+          <ul>
+            <li><strong>Kiro</strong> on the remote desktop</li>
+            <li>ChatGPT, Claude, Gemini, Perplexity, or other AI chat tools</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════
+       BEFORE THE TASK
+  ════════════════════════════════════════════════ -->
+  <div class="section-card">
+    <div class="section-header open" onclick="toggleSection(this)">
+      <div class="section-num" id="num-2">2</div>
+      <span class="section-title">Before the Task</span>
+      <div class="section-meta">
+        <span class="section-progress" id="prog-2"></span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body open" data-section="2">
+
+      <div class="checklist">
+        <label class="check-item">
+          <input type="checkbox"> <label>Complete the <strong><a href="organiser/Pre_Experiment_Survey.html" target="_blank" rel="noopener" style="color:var(--accent);">pre-experiment survey ↗</a></strong> — open the link, fill the form, and save the downloaded file to <code>DATA_COLLECTION/</code>.</label>
+        </label>
+      </div>
+
+      <div class="subsection-title">Set up the environment</div>
+      <div class="prose"><p>Open a terminal in Kiro and run:</p></div>
+
+      <div class="code-block">
+        <div class="code-label">
+          <span>bash</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>source /etc/genius/session.env
+cd ~/GENIUS_pilot
+conda activate genius_pilot
+git branch --show-current</code></pre>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <span>The branch should already be prepared and look like <code>participant-manual-01</code>. Do not create or switch branches unless the organiser asks you to.</span>
+      </div>
+
+      <div style="margin-top:10px;width:fit-content;">
+        <label class="check-item" style="width:fit-content;">
+          <input type="checkbox"> <label>Branch confirmed ✓</label>
+        </label>
+      </div>
+
+      <div class="subsection-title">Start screen recording</div>
+
+      <div class="code-block">
+        <div class="code-label">
+          <span>bash</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>/usr/local/bin/genius-screen-recorder start
+/usr/local/bin/genius-screen-recorder status</code></pre>
+      </div>
+
+      <div class="callout success">
+        <span class="callout-icon">✅</span>
+        <span>Expected output: <code>running</code></span>
+      </div>
+
+      <div class="checklist" style="margin-top:10px;">
+        <label class="check-item">
+          <input type="checkbox"> <label>Screen recorder is running. Status shows <code>running</code>.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Resource monitoring is running in its terminal. Do not close it.</label>
+        </label>
+      </div>
+
+      <div class="callout warn" style="margin-top:8px;">
+        <span class="callout-icon">⚠️</span>
+        <span>If status does not show <code>running</code>, tell the organiser before starting the task.</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       TIME GUIDANCE + SYSTEM OVERVIEW
+  ════════════════════════════════════════════════ -->
+  <div class="section-card">
+    <div class="section-header open" onclick="toggleSection(this)">
+      <div class="section-num" id="num-3">3</div>
+      <span class="section-title">Time Guidance &amp; System Overview</span>
+      <div class="section-meta">
+        <span class="section-progress" id="prog-3"></span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body open" data-section="3">
+
+      <div class="subsection-title">What this system does</div>
+      <div class="prose">
+        <p>This is a <strong>field engineer scheduling system</strong>. It:</p>
+        <ul>
+          <li>assigns jobs to engineers based on skills and location</li>
+          <li>finds a good travel route for each engineer</li>
+          <li>creates reports showing each engineer's schedule</li>
+          <li>can load job data from files</li>
+        </ul>
+        <p style="margin-top:8px;"><strong>Example:</strong> Alice is at Location A and can do repair work. A repair job at Location A is a good match for Alice. If Alice has several jobs, the system chooses an order for visiting them.</p>
+      </div>
+
+      <img src="organiser/image.png" alt="System overview diagram" style="width:100%;margin-top:14px;border-radius:var(--radius);border:1px solid var(--border);">
+
+      <div class="subsection-title">Project structure</div>
+      <div class="file-tree"><pre>src/                    main source code
+src/models/             Engineer and Job classes
+src/optimization/       matching and routing algorithms
+src/scheduling/         scheduler
+src/features/           reports and data loading
+data/                   sample data and benchmark files
+tests/                  unit and performance tests
+reports/                generated CSV reports</pre></div>
+
+      <div class="subsection-title" style="margin-top:18px;">Time guidance</div>
+
+      <div class="callout warn">
+        <span class="callout-icon">⏱️</span>
+        <span><strong>You have 2 hours total.</strong> If you run out of time, stop where you are — it is okay if not all tasks are complete.</span>
+      </div>
+
+      <table class="time-table" style="margin-top:12px;">
+        <thead>
+          <tr><th>Phase</th><th>Suggested time</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Setup, survey, and code exploration</td><td><span class="time-badge">10 min</span></td></tr>
+          <tr><td>Task 1 — Matching &amp; Routing</td><td><span class="time-badge">60 min</span></td></tr>
+          <tr><td>Task 2 — Reporting</td><td><span class="time-badge">25 min</span></td></tr>
+          <tr><td>Task 3 — Data Integration</td><td><span class="time-badge">15 min</span></td></tr>
+          <tr><td>Save work, finish commands, post-survey</td><td><span class="time-badge">10 min</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="checklist" style="margin-top:12px;">
+        <label class="check-item">
+          <input type="checkbox"> <label>Take a few minutes to explore the codebase before starting Task 1.</label>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       TASK 1
+  ════════════════════════════════════════════════ -->
+  <div class="section-card">
+    <div class="section-header open" onclick="toggleSection(this)">
+      <div class="section-num" id="num-4">4</div>
+      <span class="section-title">Task 1 — Improve Matching &amp; Routing</span>
+      <div class="section-meta">
+        <span class="section-progress" id="prog-4"></span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body open" data-section="4">
+
+      <div class="task-badge"><i data-lucide="clock"></i> ~60 min</div>
+
+      <div class="prose">
+        <p>Improve how jobs are assigned to engineers and how travel routes are calculated.</p>
+        <p><strong>Problems to fix:</strong></p>
+        <ul>
+          <li><strong>Routing</strong> tries every possible route (brute-force) — very slow for many jobs.</li>
+          <li><strong>Matching</strong> assigns jobs one-by-one to the closest engineer, which can overload some engineers.</li>
+        </ul>
+      </div>
+
+      <div class="subsection-title">Steps</div>
+      <div class="checklist">
+        <label class="check-item">
+          <input type="checkbox"> <label>Find the routing and matching code in <code>src/optimization/</code>.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Understand why the current algorithms are slow or produce poor solutions.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Improve the routing algorithm.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Pass Checkpoint A (see below).</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Improve the matching algorithm.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Pass Checkpoint B (see below).</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Run Checkpoint C and confirm Checkpoints A &amp; B still pass.</label>
+        </label>
+      </div>
+
+      <div class="subsection-title">Quick sanity check</div>
+      <div class="prose"><p>Run this to confirm the scheduler works end-to-end:</p></div>
+
+      <div class="code-block">
+        <div class="code-label">
+          <span>bash — quick demo</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>python -c "from src.models.engineer import Engineer; from src.models.job import Job; from src.scheduling.scheduler import Scheduler; engineers=[Engineer(1,'Alice','A',['repair'],8.0),Engineer(2,'Bob','B',['install'],8.0)]; jobs=[Job(1,'A','09:00',['repair'],1.0),Job(2,'B','10:00',['install'],1.0),Job(3,'B','11:00',['repair'],1.0)]; travel={'A':{'A':0.0,'B':0.5},'B':{'A':0.5,'B':0.0}}; a,r,u=Scheduler(engineers,jobs,travel).create_schedule(); print('Assignments:', {k:[j.id for j in v] for k,v in a.items()}); print('Routes:', r); print('Unassigned:', [j.id for j in u])"</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-label">
+          <span>bash — initial tests</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>python -m unittest tests.test_matching tests.test_routing tests.test_benchmarks -v</code></pre>
+      </div>
+
+      <hr class="divider">
+
+      <div class="checkpoint">
+        <h4><i data-lucide="check-circle"></i> Checkpoint A — Routing</h4>
+        <div class="code-block" style="margin:8px 0 10px;">
+          <div class="code-label">
+            <span>bash</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code>python -m unittest tests.test_routing tests.test_routing_checkpoint_a tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_01 tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_02 tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_03 tests.test_benchmarks.TestBenchmarksWithOptimal.test_brute_force_routing_optimal -v</code></pre>
+        </div>
+        <ul>
+          <li>Every test shows <code>ok</code></li>
+          <li>Benchmark output has <code>travel_time_ratio &lt;= 1.5</code></li>
+        </ul>
+      </div>
+
+      <div class="checklist">
+        <label class="check-item">
+          <input type="checkbox"> <label>Checkpoint A passed ✓</label>
+        </label>
+      </div>
+
+      <div class="checkpoint">
+        <h4><i data-lucide="check-circle"></i> Checkpoint B — Matching</h4>
+        <div class="code-block" style="margin:8px 0 10px;">
+          <div class="code-label">
+            <span>bash</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code>python -m unittest tests.test_matching tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_04 tests.test_benchmarks.TestBenchmarksWithOptimal.test_benchmark_small_05 tests.test_routing -v</code></pre>
+        </div>
+        <ul>
+          <li>Every test shows <code>ok</code></li>
+          <li><code>assignment_accuracy = 1.0</code></li>
+          <li><code>travel_time_ratio &lt;= 1.5</code></li>
+          <li>No jobs are unassigned in both benchmark tests</li>
+        </ul>
+      </div>
+
+      <div class="checklist">
+        <label class="check-item">
+          <input type="checkbox"> <label>Checkpoint B passed ✓</label>
+        </label>
+      </div>
+
+      <div class="checkpoint">
+        <h4><i data-lucide="check-circle"></i> Checkpoint C — Scalability</h4>
+        <div class="code-block" style="margin:8px 0 10px;">
+          <div class="code-label">
+            <span>bash</span>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code>python -m unittest tests.performance.test_scalability tests.test_routing tests.test_matching tests.test_benchmarks -v</code></pre>
+        </div>
+        <ul>
+          <li>Target: pass at least <strong>3 of 5</strong> scalability tests</li>
+          <li>This also confirms routing, matching, and benchmarks still pass</li>
+        </ul>
+      </div>
+
+      <div class="checklist">
+        <label class="check-item">
+          <input type="checkbox"> <label>Checkpoint C: at least 3 scalability tests passed ✓</label>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       TASK 2
+  ════════════════════════════════════════════════ -->
+  <div class="section-card">
+    <div class="section-header open" onclick="toggleSection(this)">
+      <div class="section-num" id="num-5">5</div>
+      <span class="section-title">Task 2 — Reporting on Engineer Schedules</span>
+      <div class="section-meta">
+        <span class="section-progress" id="prog-5"></span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body open" data-section="5">
+
+      <div class="task-badge"><i data-lucide="clock"></i> ~25 min</div>
+
+      <div class="prose">
+        <p>The CSV report code has <strong>bugs</strong> and a <strong>missing feature</strong>. Fix the code so all tests pass.</p>
+      </div>
+
+      <div class="subsection-title">Steps</div>
+      <div class="checklist">
+        <label class="check-item">
+          <input type="checkbox"> <label>Run the tests to see which ones fail.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Read the failure messages — they tell you what is wrong and where to look.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Find and fix the bugs in the report code.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Run the tests again until all pass.</label>
+        </label>
+      </div>
+
+      <div class="code-block" style="margin-top:12px;">
+        <div class="code-label">
+          <span>bash — run Task 2 tests</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>python -m unittest tests.test_report_correctness -v</code></pre>
+      </div>
+
+      <div class="checkpoint">
+        <h4><i data-lucide="check-circle"></i> Task 2 Pass Criterion</h4>
+        <ul>
+          <li>All tests in <code>tests.test_report_correctness</code> show <code>ok</code></li>
+        </ul>
+      </div>
+
+      <div class="checklist">
+        <label class="check-item">
+          <input type="checkbox"> <label>All report tests pass ✓</label>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       TASK 3
+  ════════════════════════════════════════════════ -->
+  <div class="section-card">
+    <div class="section-header open" onclick="toggleSection(this)">
+      <div class="section-num" id="num-6">6</div>
+      <span class="section-title">Task 3 — External Job Data Integration</span>
+      <div class="section-meta">
+        <span class="section-progress" id="prog-6"></span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body open" data-section="6">
+
+      <div class="task-badge"><i data-lucide="clock"></i> ~15 min</div>
+
+      <div class="prose">
+        <p>The data loader is <strong>missing input validation</strong>. Add the missing validation so all tests pass.</p>
+      </div>
+
+      <div class="subsection-title">Steps</div>
+      <div class="checklist">
+        <label class="check-item">
+          <input type="checkbox"> <label>Run the tests to see which ones fail.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Read the failure messages — they tell you what validation is expected.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Find the data loading code in <code>src/features/data_loader.py</code>.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Add the missing validation checks.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Run the tests again until all pass.</label>
+        </label>
+      </div>
+
+      <div class="code-block" style="margin-top:12px;">
+        <div class="code-label">
+          <span>bash — run Task 3 tests</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>python -m unittest tests.test_data_loader -v</code></pre>
+      </div>
+
+      <div class="checkpoint">
+        <h4><i data-lucide="check-circle"></i> Task 3 Pass Criterion</h4>
+        <ul>
+          <li>All tests in <code>tests.test_data_loader</code> show <code>ok</code></li>
+        </ul>
+      </div>
+
+      <div class="checklist">
+        <label class="check-item">
+          <input type="checkbox"> <label>All data loader tests pass ✓</label>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       AFTER THE TASK
+  ════════════════════════════════════════════════ -->
+  <div class="section-card">
+    <div class="section-header open" onclick="toggleSection(this)">
+      <div class="section-num" id="num-7">7</div>
+      <span class="section-title">After the Task</span>
+      <div class="section-meta">
+        <span class="section-progress" id="prog-7"></span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body open" data-section="7">
+
+      <div class="task-badge"><i data-lucide="clock"></i> ~10 min</div>
+
+      <div class="prose"><p>Run these commands before filling the post-experiment survey:</p></div>
+
+      <div class="code-block">
+        <div class="code-label">
+          <span>bash — save and submit work</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>source /etc/genius/session.env
+cd ~/GENIUS_pilot
+/usr/local/bin/genius-screen-recorder stop
+sudo systemctl stop genius-resource-monitor.service || true
+./SCRIPTS/store_participant_work.sh "$PARTICIPANT_ID" "$SESSION_ID"
+git push -u origin "participant-$PARTICIPANT_ID" --tags</code></pre>
+      </div>
+
+      <div class="callout info" style="margin-top:4px;">
+        <span class="callout-icon">ℹ️</span>
+        <span>If <code>sudo</code> asks for a password, use your remote desktop password. If the push fails or asks for GitHub credentials, tell the organiser and continue.</span>
+      </div>
+
+      <div class="checklist" style="margin-top:12px;">
+        <label class="check-item">
+          <input type="checkbox"> <label>Screen recorder stopped.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Resource monitoring stopped.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Work stored and pushed to the repository.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Complete the <strong><a href="organiser/Post_Experiment_Survey.html" target="_blank" rel="noopener" style="color:var(--accent);">post-experiment survey ↗</a></strong>.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Told the organiser you are finished.</label>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /layout -->
+
+<script>
+  // ── SECTION TOGGLE ──
+  function toggleSection(header) {
+    header.classList.toggle('open');
+    const body = header.nextElementSibling;
+    body.classList.toggle('open');
+  }
+
+  // ── COPY TO CLIPBOARD ──
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 1800);
+    });
+  }
+
+  // ── CHECKBOX INTERACTION ──
+  function initCheckboxes() {
+    document.querySelectorAll('.check-item input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        cb.closest('.check-item').classList.toggle('checked', cb.checked);
+        updateProgress();
+      });
+    });
+  }
+
+  // ── PROGRESS ──
+  function updateProgress() {
+    const all = document.querySelectorAll('.check-item input[type="checkbox"]');
+    const done = document.querySelectorAll('.check-item input[type="checkbox"]:checked');
+    const total = all.length;
+    const count = done.length;
+    const pct = total ? (count / total) * 100 : 0;
+
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = count + ' / ' + total;
+
+    const sections = [0,1,2,3,4,5,6,7];
+    sections.forEach(i => {
+      const body = i === 0
+        ? document.querySelector('.section-card#sec-0 .section-body')
+        : document.querySelector(`[data-section="${i}"]`);
+      if (!body) return;
+      const sAll = body.querySelectorAll('input[type="checkbox"]');
+      const sDone = body.querySelectorAll('input[type="checkbox"]:checked');
+      const total = sAll.length;
+      const done = sDone.length;
+      const pct = total ? (done / total) * 100 : 0;
+      const isDone = total > 0 && done === total;
+
+      // Section header num
+      const numEl = document.getElementById(`num-${i}`);
+      if (numEl) {
+        numEl.classList.toggle('done', isDone);
+        numEl.textContent = isDone ? '✓' : (i === 0 ? '!' : i);
+      }
+
+      // Section header progress text
+      const progEl = document.getElementById(`prog-${i}`);
+      if (progEl && total > 0) progEl.textContent = done + '/' + total;
+
+      // Sidebar nav
+      const navItem = document.querySelector(`[data-section-nav="${i}"]`);
+      const navNum = document.getElementById(`nav-num-${i}`);
+      const navProg = document.getElementById(`nav-prog-${i}`);
+      const navFill = document.getElementById(`nav-fill-${i}`);
+
+      if (navItem) navItem.classList.toggle('done', isDone);
+      if (navNum) {
+        navNum.textContent = isDone ? '✓' : (i === 0 ? '!' : i);
+      }
+      if (navProg && total > 0) navProg.textContent = done + '/' + total;
+      if (navFill) navFill.style.width = pct + '%';
+    });
+  }
+
+  // ── SIDEBAR NAV CLICK ──
+  function navClick(e, i) {
+    e.preventDefault();
+    const target = document.getElementById(`sec-${i}`);
+    if (!target) return;
+    const offset = 72;
+    const top = target.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+
+  // ── SIDEBAR ACTIVE ON SCROLL ──
+  function updateActiveNav() {
+    const offset = 100;
+    let active = 0;
+    for (let i = 0; i <= 7; i++) {
+      const el = document.getElementById(`sec-${i}`);
+      if (el && el.getBoundingClientRect().top < offset) active = i;
+    }
+    document.querySelectorAll('[data-section-nav]').forEach(el => {
+      el.classList.toggle('active', parseInt(el.dataset.sectionNav) === active);
+    });
+  }
+
+  window.addEventListener('scroll', updateActiveNav, { passive: true });
+
+  // ── SESSION CONFIG ──
+  function applySessionConfig() {
+    const s = window.GENIUS_SESSION;
+    const banner = document.getElementById('sessionInfoBanner');
+    if (!s || !s.participantId) return;
+
+    // Show participant ID banner in the page header
+    banner.style.display = 'flex';
+    document.getElementById('sessionInfoText').textContent =
+      `Your participant ID: ${s.participantId}`;
+
+  }
+
+  applySessionConfig();
+  initCheckboxes();
+  updateProgress();
+  lucide.createIcons();
+</script>
+</body>
+</html>

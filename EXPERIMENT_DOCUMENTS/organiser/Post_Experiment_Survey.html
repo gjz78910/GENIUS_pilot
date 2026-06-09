@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GENIUS Pilot — Post-Experiment Survey</title>
+<script src="session_config.js" onerror="window.GENIUS_SESSION=null;"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --border: #dee2e6;
+    --text: #212529;
+    --text-muted: #6c757d;
+    --accent: #2563eb;
+    --accent-light: #eff6ff;
+    --accent-border: #bfdbfe;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --green-border: #bbf7d0;
+    --amber: #d97706;
+    --amber-light: #fffbeb;
+    --amber-border: #fde68a;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    padding-bottom: 80px;
+  }
+
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .top-bar-title { font-weight: 700; font-size: 15px; }
+
+  .autosave-status {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .autosave-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #adb5bd;
+    transition: background 0.3s;
+  }
+
+  .autosave-dot.saved { background: var(--green); }
+
+  .page-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 24px 20px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .page-header h1 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+  .page-header p { color: var(--text-muted); font-size: 13px; }
+
+  .content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 14px 20px;
+    background: #f9fafb;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-header .icon { display: flex; align-items: center; }
+
+  .card-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 13px; font-weight: 600; }
+  .field textarea {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    resize: vertical;
+    min-height: 90px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  }
+
+  .radio-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.12s, border-color 0.12s;
+  }
+
+  .radio-option:hover { background: #f9fafb; border-color: #adb5bd; }
+  .radio-option.selected { background: var(--accent-light); border-color: var(--accent-border); }
+  .radio-option input { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+
+  .locked-field-wrap { display: flex; align-items: center; gap: 10px; }
+  .locked-field-wrap input {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #f1f3f5;
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  .locked-badge {
+    background: #e9ecef;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 99px;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 560px) { .two-col { grid-template-columns: 1fr; } }
+
+  i[data-lucide] {
+    width: 15px; height: 15px;
+    stroke-width: 2;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  .success-banner {
+    display: none;
+    background: var(--green-light);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    color: #14532d;
+    font-size: 14px;
+  }
+  .success-banner.visible { display: block; }
+  .success-banner strong { display: block; margin-bottom: 4px; font-size: 15px; }
+
+  code {
+    background: #e9ecef;
+    color: #c7254e;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .btn-submit {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+    width: 100%;
+  }
+  .btn-submit:hover { background: #15803d; }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.12s;
+    font-family: inherit;
+    width: 100%;
+  }
+  .btn-secondary:hover { background: #f1f3f5; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <span class="top-bar-title">GENIUS Pilot — Post-Experiment Survey</span>
+  <div class="autosave-status">
+    <div class="autosave-dot" id="saveDot"></div>
+    <span id="saveLabel">Unsaved</span>
+  </div>
+</div>
+
+<div class="page-header">
+  <h1>Post-Experiment Survey</h1>
+  <p>Please complete this survey after finishing the tasks. Your answers are saved automatically as you type.</p>
+</div>
+
+<div class="content">
+
+  <!-- PARTICIPANT DETAILS -->
+  <div class="card">
+    <div class="card-header"><span class="icon"><i data-lucide="badge"></i></span> Participant Details</div>
+    <div class="card-body">
+      <div class="two-col">
+        <div class="field">
+          <label>Participant ID</label>
+          <div class="locked-field-wrap" id="pidWrap">
+            <input type="text" id="participantId" name="participant_id" placeholder="e.g. manual-01" autocomplete="off">
+          </div>
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input type="text" id="surveyDate" name="date" readonly style="border:1px solid var(--border);border-radius:6px;padding:9px 12px;font-size:14px;font-family:inherit;background:#f1f3f5;color:var(--text-muted);">
+        </div>
+      </div>
+      <div class="field">
+        <label>Session type</label>
+        <div class="radio-group" id="sessionTypeGroup">
+          <label class="radio-option"><input type="radio" name="session_type" value="manual"> Manual Coding</label>
+          <label class="radio-option"><input type="radio" name="session_type" value="ai-assisted"> AI-Assisted Coding</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI TOOLING -->
+  <div class="card">
+    <div class="card-header"><span class="icon"><i data-lucide="cpu"></i></span> AI Tooling Usage</div>
+    <div class="card-body">
+
+      <div class="field">
+        <label>Is AI used regularly (40%+) in your day-to-day work?</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="ai_regular_use" value="yes"> Yes</label>
+          <label class="radio-option"><input type="radio" name="ai_regular_use" value="no"> No</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Was AI used during this experiment?</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="ai_used_experiment" value="yes"> Yes</label>
+          <label class="radio-option"><input type="radio" name="ai_used_experiment" value="no"> No</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>If AI was used, was it used extensively (40%+) during the experiment?</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="ai_used_extensively" value="yes"> Yes</label>
+          <label class="radio-option"><input type="radio" name="ai_used_extensively" value="no"> No</label>
+          <label class="radio-option"><input type="radio" name="ai_used_extensively" value="na"> N/A — AI was not used</label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="card">
+    <div class="card-header"><span class="icon"><i data-lucide="file-text"></i></span> Additional Notes</div>
+    <div class="card-body">
+      <div class="field">
+        <label>Any other information about your experience?</label>
+        <textarea name="notes" id="notes" placeholder="Optional"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="card">
+    <div class="card-body" style="gap:12px;">
+      <div id="successBanner" class="success-banner">
+        <strong>Survey saved successfully!</strong>
+        A file named <code id="savedFilename">survey_post_manual-01.json</code> has been downloaded.<br><br>
+        Move it to the <code>DATA_COLLECTION/</code> folder:<br><br>
+        <code id="mvCommand">mv ~/Downloads/survey_post_manual-01.json ~/GENIUS_pilot/DATA_COLLECTION/</code>
+        <br><br>
+        You can now tell the organiser you are finished.
+      </div>
+      <div id="submitArea">
+        <button class="btn-submit" onclick="submitSurvey()">Save &amp; Download Survey</button>
+      </div>
+      <button class="btn-secondary" onclick="clearSaved()">Clear saved draft</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'genius_postsurvey_draft';
+
+  document.getElementById('surveyDate').value = new Date().toISOString().slice(0, 10);
+
+  // ── Apply session config ──
+  function applySessionConfig() {
+    const s = window.GENIUS_SESSION;
+    if (!s || !s.participantId) return;
+
+    const pidInput = document.getElementById('participantId');
+    pidInput.value = s.participantId;
+    pidInput.readOnly = true;
+
+    const badge = document.createElement('span');
+    badge.className = 'locked-badge';
+    badge.textContent = 'Set by organiser';
+    document.getElementById('pidWrap').appendChild(badge);
+
+    const conditionMap = { manual: 'manual', ai: 'ai-assisted' };
+    const radioValue = conditionMap[s.condition] || s.condition;
+    document.querySelectorAll('[name="session_type"]').forEach(r => {
+      r.checked = (r.value === radioValue);
+      r.disabled = true;
+    });
+  }
+
+  applySessionConfig();
+
+  // ── Autosave ──
+  function getFormData() {
+    const data = { date: document.getElementById('surveyDate').value };
+    document.querySelectorAll('input, textarea').forEach(el => {
+      if (!el.name) return;
+      if (el.type === 'radio') {
+        if (el.checked) data[el.name] = el.value;
+      } else {
+        if (el.value !== '') data[el.name] = el.value;
+      }
+    });
+    return data;
+  }
+
+  let saveTimer = null;
+  function scheduleSave() {
+    document.getElementById('saveDot').classList.remove('saved');
+    document.getElementById('saveLabel').textContent = 'Saving…';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(getFormData()));
+      document.getElementById('saveDot').classList.add('saved');
+      document.getElementById('saveLabel').textContent = 'Draft saved';
+    }, 600);
+  }
+
+  document.addEventListener('input', scheduleSave);
+  document.addEventListener('change', () => {
+    scheduleSave();
+    document.querySelectorAll('.radio-option').forEach(opt => {
+      opt.classList.toggle('selected', opt.querySelector('input[type=radio]')?.checked ?? false);
+    });
+  });
+
+  // ── Restore draft ──
+  function restoreDraft() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      Object.entries(data).forEach(([name, value]) => {
+        document.querySelectorAll(`[name="${name}"]`).forEach(el => {
+          if (el.type === 'radio') el.checked = (el.value === String(value));
+          else el.value = value;
+        });
+      });
+      document.querySelectorAll('.radio-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.querySelector('input[type=radio]')?.checked ?? false);
+      });
+      document.getElementById('saveDot').classList.add('saved');
+      document.getElementById('saveLabel').textContent = 'Draft restored';
+    } catch (e) {}
+  }
+
+  restoreDraft();
+
+  // ── Submit ──
+  function submitSurvey() {
+    const data = getFormData();
+    const pid = (data.participant_id || 'unknown').trim();
+    const filename = `survey_post_${pid}.json`;
+
+    const output = {
+      _metadata: {
+        form: 'post_experiment_survey',
+        generated_at: new Date().toISOString(),
+        participant_id: pid,
+      },
+      ...data
+    };
+
+    const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    document.getElementById('savedFilename').textContent = filename;
+    document.getElementById('mvCommand').textContent =
+      `mv ~/Downloads/${filename} ~/GENIUS_pilot/DATA_COLLECTION/`;
+    document.getElementById('successBanner').classList.add('visible');
+    document.getElementById('submitArea').style.display = 'none';
+  }
+
+  function clearSaved() {
+    if (confirm('Clear the saved draft? This cannot be undone.')) {
+      localStorage.removeItem(STORAGE_KEY);
+      document.getElementById('saveDot').classList.remove('saved');
+      document.getElementById('saveLabel').textContent = 'Draft cleared';
+    }
+  }
+
+  lucide.createIcons();
+</script>
+</body>
+</html>

@@ -7,7 +7,8 @@ Simple guide to collect all data needed for GoCodeGreen carbon footprint calcula
 ## Execution Documents
 
 Use only these two documents during the session:
-- **For participants:** `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md`
+- **For participants (manual):** `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_MANUAL.html`
+- **For participants (AI):** `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.md`
 - **For organizers:** `EXPERIMENT_DOCUMENTS/DATA_COLLECTION.md` (this file)
 
 ---
@@ -61,9 +62,35 @@ python SCRIPTS/collect_system_info.py --participant-id <ID>
 ```
 Output: `DATA_COLLECTION/system_info_<ID>.json`
 
-**2. Have participant fill survey:**
-- Use `EXPERIMENT_DOCUMENTS/Pre_Experiment_Survey.md`
-- Save as `DATA_COLLECTION/survey_<ID>.md`
+**2. Generate session config for the HTML pages (organiser only):**
+
+Run this on each VM (or via SSM) after the environment is set up. It reads
+`/etc/genius/session.env` and writes `EXPERIMENT_DOCUMENTS/session_config.js`
+so that the participant's HTML pages auto-fill their participant ID, session
+type, and branch name — the participant does not type or remember anything.
+
+```bash
+python SCRIPTS/generate_session_config.py
+```
+
+To run via SSM for a remote VM:
+```bash
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 \
+  --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters 'commands=["sudo -u participant -H bash -lc \"cd ~/GENIUS_pilot && conda activate genius_pilot && python SCRIPTS/generate_session_config.py\""]'
+```
+
+Output: `EXPERIMENT_DOCUMENTS/session_config.js` (read by both HTML pages at load time)
+
+**3. Have participant fill the survey (via HTML form):**
+- Participant opens `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_MANUAL.html`
+- The pre-experiment survey link in Section 2 opens `Pre_Experiment_Survey.html`
+- Participant ID and session type are pre-filled and locked from `session_config.js`
+- On submit, the form downloads `survey_<ID>.json` to `~/Downloads/`
+- Participant runs: `mv ~/Downloads/survey_<ID>.json ~/GENIUS_pilot/DATA_COLLECTION/`
+- Output saved as `DATA_COLLECTION/survey_<ID>.json`
 
 **3. Install dependencies:**
 ```bash
@@ -248,7 +275,7 @@ python SCRIPTS/verify_data_separation.py --participant-id <ID>
 **Before starting monitoring:**
 - Close unnecessary applications (browsers, media players, etc.)
 - Run: `python SCRIPTS/list_background_processes.py` to see what's running
-- See `EXPERIMENT_DOCUMENTS/EXPERIMENT_CHECKLIST.md` for a longer prep checklist
+- See `EXPERIMENT_DOCUMENTS/organiser/EXPERIMENT_CHECKLIST.html` for the full organiser checklist
 
 **Why it matters:**
 - Background processes affect energy consumption measurements

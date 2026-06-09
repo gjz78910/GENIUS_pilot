@@ -197,13 +197,16 @@ def map_to_gocodegreen_format(aggregated_data, session_type="manual"):
         }
     
     # Technology - Engineering Factors
+    survey = data.get("survey", {})
+    devops_val = survey.get("devops_maturity")
+    mlops_val = survey.get("mlops_maturity")
     gcg_data["engineering_factors"] = {
-        "main_programming_language": "Python",
-        "sse_rating_above_very_good": "No",  # To be assessed
-        "devops_maturity_above_4": "Yes",  # Has CI/CD
-        "mlops_maturity_above_4": "N/A",  # Not applicable
+        "main_programming_language": survey.get("main_language", "Python"),
+        "sse_rating_above_very_good": "Yes" if survey.get("sse_completed") == "yes" else "No",
+        "devops_maturity_above_4": "Yes" if devops_val and int(devops_val) >= 4 else "No",
+        "mlops_maturity_above_4": "Yes" if mlops_val and int(mlops_val) >= 4 else "N/A",
     }
-    
+
     # Travel - Business Travel
     gcg_data["travel_business"] = {
         "short_haul_flights_per_month": 0,
@@ -213,13 +216,18 @@ def map_to_gocodegreen_format(aggregated_data, session_type="manual"):
         "car_trips_per_month": 0,
         "hotel_nights_per_month": 0,
     }
-    
-    # Travel - Employee Commute
-    # This should come from pre-experiment survey
+
+    # Travel - Employee Commute (from pre-experiment survey)
+    def _to_float(v):
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return None
+
     gcg_data["travel_commute"] = {
-        "avg_bus_trips_per_employee_per_day": None,
-        "avg_train_trips_per_employee_per_day": None,
-        "avg_car_trips_per_employee_per_day": None,
+        "avg_bus_trips_per_employee_per_day": _to_float(survey.get("bus_trips_per_day")),
+        "avg_train_trips_per_employee_per_day": _to_float(survey.get("train_trips_per_day")),
+        "avg_car_trips_per_employee_per_day": _to_float(survey.get("car_trips_per_day")),
     }
     
     # Sustainability metrics
