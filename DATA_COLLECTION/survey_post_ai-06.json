@@ -1,0 +1,14 @@
+{
+  "_metadata": {
+    "form": "post_experiment_survey",
+    "generated_at": "2026-06-09T14:05:14.397Z",
+    "participant_id": "ai-06"
+  },
+  "date": "2026-06-09",
+  "participant_id": "ai-06",
+  "session_type": "ai-assisted",
+  "ai_regular_use": "yes",
+  "ai_used_experiment": "yes",
+  "ai_used_extensively": "yes",
+  "notes": "I enjoyed the experience, it reminded me alot of applying for jobs after university where you had to solve a bunch of coding tasks and they had to pass unit tests. But it was alot better with AI :)"
+}

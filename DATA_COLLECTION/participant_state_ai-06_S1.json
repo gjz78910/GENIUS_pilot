@@ -1,0 +1,10 @@
+{
+  "participant_id": "ai-06",
+  "session_id": "S1",
+  "timestamp": "2026-06-09T14:02:32Z",
+  "branch": "participant-ai-06",
+  "commit": "11d36ad8cef06321a0aecabc28d322e8d5d72cbc",
+  "tag": "participant-ai-06-S1-20260609-140231",
+  "backup_file": "DATA_COLLECTION/participant_backups/participant_ai-06_S1_20260609_140231.tar.gz",
+  "has_uncommitted": false
+}
