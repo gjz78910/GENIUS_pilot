@@ -15,6 +15,21 @@ from src.models.engineer import Engineer
 from src.models.job import Job
 
 
+def _is_valid_time(time_str: str) -> bool:
+    """Validate that a time string is in HH:MM format with valid values."""
+    if not isinstance(time_str, str):
+        return False
+    parts = time_str.split(":")
+    if len(parts) != 2:
+        return False
+    try:
+        hours = int(parts[0])
+        minutes = int(parts[1])
+    except ValueError:
+        return False
+    return 0 <= hours <= 23 and 0 <= minutes <= 59
+
+
 def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict[str, float]]]:
     """Load engineers, jobs and travel matrix from a JSON file.
 
@@ -69,6 +84,26 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
             if not isinstance(time, (int, float)) or time < 0:
                 raise ValueError(f"travel_matrix[{source}][{dest}] must be a non-negative number")
 
+    # Validate diagonal entries are zero
+    for loc in all_locations:
+        if loc in travel_matrix and loc in travel_matrix[loc]:
+            if travel_matrix[loc][loc] != 0.0:
+                raise ValueError(
+                    f"travel_matrix diagonal must be zero: travel_matrix[{loc}][{loc}] = {travel_matrix[loc][loc]}"
+                )
+
+    # Validate symmetry
+    for source in travel_matrix:
+        for dest, time in travel_matrix[source].items():
+            if dest in travel_matrix and source in travel_matrix[dest]:
+                reverse_time = travel_matrix[dest][source]
+                if abs(time - reverse_time) > 1e-9:
+                    raise ValueError(
+                        f"travel_matrix must be symmetric: "
+                        f"travel_matrix[{source}][{dest}]={time} != "
+                        f"travel_matrix[{dest}][{source}]={reverse_time}"
+                    )
+
     # Load engineers
     engineers = []
     engineer_ids = set()
@@ -102,6 +137,13 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         )
         engineers.append(engineer)
 
+        # Validate working hours
+        if engineer.working_hours <= 0 or engineer.working_hours > 24:
+            raise ValueError(
+                f"Engineer {eng_id} working_hours must be between 0 and 24, "
+                f"got {engineer.working_hours}"
+            )
+
     # Load jobs
     jobs = []
     job_ids = set()
@@ -123,6 +165,15 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         job_ids.add(job_id)
 
         location = j_data["location"]
+        if location not in all_locations:
+            raise ValueError(f"Job {job_id} location '{location}' not found in travel_matrix")
+
+        # Validate time format (HH:MM, 00-23 hours, 00-59 minutes)
+        time_str = j_data["time"]
+        if not _is_valid_time(time_str):
+            raise ValueError(
+                f"Job {job_id} time '{time_str}' is not a valid time format (expected HH:MM)"
+            )
 
         job = Job(
             id=job_id,
