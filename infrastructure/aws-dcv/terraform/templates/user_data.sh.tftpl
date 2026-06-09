@@ -415,11 +415,13 @@ METADATA_FILE="$RUNTIME_DIR/screen_recording_$${PARTICIPANT_ID}_$${SESSION_ID}.j
 start_recording() {
   mkdir -p "$VIDEO_DIR" "$RUNTIME_DIR"
 
+  # Lock to prevent concurrent starts (race between watchdog and manual call)
+  exec 9>"$RUNTIME_DIR/screen_recording.lock"
+  flock -n 9 || exit 0
+
   if [ -s "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
     exit 0
   fi
-
-  rm -f "$VIDEO_DIR"/GENIUS_"$PARTICIPANT_ID"_"$SESSION_ID"*.mp4
 
   local xauthority="" xdcv_pid="" xdcv_args=""
   xdcv_pid="$(pgrep -u "$(id -u participant)" -f "Xdcv.*-sessionid genius" | head -n 1 || true)"
@@ -453,7 +455,7 @@ start_recording() {
   fi
 
   local output_file
-  output_file="$VIDEO_DIR/GENIUS_$${PARTICIPANT_ID}_$${SESSION_ID}.mp4"
+  output_file="$VIDEO_DIR/GENIUS_$${PARTICIPANT_ID}_$${SESSION_ID}_$(date -u +%Y%m%dT%H%M%SZ).mp4"
 
   nohup ffmpeg \
     -y \
