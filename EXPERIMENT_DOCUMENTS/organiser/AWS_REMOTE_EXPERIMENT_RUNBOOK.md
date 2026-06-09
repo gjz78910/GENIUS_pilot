@@ -426,3 +426,85 @@ AWS_PROFILE=genius-dcv aws ec2 stop-instances --region eu-west-2 --instance-ids 
 ```
 
 Then confirm all participant instances show `stopped`.
+
+### "Oh no! Something has gone wrong" on DCV login
+
+Cause: `x-session-manager` alternative points to `gnome-session`, which is not installed on this AMI. The AMI uses XFCE, but the alternative is not set correctly by default.
+
+Fix (run for each affected VM):
+
+```bash
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters 'commands=[
+    "update-alternatives --set x-session-manager /usr/bin/xfce4-session",
+    "printf \"[Desktop]\\nSession=xfce\\n\" > /home/participant/.dmrc && chown participant:participant /home/participant/.dmrc",
+    "dcv close-session genius 2>/dev/null || true",
+    "systemctl restart dcvserver && sleep 5",
+    "dcv create-session --type=virtual --user=participant --owner=participant genius 2>&1 || true"
+  ]'
+```
+
+Prevention: always run this after provisioning each VM — see the post-boot fix step in the README.
+
+### Terraform destroys and recreates all VMs unexpectedly
+
+Cause: `user_data_replace_on_change = true`. Any change to `terraform.tfvars` that affects user_data (e.g. `auto_stop_hours`, `repo_ref`) forces full instance replacement, wiping all configuration including Kiro logins.
+
+Prevention: set `auto_stop_hours` and `repo_ref` correctly **before** the first `terraform apply` and do not change them again. Recommended values: `auto_stop_hours = 12`, `repo_ref` = pinned main HEAD commit.
+
+### Screen recording stops during experiment
+
+Cause: when a participant closes and reopens the DCV browser tab, the Xdcv process can restart and rotate its X auth cookie. ffmpeg loses display access and dies silently.
+
+Fix (restart from organiser side without affecting participant):
+
+```bash
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters 'commands=["sudo -u participant /usr/local/bin/genius-screen-recorder start 2>&1"]'
+```
+
+Prevention: install the watchdog cron job on each VM after provisioning:
+
+```bash
+# Run on each VM via SSM — checks every minute and auto-restarts if crashed
+B64=$(python3 -c "import base64; print(base64.b64encode(b'#!/bin/bash\nPID_FILE=/home/participant/genius-runtime/screen_recording.pid\nif [ -s \"\$PID_FILE\" ] && ! kill -0 \"\$(cat \$PID_FILE)\" 2>/dev/null; then\n  sudo -u participant /usr/local/bin/genius-screen-recorder start\nfi\n').decode())")
+aws ssm send-command --region eu-west-2 --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters "{\"commands\":[
+    \"echo '$B64' | base64 -d > /usr/local/bin/genius-recorder-watchdog && chmod +x /usr/local/bin/genius-recorder-watchdog\",
+    \"(crontab -l 2>/dev/null | grep -v recorder-watchdog; echo '* * * * * /usr/local/bin/genius-recorder-watchdog') | crontab -\"
+  ]}"
+```
+
+Note: the watchdog only restarts if the PID file exists but the process is dead (crashed). If the participant intentionally stops recording, the PID file is removed and the watchdog will not restart it.
+
+### OOM crash on simultaneous VM boot
+
+Cause: booting many VMs at the same time causes cloud-init, conda, git, certbot, and dcvserver to compete for RAM (8 GB per VM). dcvserver gets OOM-killed and the VM becomes unresponsive.
+
+Fix: force-stop the affected VM, start it again, wait for SSM Online, then run the post-boot fixes.
+
+Prevention: `terraform apply` provisioning all VMs simultaneously is acceptable. Avoid triggering additional heavy SSM commands (git, conda) across all VMs at the same time.
+
+### SSM agent goes unresponsive
+
+Cause: sending git or other heavy SSM commands to all VMs simultaneously saturates the SSM agent queue.
+
+Prevention: always send SSM commands to one VM at a time. Wait for `Success` before sending to the next.
+
+### session_config.js shows wrong participantId after git pull
+
+Cause: the file is committed with placeholder values. Any `git pull` or `git checkout` resets it.
+
+Fix: re-run `generate_session_config.py` on the affected VM after any git operation:
+
+```bash
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters "commands=[\"cd /home/participant/GENIUS_pilot && sudo -u participant /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/generate_session_config.py --desktop-url '<URL>' --password '<PASSWORD>' 2>&1\"]"
+```

@@ -47,27 +47,68 @@ The instructions will guide you through everything: setup, the three tasks, and 
 
 ### Run an Experiment Session
 
-To prepare VMs for a new session, run from the `main` branch:
+**Step 1 — Prepare participant branches** (run once from `main` before provisioning):
 
 ```bash
-# Create participant git branches and print the terraform roster block
 ./SCRIPTS/prepare_vms.sh --type manual --count 4 --session S1
 ./SCRIPTS/prepare_vms.sh --type ai     --count 4 --session S1
 ```
 
-Then create an experiment branch, configure Terraform, and apply:
+**Step 2 — Create experiment branch and configure Terraform:**
 
 ```bash
-git checkout -b <experiment-branch>        # e.g. KCL-S1
-# Paste the roster block printed above into:
-#   infrastructure/aws-dcv/terraform/terraform.tfvars
-# Set dcv_allowed_cidrs = ["0.0.0.0/0"] (participants join from unknown IPs)
-# Set repo_ref to current main HEAD commit hash
+git checkout -b <experiment-branch>   # e.g. KCL-S1
+# Edit infrastructure/aws-dcv/terraform/terraform.tfvars:
+#   - Paste the roster block printed above
+#   - Set dcv_allowed_cidrs = ["0.0.0.0/0"]
+#   - Set repo_ref to current main HEAD commit hash
+#   - Set auto_stop_hours = 12 (do NOT change this after first apply)
+```
+
+**Step 3 — Apply Terraform (provisions all VMs at once):**
+
+```bash
 cd infrastructure/aws-dcv/terraform
 AWS_PROFILE=genius-dcv terraform apply
 ```
 
-Follow `EXPERIMENT_DOCUMENTS/organiser/AWS_REMOTE_EXPERIMENT_RUNBOOK.md` for all subsequent steps (readiness checks, screen recorder patch, Kiro setup, end-session data collection).
+**Step 4 — For each VM, wait for SSM Online then run post-boot fixes:**
+
+```bash
+# Wait for SSM Online:
+AWS_PROFILE=genius-dcv aws ssm describe-instance-information \
+  --region eu-west-2 --filters "Key=InstanceIds,Values=<instance-id>" \
+  --query "InstanceInformationList[0].PingStatus" --output text
+
+# Wait for cloud-init done, then apply fixes (one VM at a time):
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters 'commands=[
+    "update-alternatives --set x-session-manager /usr/bin/xfce4-session",
+    "printf \"[Desktop]\\nSession=xfce\\n\" > /home/participant/.dmrc && chown participant:participant /home/participant/.dmrc",
+    "sed -i \"/enable-client-resize/s/=.*/=true/\" /etc/dcv/dcv.conf",
+    "dcv close-session genius 2>/dev/null || true",
+    "systemctl restart dcvserver && sleep 5",
+    "dcv create-session --type=virtual --user=participant --owner=participant genius 2>&1 || true",
+    "dcv list-sessions"
+  ]'
+```
+
+**Step 5 — Generate session_config.js on each VM** (get URL and password from terraform output):
+
+```bash
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters "commands=[\"cd /home/participant/GENIUS_pilot && sudo -u participant /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/generate_session_config.py --desktop-url '<URL>' --password '<PASSWORD>' 2>&1\"]"
+```
+
+**Step 6 — For AI VMs, log in via DCV and configure Kiro** before handing credentials to participants.
+
+> ⚠️ **Never run `terraform apply` again after VMs are configured.** Any change to `terraform.tfvars` that touches user_data (e.g. `auto_stop_hours`, `repo_ref`) will destroy and recreate all VMs, wiping Kiro configuration.
+
+For full details and troubleshooting see `EXPERIMENT_DOCUMENTS/organiser/AWS_REMOTE_EXPERIMENT_RUNBOOK.md`.
 
 ### Between Participants
 
