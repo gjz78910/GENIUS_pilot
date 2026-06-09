@@ -1,0 +1,26 @@
+{
+  "_metadata": {
+    "form": "pre_experiment_survey",
+    "generated_at": "2026-06-09T13:22:28.772Z",
+    "participant_id": "ai-03"
+  },
+  "date": "2026-06-09",
+  "participant_id": "ai-03",
+  "session_type": "ai-assisted",
+  "role_other": "DevOps Engineer",
+  "experience_level": "mid",
+  "main_language": "Python",
+  "degree_programme": "Computer Science",
+  "city_home": "Oxford",
+  "city_work": "Oxford",
+  "commute_public_transport": false,
+  "commute_car": false,
+  "commute_active": false,
+  "commute_remote": true,
+  "hours_per_day": "8",
+  "start_time": "14:09",
+  "end_time": "16:08",
+  "sse_completed": "yes",
+  "devops_maturity": "5",
+  "mlops_maturity": "3"
+}

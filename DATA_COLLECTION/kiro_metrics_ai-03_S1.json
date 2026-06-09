@@ -1,0 +1,4209 @@
+{
+  "collection_timestamp": "2026-06-09T14:48:27.762261",
+  "collection_method": "kiro_local_log_and_session_scan",
+  "privacy_note": "Raw prompt and response text is not stored. Token counts are estimated from character counts unless Kiro exposes exact values in logs.",
+  "log_roots_checked": [
+    "/home/participant/.config/Kiro/logs",
+    "/home/participant/.config/kiro/logs",
+    "/home/participant/.kiro/logs"
+  ],
+  "session_roots_checked": [
+    "/home/participant/.config/Kiro/User/globalStorage/kiro.kiroagent/workspace-sessions",
+    "/home/participant/.config/kiro/User/globalStorage/kiro.kiroagent/workspace-sessions",
+    "/home/participant/.kiro/sessions"
+  ],
+  "logs_found": true,
+  "log_files": [
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/Kiro Logs.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/4-Kiro - LLM PromptCompletion.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/renderer.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/exthost.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/Kiro - MCP Logs.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/ptyhost.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.markdown-language-features/Markdown.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/textModelChanges.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.github-authentication/GitHub Authentication.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.github/GitHub.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/main.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.json-language-features/JSON Language Server.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/3-Kiro - Chat Webview State Log.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/2-autocomplete-completion.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/1-code-references.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/KiroLLMLogs.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/Kiro - Powers.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/sharedprocess.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/userDataSync.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/network-shared.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/telemetry.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/extHostTelemetry.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/output_20260609T082742/tasks.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/remoteTunnelService.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/editSessions.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/notebook.rendering.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/terminal.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/network.log",
+    "/home/participant/.config/Kiro/logs/20260609T082737/window1/views.log"
+  ],
+  "data": {
+    "chat_messages": 149,
+    "agent_actions": 739,
+    "file_changes": 192,
+    "errors": 632,
+    "total_detected_events": 1712,
+    "log_files_found": 33,
+    "session_files_found": 3,
+    "chat_api_logs_found": 2,
+    "kiro_conversations": 2,
+    "kiro_requests": 103,
+    "kiro_responses": 103,
+    "kiro_request_ids": 103,
+    "kiro_credits_used": 24.502668538640133,
+    "kiro_estimated_input_tokens": 13784,
+    "kiro_estimated_output_tokens": 8251,
+    "kiro_tool_use_events": 18824,
+    "kiro_stream_events": 22597
+  },
+  "sessions": {
+    "session_files_found": 3,
+    "sessions": [
+      {
+        "file": "/home/participant/.config/Kiro/User/globalStorage/kiro.kiroagent/workspace-sessions/L2hvbWUvcGFydGljaXBhbnQvR0VOSVVTX3BpbG90/sessions.json",
+        "session_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "title_present": true,
+        "workspace_directory": "/home/participant/GENIUS_pilot"
+      },
+      {
+        "file": "/home/participant/.config/Kiro/User/globalStorage/kiro.kiroagent/workspace-sessions/L2hvbWUvcGFydGljaXBhbnQvR0VOSVVTX3BpbG90/sessions.json",
+        "session_id": "f04a8035-65fe-4cfd-835a-dc6da4658f19",
+        "title_present": true,
+        "workspace_directory": "/home/participant/GENIUS_pilot"
+      },
+      {
+        "file": "/home/participant/.config/Kiro/User/globalStorage/kiro.kiroagent/workspace-sessions/L2hvbWUvcGFydGljaXBhbnQvR0VOSVVTX3BpbG90/2d3d6868-80ad-4576-bee2-96b706887537.json",
+        "session_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "title_present": true,
+        "workspace_path": "/home/participant/GENIUS_pilot",
+        "selected_model": "auto",
+        "default_model_title": "Agent",
+        "session_type": "spec",
+        "autonomy_mode": "Autopilot",
+        "usage_summary_enabled": true,
+        "context_usage_percent": 13.80270004272461,
+        "context_usage_by_session": {
+          "2d3d6868-80ad-4576-bee2-96b706887537": 13.80270004272461,
+          "f04a8035-65fe-4cfd-835a-dc6da4658f19": 0
+        },
+        "initial_context_estimate": {
+          "usagePercentage": 1.875,
+          "mcpToolsPercentage": 0,
+          "steeringPercentage": 0,
+          "exceedsThreshold": {
+            "total": false,
+            "mcpTools": false,
+            "steering": false
+          }
+        },
+        "history_items": 34,
+        "message_like_history_items": 34
+      },
+      {
+        "file": "/home/participant/.config/Kiro/User/globalStorage/kiro.kiroagent/workspace-sessions/L2hvbWUvcGFydGljaXBhbnQvR0VOSVVTX3BpbG90/f04a8035-65fe-4cfd-835a-dc6da4658f19.json",
+        "session_id": "f04a8035-65fe-4cfd-835a-dc6da4658f19",
+        "title_present": true,
+        "workspace_path": "/home/participant/GENIUS_pilot",
+        "selected_model": "auto",
+        "default_model_title": "Agent",
+        "session_type": "spec",
+        "autonomy_mode": "Autopilot",
+        "usage_summary_enabled": true,
+        "context_usage_percent": 0,
+        "context_usage_by_session": {
+          "2d3d6868-80ad-4576-bee2-96b706887537": 10.793299674987793,
+          "f04a8035-65fe-4cfd-835a-dc6da4658f19": 0
+        },
+        "initial_context_estimate": {
+          "usagePercentage": 1.875,
+          "mcpToolsPercentage": 0,
+          "steeringPercentage": 0,
+          "exceedsThreshold": {
+            "total": false,
+            "mcpTools": false,
+            "steering": false
+          }
+        },
+        "history_items": 2,
+        "message_like_history_items": 2
+      }
+    ],
+    "selected_models": {
+      "auto": 2
+    },
+    "session_types": {
+      "spec": 2
+    },
+    "autonomy_modes": {
+      "Autopilot": 2
+    }
+  },
+  "chat_api": {
+    "chat_api_logs_found": 2,
+    "chat_api_log_files": [
+      "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+      "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log"
+    ],
+    "conversation_count": 2,
+    "conversations": [
+      "2d3d6868-80ad-4576-bee2-96b706887537",
+      "f04a8035-65fe-4cfd-835a-dc6da4658f19"
+    ],
+    "request_count": 103,
+    "response_count": 103,
+    "request_ids": [
+      "02e82c54-c607-4522-b99f-adf74303ab3a",
+      "043846b1-82cd-4bad-8f91-8f3fff2f5b7d",
+      "0494b343-187e-4ea9-8cef-fd61c5d967b1",
+      "054845d9-9bb5-4157-be9f-3e09db967c2b",
+      "0e573a88-cabd-4e20-bdce-a79c8dca82f1",
+      "101798c6-ed4c-41a0-9639-f3ab6f06d5d9",
+      "13dfb028-6239-49e8-9333-eb7c1f2ffde7",
+      "13fdfba4-3cc8-4091-aef3-e3b35d3d6ac3",
+      "1518080d-dc20-4f84-b56c-7d2c9aa2b795",
+      "19bd403d-4e73-4caf-a535-bb07064bb6bf",
+      "20ae0e14-3cd0-4313-8114-7b9c565e7195",
+      "2234a480-d997-437d-bdc0-edb8195436cc",
+      "2258b5d5-4e31-4c08-89a2-a6600de9ff2b",
+      "22b1051e-454d-45b4-b657-ec51c2a05b9d",
+      "24a22182-4c2b-4967-9ae5-408c60757877",
+      "26c1f677-8e41-494d-89ef-da0a703e04a2",
+      "2992e3f8-19d0-4d12-a918-1e38d5c4bf30",
+      "299fef3c-225b-4cdf-b811-b3ec91234f43",
+      "29de88bc-ed01-4376-974c-698c5484c11e",
+      "2ef7a8eb-0821-42ef-a23e-375bfe66fee9",
+      "32c00218-0833-4c90-8f90-34f774f91b3b",
+      "3348b49d-1a0f-4ad6-ad0d-8a19e18b273a",
+      "36a84604-8b9f-40ca-90da-7984c3d53f77",
+      "37f11bf1-1593-423c-bcc1-16ef4cab7f03",
+      "388e191f-100f-4e6f-ab6f-1282a3b000d1",
+      "427211b7-ba78-41e1-bf88-4fea7f246358",
+      "4725f9f3-de92-45aa-b1bf-b8ee5e33f967",
+      "47c11f8e-5911-422e-8707-ba6df6d6e291",
+      "4871c037-a6c8-46a3-a3a5-4e19f3515b94",
+      "48bc8ff5-bcdb-4a34-af45-949224400aa1",
+      "49358861-68bd-4956-b144-0fbd595a9db0",
+      "4979ef3f-ddf3-4b52-8968-028efcd8e2fe",
+      "4b5b3146-fb6a-4631-8b18-507c92a86736",
+      "4d5cfaed-d212-47b2-835b-976ea3d65b9e",
+      "4ddd8fd3-87a2-4c2d-b86b-e8b5e9ebf243",
+      "4f1ab14e-88ca-4aa7-93fc-c367350996f4",
+      "5875ce2e-a47b-415c-8825-cd0e065bc9f0",
+      "59061033-d42d-4c9c-9368-3ad9c3178381",
+      "5e636c24-5fdb-4552-a438-88bc7ac23735",
+      "5ec68549-240a-4772-b5f6-3d62951e8b94",
+      "5f0571f0-ef5f-4f29-a255-91c121f4da5a",
+      "64dc6f77-7366-4986-a706-dfa9c93802ad",
+      "65bcfc14-3e79-4b8e-bacf-914f434e4844",
+      "667cb404-2aba-4866-a0c5-cce6a6d483cf",
+      "6b9af95f-bfef-498e-a3b6-3ade5d9feb8a",
+      "6bf0c325-a0ba-4370-a13b-7f6cfd085452",
+      "6bf36ab9-f7c1-4fcc-a908-146718bb6911",
+      "6cf143ab-86fc-419f-a57e-ce342e9287d3",
+      "6da42492-10a5-4337-aed4-3d0c892d951c",
+      "6dd54109-6a30-4ef0-9279-00c947485e76",
+      "6ebc18e7-3b39-42d5-8af7-e6cd4409da83",
+      "760b30c7-eb3a-4e74-8728-de543ed46f29",
+      "761559e1-70d6-4f27-af3f-f375fb0ec28a",
+      "7bc362cb-4d4f-40ff-aec9-a4e7a5025d03",
+      "7d3783a4-6c9f-41b0-8c9a-dd88e068347c",
+      "83be426d-b9c4-4955-929e-1d453b2e2bd9",
+      "840bf838-9d57-4467-8acc-7ae1a7218a93",
+      "89439f43-c1da-4c13-9912-e17d74e100e1",
+      "8a0f0b44-7bba-49a7-af16-fd2384e47704",
+      "8bf921a7-d35b-419c-8891-6b83148e25d3",
+      "8c64ccab-ef9a-4349-a197-a5fd930a1d08",
+      "8f6a35af-10a9-49ae-b7c4-b3a485e2380f",
+      "8fefa127-8761-4382-a9a7-3b9fe10c8b94",
+      "9192b51a-b434-429f-bd2b-88bae8be15f4",
+      "923b65a7-8bcd-40c3-b986-ef0c83a19183",
+      "923c9ad8-f28b-40be-9a1b-9fa291901a7a",
+      "95817622-2aa5-4bf7-8246-6a35016c6470",
+      "9c5f055d-0821-42ea-acf3-cdbf6e1788ae",
+      "9cad72cb-11ac-497b-9187-2e13a12242cb",
+      "9cbb0f49-e00c-4a51-8be8-13271b68eff4",
+      "a514d5e2-1bc6-4e08-a4ba-abe9a7461eff",
+      "aaf70766-5ce2-4c1f-9529-174a2250fc4f",
+      "adea1473-1533-4aaf-b90f-3fa3f496bf02",
+      "ae32482e-4883-4d79-b373-7f8d9f74878d",
+      "aedff3a3-7d75-48e0-b9e3-3e164a9c6436",
+      "af1e7644-4c88-4040-9e9c-a60ad2b3902e",
+      "b038a284-4163-4fc0-bc72-d9ac57739f7f",
+      "b46c660d-0c52-4223-b58d-3f00a3b52805",
+      "b7a9d282-bc35-49c9-99eb-ecc98824b2e1",
+      "b973cb07-e787-45ab-b31c-856712cb7342",
+      "bee0c27f-863c-4681-9eb6-2acf8ee770b7",
+      "c26cc3a1-bd78-4fc7-91d3-d613ed18d116",
+      "c2bcee7b-7117-48b4-8a51-d661c9365efb",
+      "c4714ee1-d677-44a4-8cc6-95d3c6fce4ab",
+      "c738af76-08d5-4117-a47d-17b7be5cbe94",
+      "c7e6155e-01b2-438e-bb9c-241870025a9a",
+      "c9128d65-6049-42cf-a539-625474de6131",
+      "c995a37c-8086-4fa9-9460-925fb68d58b3",
+      "ccea0e8a-c961-49c3-b970-eff1c6eb5624",
+      "cf9fdf8e-d36e-4583-9e29-af25e5e95ff1",
+      "d14bf55e-12b1-4988-b740-e91c4909934e",
+      "d28da2bd-f33e-4874-aa19-f7dff6e91900",
+      "d9022a27-d083-4a1f-a054-277824ec694a",
+      "dc56f346-2e42-4ea9-bb13-0f8e83a9fd41",
+      "e05dea82-fd86-4b34-8798-2fd77659bbc4",
+      "e2760d5b-f89b-4ba4-bf21-4bdf42860457",
+      "e31f4fd3-56df-4695-88cf-3a8c3486be5e",
+      "e52740c9-90ad-4c19-9964-25a475a3b53b",
+      "e86b7fdb-d89c-493a-bdda-8569d76cdd92",
+      "ee605b27-af20-4053-ad67-b2d56d500db3",
+      "f0fc342f-ef17-4962-9c91-253a6c43a52e",
+      "f5f704aa-d22b-48cb-8130-3d5e9891dee7",
+      "fd3a702b-fa44-4ef8-bdc9-30388fe3ea10"
+    ],
+    "request_id_count": 103,
+    "request_models": {
+      "auto": 4994
+    },
+    "response_models": {
+      "auto": 3567
+    },
+    "chat_trigger_types": {
+      "MANUAL": 104
+    },
+    "http_statuses": {
+      "200": 103
+    },
+    "stream_events": 22597,
+    "tool_use_events": 18824,
+    "credits_used": 24.502668538640133,
+    "estimated_input_tokens": 13784,
+    "estimated_output_tokens": 8251,
+    "turns": [
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "7d3783a4-6c9f-41b0-8c9a-dd88e068347c",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 4,
+        "input_chars": 1296,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 324,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.11344797280265338,
+        "stream_events": 23,
+        "tool_use_events": 21,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 3.232600212097168
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "5f0571f0-ef5f-4f29-a255-91c121f4da5a",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 6,
+        "input_chars": 0,
+        "output_chars": 1631,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 408,
+        "credits_used": 0.15719695688225538,
+        "stream_events": 165,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 3.4560999870300293
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "8f6a35af-10a9-49ae-b7c4-b3a485e2380f",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 12,
+        "input_chars": 877,
+        "output_chars": 2688,
+        "estimated_input_tokens_chars_div_4": 219,
+        "estimated_output_tokens_chars_div_4": 672,
+        "credits_used": 0.19252226102819237,
+        "stream_events": 277,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 3.6506998538970947
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "adea1473-1533-4aaf-b90f-3fa3f496bf02",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 16,
+        "input_chars": 800,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 200,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.1293021966832504,
+        "stream_events": 37,
+        "tool_use_events": 35,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 3.70169997215271
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "8a0f0b44-7bba-49a7-af16-fd2384e47704",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 18,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.16407109701492537,
+        "stream_events": 34,
+        "tool_use_events": 32,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 4.883499622344971
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "e86b7fdb-d89c-493a-bdda-8569d76cdd92",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 20,
+        "input_chars": 0,
+        "output_chars": 1417,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 354,
+        "credits_used": 0.133452187893864,
+        "stream_events": 195,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 4.982300281524658
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "47c11f8e-5911-422e-8707-ba6df6d6e291",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 24,
+        "input_chars": 755,
+        "output_chars": 3732,
+        "estimated_input_tokens_chars_div_4": 189,
+        "estimated_output_tokens_chars_div_4": 933,
+        "credits_used": 0.27049972620232177,
+        "stream_events": 367,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 5.12060022354126
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "ae32482e-4883-4d79-b373-7f8d9f74878d",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 28,
+        "input_chars": 757,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 189,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.47413262636815917,
+        "stream_events": 1515,
+        "tool_use_events": 1513,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 5.438299655914307
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "b973cb07-e787-45ab-b31c-856712cb7342",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 30,
+        "input_chars": 0,
+        "output_chars": 88,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 22,
+        "credits_used": 0.14708053233830842,
+        "stream_events": 42,
+        "tool_use_events": 32,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 5.45359992980957
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "aedff3a3-7d75-48e0-b9e3-3e164a9c6436",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 32,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.10478721094527366,
+        "stream_events": 30,
+        "tool_use_events": 28,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 5.468299865722656
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "6dd54109-6a30-4ef0-9279-00c947485e76",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 34,
+        "input_chars": 80,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 20,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.10335122172470977,
+        "stream_events": 31,
+        "tool_use_events": 29,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 5.4721999168396
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "c995a37c-8086-4fa9-9460-925fb68d58b3",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 36,
+        "input_chars": 0,
+        "output_chars": 1450,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 362,
+        "credits_used": 0.15470155207296848,
+        "stream_events": 151,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 5.651100158691406
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "1518080d-dc20-4f84-b56c-7d2c9aa2b795",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 40,
+        "input_chars": 822,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 206,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.19106104129353232,
+        "stream_events": 26,
+        "tool_use_events": 24,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 5.69920015335083
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "b038a284-4163-4fc0-bc72-d9ac57739f7f",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 42,
+        "input_chars": 0,
+        "output_chars": 2231,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 558,
+        "credits_used": 0.16850749303482587,
+        "stream_events": 214,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 5.8302998542785645
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "c26cc3a1-bd78-4fc7-91d3-d613ed18d116",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 46,
+        "input_chars": 881,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 220,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.20619283980099504,
+        "stream_events": 53,
+        "tool_use_events": 51,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 5.889900207519531
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "760b30c7-eb3a-4e74-8728-de543ed46f29",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 48,
+        "input_chars": 0,
+        "output_chars": 221,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 55,
+        "credits_used": 0.3340983213930348,
+        "stream_events": 1150,
+        "tool_use_events": 1120,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.180299758911133
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "054845d9-9bb5-4157-be9f-3e09db967c2b",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 50,
+        "input_chars": 0,
+        "output_chars": 68,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 17,
+        "credits_used": 0.14726643366500825,
+        "stream_events": 47,
+        "tool_use_events": 37,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.196099758148193
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "5e636c24-5fdb-4552-a438-88bc7ac23735",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 52,
+        "input_chars": 77,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 19,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.11531742354892206,
+        "stream_events": 30,
+        "tool_use_events": 28,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.196199893951416
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "13fdfba4-3cc8-4091-aef3-e3b35d3d6ac3",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 54,
+        "input_chars": 0,
+        "output_chars": 644,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 161,
+        "credits_used": 0.3668935635157545,
+        "stream_events": 1220,
+        "tool_use_events": 1156,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.530699729919434
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "89439f43-c1da-4c13-9912-e17d74e100e1",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 56,
+        "input_chars": 0,
+        "output_chars": 71,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 18,
+        "credits_used": 0.15419012570480928,
+        "stream_events": 42,
+        "tool_use_events": 32,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.544400215148926
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "6da42492-10a5-4337-aed4-3d0c892d951c",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 54,
+        "input_chars": 847,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 212,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.2083571918739635,
+        "stream_events": 27,
+        "tool_use_events": 25,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.234500408172607
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "923c9ad8-f28b-40be-9a1b-9fa291901a7a",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 56,
+        "input_chars": 0,
+        "output_chars": 576,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 144,
+        "credits_used": 0.2454282567164179,
+        "stream_events": 435,
+        "tool_use_events": 365,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.625500202178955
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "8bf921a7-d35b-419c-8891-6b83148e25d3",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 58,
+        "input_chars": 0,
+        "output_chars": 79,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 20,
+        "credits_used": 0.15088640514096185,
+        "stream_events": 115,
+        "tool_use_events": 106,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.65369987487793
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "4ddd8fd3-87a2-4c2d-b86b-e8b5e9ebf243",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 60,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.14520838623548923,
+        "stream_events": 130,
+        "tool_use_events": 128,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.683699607849121
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "7bc362cb-4d4f-40ff-aec9-a4e7a5025d03",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 62,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.15403962686567163,
+        "stream_events": 156,
+        "tool_use_events": 154,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.720999717712402
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "a514d5e2-1bc6-4e08-a4ba-abe9a7461eff",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 64,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.14823508358208953,
+        "stream_events": 104,
+        "tool_use_events": 102,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.751500129699707
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "af1e7644-4c88-4040-9e9c-a60ad2b3902e",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 66,
+        "input_chars": 0,
+        "output_chars": 39,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 10,
+        "credits_used": 0.13104341741293532,
+        "stream_events": 45,
+        "tool_use_events": 39,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 6.766899585723877
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "9c5f055d-0821-42ea-acf3-cdbf6e1788ae",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 68,
+        "input_chars": 9094,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 2274,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.16906843366500826,
+        "stream_events": 33,
+        "tool_use_events": 31,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 7.032700061798096
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "6cf143ab-86fc-419f-a57e-ce342e9287d3",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 70,
+        "input_chars": 0,
+        "output_chars": 614,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 154,
+        "credits_used": 0.20813114361525706,
+        "stream_events": 109,
+        "tool_use_events": 24,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 7.422100067138672
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "02e82c54-c607-4522-b99f-adf74303ab3a",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 72,
+        "input_chars": 0,
+        "output_chars": 115,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 29,
+        "credits_used": 0.7835611771144277,
+        "stream_events": 2977,
+        "tool_use_events": 2964,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.19059944152832
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "aaf70766-5ce2-4c1f-9529-174a2250fc4f",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 74,
+        "input_chars": 0,
+        "output_chars": 126,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 32,
+        "credits_used": 0.30328755339966834,
+        "stream_events": 351,
+        "tool_use_events": 338,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.268000602722168
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "6b9af95f-bfef-498e-a3b6-3ade5d9feb8a",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 76,
+        "input_chars": 0,
+        "output_chars": 61,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 15,
+        "credits_used": 0.17689224461028194,
+        "stream_events": 106,
+        "tool_use_events": 98,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.29580020904541
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "9cad72cb-11ac-497b-9187-2e13a12242cb",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 78,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.17956208524046435,
+        "stream_events": 149,
+        "tool_use_events": 147,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.332300186157227
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "cf9fdf8e-d36e-4583-9e29-af25e5e95ff1",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 80,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.17505803449419569,
+        "stream_events": 114,
+        "tool_use_events": 112,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.36299991607666
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "d28da2bd-f33e-4874-aa19-f7dff6e91900",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 82,
+        "input_chars": 0,
+        "output_chars": 79,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 20,
+        "credits_used": 0.1598971061359867,
+        "stream_events": 41,
+        "tool_use_events": 25,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.38029956817627
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "8c64ccab-ef9a-4349-a197-a5fd930a1d08",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 84,
+        "input_chars": 0,
+        "output_chars": 95,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 24,
+        "credits_used": 0.159478471973466,
+        "stream_events": 50,
+        "tool_use_events": 40,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.412199974060059
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "37f11bf1-1593-423c-bcc1-16ef4cab7f03",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 70,
+        "input_chars": 10602,
+        "output_chars": 412,
+        "estimated_input_tokens_chars_div_4": 2650,
+        "estimated_output_tokens_chars_div_4": 103,
+        "credits_used": 0.2475356109452736,
+        "stream_events": 81,
+        "tool_use_events": 29,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 7.099799633026123
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "0e573a88-cabd-4e20-bdce-a79c8dca82f1",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 72,
+        "input_chars": 0,
+        "output_chars": 568,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 142,
+        "credits_used": 0.20750339087893865,
+        "stream_events": 91,
+        "tool_use_events": 27,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 7.478699684143066
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "4d5cfaed-d212-47b2-835b-976ea3d65b9e",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 74,
+        "input_chars": 0,
+        "output_chars": 418,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 104,
+        "credits_used": 0.3801357694859038,
+        "stream_events": 896,
+        "tool_use_events": 849,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 7.998199939727783
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "2ef7a8eb-0821-42ef-a23e-375bfe66fee9",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 76,
+        "input_chars": 0,
+        "output_chars": 178,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 44,
+        "credits_used": 0.25015882868988387,
+        "stream_events": 534,
+        "tool_use_events": 511,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.082599639892578
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "4871c037-a6c8-46a3-a3a5-4e19f3515b94",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 78,
+        "input_chars": 0,
+        "output_chars": 90,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 22,
+        "credits_used": 0.157958887893864,
+        "stream_events": 24,
+        "tool_use_events": 10,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.095099449157715
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "2234a480-d997-437d-bdc0-edb8195436cc",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 80,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.16352177363184084,
+        "stream_events": 85,
+        "tool_use_events": 83,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.129300117492676
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "48bc8ff5-bcdb-4a34-af45-949224400aa1",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 82,
+        "input_chars": 0,
+        "output_chars": 399,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 100,
+        "credits_used": 0.2008080786069652,
+        "stream_events": 263,
+        "tool_use_events": 217,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.187799453735352
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "3348b49d-1a0f-4ad6-ad0d-8a19e18b273a",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 84,
+        "input_chars": 0,
+        "output_chars": 59,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 15,
+        "credits_used": 0.15948368076285244,
+        "stream_events": 42,
+        "tool_use_events": 33,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.20359992980957
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "2992e3f8-19d0-4d12-a918-1e38d5c4bf30",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 86,
+        "input_chars": 127,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 32,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.14912316003316753,
+        "stream_events": 33,
+        "tool_use_events": 31,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.205100059509277
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "13dfb028-6239-49e8-9333-eb7c1f2ffde7",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 88,
+        "input_chars": 0,
+        "output_chars": 1430,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 358,
+        "credits_used": 0.2411630227197346,
+        "stream_events": 172,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 8.606800079345703
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "9192b51a-b434-429f-bd2b-88bae8be15f4",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 92,
+        "input_chars": 844,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 211,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.3636875232172471,
+        "stream_events": 378,
+        "tool_use_events": 376,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 9.004600524902344
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "36a84604-8b9f-40ca-90da-7984c3d53f77",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 94,
+        "input_chars": 0,
+        "output_chars": 356,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 89,
+        "credits_used": 0.17070838026533997,
+        "stream_events": 40,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 9.015800476074219
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "388e191f-100f-4e6f-ab6f-1282a3b000d1",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 98,
+        "input_chars": 10602,
+        "output_chars": 694,
+        "estimated_input_tokens_chars_div_4": 2650,
+        "estimated_output_tokens_chars_div_4": 174,
+        "credits_used": 0.3245384706467662,
+        "stream_events": 131,
+        "tool_use_events": 37,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 9.366499900817871
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "bee0c27f-863c-4681-9eb6-2acf8ee770b7",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 100,
+        "input_chars": 0,
+        "output_chars": 536,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 134,
+        "credits_used": 0.4485307104477612,
+        "stream_events": 1148,
+        "tool_use_events": 1088,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 9.936399459838867
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "c7e6155e-01b2-438e-bb9c-241870025a9a",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 102,
+        "input_chars": 0,
+        "output_chars": 170,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 42,
+        "credits_used": 0.20967698689883918,
+        "stream_events": 40,
+        "tool_use_events": 19,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 9.950900077819824
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "4725f9f3-de92-45aa-b1bf-b8ee5e33f967",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 104,
+        "input_chars": 0,
+        "output_chars": 142,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 36,
+        "credits_used": 0.18496122238805968,
+        "stream_events": 55,
+        "tool_use_events": 34,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 9.979000091552734
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "6ebc18e7-3b39-42d5-8af7-e6cd4409da83",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 106,
+        "input_chars": 29,
+        "output_chars": 46,
+        "estimated_input_tokens_chars_div_4": 7,
+        "estimated_output_tokens_chars_div_4": 12,
+        "credits_used": 0.18229219635157548,
+        "stream_events": 48,
+        "tool_use_events": 41,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 9.981300354003906
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "26c1f677-8e41-494d-89ef-da0a703e04a2",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 108,
+        "input_chars": 0,
+        "output_chars": 195,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 49,
+        "credits_used": 0.24028210547263676,
+        "stream_events": 58,
+        "tool_use_events": 29,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.322999954223633
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "64dc6f77-7366-4986-a706-dfa9c93802ad",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 110,
+        "input_chars": 0,
+        "output_chars": 274,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 68,
+        "credits_used": 0.19769511111111113,
+        "stream_events": 58,
+        "tool_use_events": 26,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.376999855041504
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "e31f4fd3-56df-4695-88cf-3a8c3486be5e",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 112,
+        "input_chars": 0,
+        "output_chars": 180,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 45,
+        "credits_used": 0.23119796434494194,
+        "stream_events": 153,
+        "tool_use_events": 133,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.478300094604492
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "fd3a702b-fa44-4ef8-bdc9-30388fe3ea10",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 114,
+        "input_chars": 0,
+        "output_chars": 241,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 60,
+        "credits_used": 0.22784519784411275,
+        "stream_events": 156,
+        "tool_use_events": 128,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.528800010681152
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "5875ce2e-a47b-415c-8825-cd0e065bc9f0",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 116,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.19345964676616917,
+        "stream_events": 31,
+        "tool_use_events": 29,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.542400360107422
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "f0fc342f-ef17-4962-9c91-253a6c43a52e",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 118,
+        "input_chars": 0,
+        "output_chars": 383,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 96,
+        "credits_used": 0.2154582177446103,
+        "stream_events": 84,
+        "tool_use_events": 47,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.636399269104004
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "83be426d-b9c4-4955-929e-1d453b2e2bd9",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 120,
+        "input_chars": 0,
+        "output_chars": 353,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 88,
+        "credits_used": 0.24049502006633497,
+        "stream_events": 218,
+        "tool_use_events": 164,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.692999839782715
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "49358861-68bd-4956-b144-0fbd595a9db0",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 122,
+        "input_chars": 0,
+        "output_chars": 285,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 71,
+        "credits_used": 0.262919092371476,
+        "stream_events": 251,
+        "tool_use_events": 223,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.768899917602539
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "e2760d5b-f89b-4ba4-bf21-4bdf42860457",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 124,
+        "input_chars": 0,
+        "output_chars": 138,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 34,
+        "credits_used": 0.2575978371475954,
+        "stream_events": 220,
+        "tool_use_events": 207,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.835400581359863
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "923b65a7-8bcd-40c3-b986-ef0c83a19183",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 108,
+        "input_chars": 836,
+        "output_chars": 404,
+        "estimated_input_tokens_chars_div_4": 209,
+        "estimated_output_tokens_chars_div_4": 101,
+        "credits_used": 0.3347719588723051,
+        "stream_events": 47,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.297599792480469
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "9cbb0f49-e00c-4a51-8be8-13271b68eff4",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 126,
+        "input_chars": 0,
+        "output_chars": 195,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 49,
+        "credits_used": 0.21287503233830848,
+        "stream_events": 54,
+        "tool_use_events": 30,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.87540054321289
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "ccea0e8a-c961-49c3-b970-eff1c6eb5624",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 128,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.20783635422885574,
+        "stream_events": 27,
+        "tool_use_events": 25,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.951899528503418
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "299fef3c-225b-4cdf-b811-b3ec91234f43",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 130,
+        "input_chars": 0,
+        "output_chars": 362,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 90,
+        "credits_used": 0.28512855605306797,
+        "stream_events": 403,
+        "tool_use_events": 359,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.072400093078613
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "d14bf55e-12b1-4988-b740-e91c4909934e",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 132,
+        "input_chars": 0,
+        "output_chars": 27,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 7,
+        "credits_used": 0.26725394560530674,
+        "stream_events": 223,
+        "tool_use_events": 219,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.138299942016602
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "c2bcee7b-7117-48b4-8a51-d661c9365efb",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 112,
+        "input_chars": 854,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 214,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.3408519053067993,
+        "stream_events": 49,
+        "tool_use_events": 47,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.350899696350098
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "8fefa127-8761-4382-a9a7-3b9fe10c8b94",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 114,
+        "input_chars": 0,
+        "output_chars": 252,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 63,
+        "credits_used": 0.243782,
+        "stream_events": 66,
+        "tool_use_events": 33,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.671299934387207
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "0494b343-187e-4ea9-8cef-fd61c5d967b1",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 116,
+        "input_chars": 0,
+        "output_chars": 293,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 73,
+        "credits_used": 0.2623016641791044,
+        "stream_events": 252,
+        "tool_use_events": 216,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.798700332641602
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "c738af76-08d5-4117-a47d-17b7be5cbe94",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 118,
+        "input_chars": 149,
+        "output_chars": 222,
+        "estimated_input_tokens_chars_div_4": 37,
+        "estimated_output_tokens_chars_div_4": 56,
+        "credits_used": 0.09943699203980098,
+        "stream_events": 26,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 3.334400177001953
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "f04a8035-65fe-4cfd-835a-dc6da4658f19",
+        "request_id": "95817622-2aa5-4bf7-8246-6a35016c6470",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 4,
+        "input_chars": 1363,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 341,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.24046668706467667,
+        "stream_events": 195,
+        "tool_use_events": 193,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.793299674987793
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "761559e1-70d6-4f27-af3f-f375fb0ec28a",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 120,
+        "input_chars": 0,
+        "output_chars": 317,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 79,
+        "credits_used": 0.2590509932006634,
+        "stream_events": 236,
+        "tool_use_events": 198,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.864800453186035
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "b7a9d282-bc35-49c9-99eb-ecc98824b2e1",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 122,
+        "input_chars": 0,
+        "output_chars": 288,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 72,
+        "credits_used": 0.24115944742951906,
+        "stream_events": 173,
+        "tool_use_events": 128,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.923700332641602
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "22b1051e-454d-45b4-b657-ec51c2a05b9d",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 124,
+        "input_chars": 0,
+        "output_chars": 124,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 31,
+        "credits_used": 0.20450848606965172,
+        "stream_events": 44,
+        "tool_use_events": 31,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.943499565124512
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "59061033-d42d-4c9c-9368-3ad9c3178381",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 126,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.22388177728026531,
+        "stream_events": 128,
+        "tool_use_events": 126,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.981800079345703
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "dc56f346-2e42-4ea9-bb13-0f8e83a9fd41",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 128,
+        "input_chars": 0,
+        "output_chars": 136,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 34,
+        "credits_used": 0.247320564013267,
+        "stream_events": 191,
+        "tool_use_events": 177,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.040599822998047
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "20ae0e14-3cd0-4313-8114-7b9c565e7195",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 130,
+        "input_chars": 0,
+        "output_chars": 151,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 38,
+        "credits_used": 0.2104657880597015,
+        "stream_events": 40,
+        "tool_use_events": 26,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.063600540161133
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "e52740c9-90ad-4c19-9964-25a475a3b53b",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 132,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.20905423200663345,
+        "stream_events": 29,
+        "tool_use_events": 27,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.130900382995605
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "4f1ab14e-88ca-4aa7-93fc-c367350996f4",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 134,
+        "input_chars": 0,
+        "output_chars": 666,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 166,
+        "credits_used": 0.31303061243781094,
+        "stream_events": 497,
+        "tool_use_events": 418,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.288599967956543
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "6bf0c325-a0ba-4370-a13b-7f6cfd085452",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 136,
+        "input_chars": 0,
+        "output_chars": 39,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 10,
+        "credits_used": 0.24355278839137648,
+        "stream_events": 131,
+        "tool_use_events": 126,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.327099800109863
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "b46c660d-0c52-4223-b58d-3f00a3b52805",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 138,
+        "input_chars": 0,
+        "output_chars": 176,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 44,
+        "credits_used": 0.23803651890547264,
+        "stream_events": 136,
+        "tool_use_events": 118,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.372300148010254
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "c9128d65-6049-42cf-a539-625474de6131",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 140,
+        "input_chars": 0,
+        "output_chars": 81,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 20,
+        "credits_used": 0.24784982139303482,
+        "stream_events": 146,
+        "tool_use_events": 136,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.433899879455566
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "101798c6-ed4c-41a0-9639-f3ab6f06d5d9",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 120,
+        "input_chars": 881,
+        "output_chars": 640,
+        "estimated_input_tokens_chars_div_4": 220,
+        "estimated_output_tokens_chars_div_4": 160,
+        "credits_used": 0.44886119900497506,
+        "stream_events": 361,
+        "tool_use_events": 280,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.873200416564941
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "5ec68549-240a-4772-b5f6-3d62951e8b94",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 122,
+        "input_chars": 0,
+        "output_chars": 351,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 88,
+        "credits_used": 0.2207273190713101,
+        "stream_events": 75,
+        "tool_use_events": 32,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.901800155639648
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "427211b7-ba78-41e1-bf88-4fea7f246358",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 124,
+        "input_chars": 0,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.2063558928689884,
+        "stream_events": 26,
+        "tool_use_events": 24,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 10.96679973602295
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "c4714ee1-d677-44a4-8cc6-95d3c6fce4ab",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 126,
+        "input_chars": 0,
+        "output_chars": 543,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 136,
+        "credits_used": 0.2687932192371476,
+        "stream_events": 227,
+        "tool_use_events": 159,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.085800170898438
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "32c00218-0833-4c90-8f90-34f774f91b3b",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 128,
+        "input_chars": 0,
+        "output_chars": 305,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 76,
+        "credits_used": 0.29613855174129355,
+        "stream_events": 433,
+        "tool_use_events": 396,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.18440055847168
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "19bd403d-4e73-4caf-a535-bb07064bb6bf",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 130,
+        "input_chars": 0,
+        "output_chars": 388,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 97,
+        "credits_used": 0.22322592951907133,
+        "stream_events": 70,
+        "tool_use_events": 26,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.208199501037598
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "ee605b27-af20-4053-ad67-b2d56d500db3",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 132,
+        "input_chars": 0,
+        "output_chars": 213,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 53,
+        "credits_used": 0.2466343278606965,
+        "stream_events": 132,
+        "tool_use_events": 105,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.328099250793457
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "2258b5d5-4e31-4c08-89a2-a6600de9ff2b",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 134,
+        "input_chars": 0,
+        "output_chars": 54,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 14,
+        "credits_used": 0.21187183349917083,
+        "stream_events": 46,
+        "tool_use_events": 38,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.352899551391602
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "24a22182-4c2b-4967-9ae5-408c60757877",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 136,
+        "input_chars": 0,
+        "output_chars": 874,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 218,
+        "credits_used": 0.26114730547263687,
+        "stream_events": 88,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.59999942779541
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.1.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "65bcfc14-3e79-4b8e-bacf-914f434e4844",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 140,
+        "input_chars": 5388,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 1347,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.3853924048092869,
+        "stream_events": 39,
+        "tool_use_events": 37,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 11.77810001373291
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "840bf838-9d57-4467-8acc-7ae1a7218a93",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 142,
+        "input_chars": 0,
+        "output_chars": 523,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 131,
+        "credits_used": 0.554659848424544,
+        "stream_events": 1202,
+        "tool_use_events": 1139,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 12.665499687194824
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "d9022a27-d083-4a1f-a054-277824ec694a",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 144,
+        "input_chars": 0,
+        "output_chars": 32,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 8,
+        "credits_used": 0.25741330530679934,
+        "stream_events": 32,
+        "tool_use_events": 27,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 12.680000305175781
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "4b5b3146-fb6a-4631-8b18-507c92a86736",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 146,
+        "input_chars": 0,
+        "output_chars": 644,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 161,
+        "credits_used": 0.24021222006633502,
+        "stream_events": 63,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 12.752500534057617
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "043846b1-82cd-4bad-8f91-8f3fff2f5b7d",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 150,
+        "input_chars": 905,
+        "output_chars": 0,
+        "estimated_input_tokens_chars_div_4": 226,
+        "estimated_output_tokens_chars_div_4": 0,
+        "credits_used": 0.4259720092868988,
+        "stream_events": 37,
+        "tool_use_events": 35,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 13.083000183105469
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "667cb404-2aba-4866-a0c5-cce6a6d483cf",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 152,
+        "input_chars": 6274,
+        "output_chars": 495,
+        "estimated_input_tokens_chars_div_4": 1568,
+        "estimated_output_tokens_chars_div_4": 124,
+        "credits_used": 0.37841328590381423,
+        "stream_events": 337,
+        "tool_use_events": 291,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 13.613300323486328
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "29de88bc-ed01-4376-974c-698c5484c11e",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 154,
+        "input_chars": 0,
+        "output_chars": 33,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 8,
+        "credits_used": 0.2733578487562189,
+        "stream_events": 138,
+        "tool_use_events": 133,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 13.648200035095215
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "4979ef3f-ddf3-4b52-8968-028efcd8e2fe",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 156,
+        "input_chars": 0,
+        "output_chars": 48,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 12,
+        "credits_used": 0.2707137210613599,
+        "stream_events": 141,
+        "tool_use_events": 135,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 13.686100006103516
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "6bf36ab9-f7c1-4fcc-a908-146718bb6911",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 158,
+        "input_chars": 0,
+        "output_chars": 55,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 14,
+        "credits_used": 0.2637249348258706,
+        "stream_events": 105,
+        "tool_use_events": 100,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 13.716700553894043
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "f5f704aa-d22b-48cb-8130-3d5e9891dee7",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 160,
+        "input_chars": 0,
+        "output_chars": 24,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 6,
+        "credits_used": 0.24546597628524044,
+        "stream_events": 31,
+        "tool_use_events": 27,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 13.73129940032959
+          }
+        ]
+      },
+      {
+        "source_log": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/output_logging_20260609T082743/5-Q Chat API.log",
+        "conversation_id": "2d3d6868-80ad-4576-bee2-96b706887537",
+        "request_id": "e05dea82-fd86-4b34-8798-2fd77659bbc4",
+        "http_status": 200,
+        "request_model": "auto",
+        "response_models": [
+          "auto"
+        ],
+        "chat_trigger_type": "MANUAL",
+        "history_items": 162,
+        "input_chars": 0,
+        "output_chars": 473,
+        "estimated_input_tokens_chars_div_4": 0,
+        "estimated_output_tokens_chars_div_4": 118,
+        "credits_used": 0.25602599203980103,
+        "stream_events": 40,
+        "tool_use_events": 0,
+        "context_usage_events": [
+          {
+            "contextUsagePercentage": 13.80270004272461
+          }
+        ]
+      }
+    ]
+  },
+  "interactions": [
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 20,
+      "snippet": "2026-06-09 10:01:57.499 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 106,
+      "snippet": "2026-06-09 13:31:27.640 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 112,
+      "snippet": "2026-06-09 13:34:36.792 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 114,
+      "snippet": "2026-06-09 13:34:36.927 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 116,
+      "snippet": "2026-06-09 13:36:25.520 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 118,
+      "snippet": "2026-06-09 13:36:30.331 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 120,
+      "snippet": "2026-06-09 13:36:30.372 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 122,
+      "snippet": "2026-06-09 13:36:30.788 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 124,
+      "snippet": "2026-06-09 13:36:35.270 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 126,
+      "snippet": "2026-06-09 13:36:35.363 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 128,
+      "snippet": "2026-06-09 13:40:02.224 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 130,
+      "snippet": "2026-06-09 13:41:19.142 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 132,
+      "snippet": "2026-06-09 13:41:54.400 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 134,
+      "snippet": "2026-06-09 13:41:55.088 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 140,
+      "snippet": "2026-06-09 13:41:59.650 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 146,
+      "snippet": "2026-06-09 13:42:57.528 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 148,
+      "snippet": "2026-06-09 13:43:01.499 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 150,
+      "snippet": "2026-06-09 13:43:01.584 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 156,
+      "snippet": "2026-06-09 13:45:24.024 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 158,
+      "snippet": "2026-06-09 13:45:28.215 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 160,
+      "snippet": "2026-06-09 13:45:28.282 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 162,
+      "snippet": "2026-06-09 13:48:14.819 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 164,
+      "snippet": "2026-06-09 13:48:26.594 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 166,
+      "snippet": "2026-06-09 13:48:26.595 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 168,
+      "snippet": "2026-06-09 13:48:26.699 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 170,
+      "snippet": "2026-06-09 13:48:49.222 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 172,
+      "snippet": "2026-06-09 13:48:49.863 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 183,
+      "snippet": "2026-06-09 13:50:42.661 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 185,
+      "snippet": "2026-06-09 13:50:46.846 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 187,
+      "snippet": "2026-06-09 13:50:46.920 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 189,
+      "snippet": "2026-06-09 13:51:18.379 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 191,
+      "snippet": "2026-06-09 13:51:18.876 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 201,
+      "snippet": "2026-06-09 13:52:06.462 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 203,
+      "snippet": "2026-06-09 13:52:10.740 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 205,
+      "snippet": "2026-06-09 13:52:10.835 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 207,
+      "snippet": "2026-06-09 13:52:24.325 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 209,
+      "snippet": "2026-06-09 13:52:25.072 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 215,
+      "snippet": "2026-06-09 13:52:29.688 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 217,
+      "snippet": "2026-06-09 13:52:29.897 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 223,
+      "snippet": "2026-06-09 13:52:34.766 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 225,
+      "snippet": "2026-06-09 13:52:35.025 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 231,
+      "snippet": "2026-06-09 13:52:40.292 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 233,
+      "snippet": "2026-06-09 13:52:40.518 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 239,
+      "snippet": "2026-06-09 13:52:45.406 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 241,
+      "snippet": "2026-06-09 13:52:45.630 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 255,
+      "snippet": "2026-06-09 13:55:23.665 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 257,
+      "snippet": "2026-06-09 13:55:28.038 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 259,
+      "snippet": "2026-06-09 13:55:28.129 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 261,
+      "snippet": "2026-06-09 13:55:36.381 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 263,
+      "snippet": "2026-06-09 13:55:36.450 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 265,
+      "snippet": "2026-06-09 13:56:28.440 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 267,
+      "snippet": "2026-06-09 13:56:28.635 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 273,
+      "snippet": "2026-06-09 13:56:39.956 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 275,
+      "snippet": "2026-06-09 13:56:40.313 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 281,
+      "snippet": "2026-06-09 13:56:45.715 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 283,
+      "snippet": "2026-06-09 13:56:46.404 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 289,
+      "snippet": "2026-06-09 13:56:52.485 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 291,
+      "snippet": "2026-06-09 13:56:52.728 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 297,
+      "snippet": "2026-06-09 13:56:58.181 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 299,
+      "snippet": "2026-06-09 13:56:58.491 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 305,
+      "snippet": "2026-06-09 13:57:03.393 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 307,
+      "snippet": "2026-06-09 13:57:03.475 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 313,
+      "snippet": "2026-06-09 14:02:03.712 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 315,
+      "snippet": "2026-06-09 14:02:13.654 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 317,
+      "snippet": "2026-06-09 14:02:13.742 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 319,
+      "snippet": "2026-06-09 14:02:20.906 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 321,
+      "snippet": "2026-06-09 14:02:21.007 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 323,
+      "snippet": "2026-06-09 14:02:39.368 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 325,
+      "snippet": "2026-06-09 14:02:39.716 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 331,
+      "snippet": "2026-06-09 14:02:50.108 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 333,
+      "snippet": "2026-06-09 14:02:50.365 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 339,
+      "snippet": "2026-06-09 14:02:54.835 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 341,
+      "snippet": "2026-06-09 14:02:59.775 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 343,
+      "snippet": "2026-06-09 14:03:00.032 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 349,
+      "snippet": "2026-06-09 14:03:10.105 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 351,
+      "snippet": "2026-06-09 14:03:10.622 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 361,
+      "snippet": "2026-06-09 14:03:31.719 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 363,
+      "snippet": "2026-06-09 14:03:36.424 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 365,
+      "snippet": "2026-06-09 14:03:36.540 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 367,
+      "snippet": "2026-06-09 14:04:56.953 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 369,
+      "snippet": "2026-06-09 14:05:09.746 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 371,
+      "snippet": "2026-06-09 14:05:10.272 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 381,
+      "snippet": "2026-06-09 14:08:06.567 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 383,
+      "snippet": "2026-06-09 14:08:16.847 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 385,
+      "snippet": "2026-06-09 14:08:16.938 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 387,
+      "snippet": "2026-06-09 14:08:44.337 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 389,
+      "snippet": "2026-06-09 14:08:45.369 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 395,
+      "snippet": "2026-06-09 14:08:51.034 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 401,
+      "snippet": "2026-06-09 14:09:21.387 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 403,
+      "snippet": "2026-06-09 14:11:12.476 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 405,
+      "snippet": "2026-06-09 14:11:18.012 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 407,
+      "snippet": "2026-06-09 14:11:18.144 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 409,
+      "snippet": "2026-06-09 14:11:23.718 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 411,
+      "snippet": "2026-06-09 14:11:23.806 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 413,
+      "snippet": "2026-06-09 14:11:48.489 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 415,
+      "snippet": "2026-06-09 14:12:04.805 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 417,
+      "snippet": "2026-06-09 14:12:08.938 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 419,
+      "snippet": "2026-06-09 14:12:09.039 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 421,
+      "snippet": "2026-06-09 14:12:14.858 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 423,
+      "snippet": "2026-06-09 14:12:15.075 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 433,
+      "snippet": "2026-06-09 14:12:33.368 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 435,
+      "snippet": "2026-06-09 14:12:59.536 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 437,
+      "snippet": "2026-06-09 14:15:23.681 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 439,
+      "snippet": "2026-06-09 14:15:39.545 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 441,
+      "snippet": "2026-06-09 14:15:44.621 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 443,
+      "snippet": "2026-06-09 14:15:44.712 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 445,
+      "snippet": "2026-06-09 14:15:48.644 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 447,
+      "snippet": "2026-06-09 14:15:48.777 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 449,
+      "snippet": "2026-06-09 14:15:59.964 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 451,
+      "snippet": "2026-06-09 14:16:00.413 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 461,
+      "snippet": "2026-06-09 14:16:53.113 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 463,
+      "snippet": "2026-06-09 14:19:01.197 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 465,
+      "snippet": "2026-06-09 14:19:07.435 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 467,
+      "snippet": "2026-06-09 14:19:07.543 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 469,
+      "snippet": "2026-06-09 14:21:15.553 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 471,
+      "snippet": "2026-06-09 14:22:39.990 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 473,
+      "snippet": "2026-06-09 14:23:02.816 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 475,
+      "snippet": "2026-06-09 14:23:28.923 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 481,
+      "snippet": "2026-06-09 14:23:48.587 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 487,
+      "snippet": "2026-06-09 14:24:09.285 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 489,
+      "snippet": "2026-06-09 14:24:37.747 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 491,
+      "snippet": "2026-06-09 14:24:43.192 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 493,
+      "snippet": "2026-06-09 14:24:43.533 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 495,
+      "snippet": "2026-06-09 14:24:48.061 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 497,
+      "snippet": "2026-06-09 14:24:48.498 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 499,
+      "snippet": "2026-06-09 14:25:02.928 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 501,
+      "snippet": "2026-06-09 14:25:03.709 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 511,
+      "snippet": "2026-06-09 14:25:24.692 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 513,
+      "snippet": "2026-06-09 14:25:42.176 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 515,
+      "snippet": "2026-06-09 14:26:19.729 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 521,
+      "snippet": "2026-06-09 14:27:56.505 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 523,
+      "snippet": "2026-06-09 14:28:02.921 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 525,
+      "snippet": "2026-06-09 14:28:03.207 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 527,
+      "snippet": "2026-06-09 14:28:07.267 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 529,
+      "snippet": "2026-06-09 14:28:07.481 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 531,
+      "snippet": "2026-06-09 14:28:42.669 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 533,
+      "snippet": "2026-06-09 14:28:54.243 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 535,
+      "snippet": "2026-06-09 14:28:55.285 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 541,
+      "snippet": "2026-06-09 14:29:01.786 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 543,
+      "snippet": "2026-06-09 14:29:02.014 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 549,
+      "snippet": "2026-06-09 14:29:26.553 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 551,
+      "snippet": "2026-06-09 14:29:47.714 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 558,
+      "snippet": "2026-06-09 14:33:43.373 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 560,
+      "snippet": "2026-06-09 14:33:51.934 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 562,
+      "snippet": "2026-06-09 14:33:52.020 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 564,
+      "snippet": "2026-06-09 14:33:52.521 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 566,
+      "snippet": "2026-06-09 14:34:27.483 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 568,
+      "snippet": "2026-06-09 14:34:28.408 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 578,
+      "snippet": "2026-06-09 14:34:41.279 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 584,
+      "snippet": "2026-06-09 14:36:48.922 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 586,
+      "snippet": "2026-06-09 14:37:01.023 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 588,
+      "snippet": "2026-06-09 14:37:06.390 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 590,
+      "snippet": "2026-06-09 14:37:06.455 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 592,
+      "snippet": "2026-06-09 14:37:06.837 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 594,
+      "snippet": "2026-06-09 14:37:18.784 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 596,
+      "snippet": "2026-06-09 14:37:19.881 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 602,
+      "snippet": "2026-06-09 14:37:25.946 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 604,
+      "snippet": "2026-06-09 14:37:26.314 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 610,
+      "snippet": "2026-06-09 14:37:33.399 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 612,
+      "snippet": "2026-06-09 14:37:34.459 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 618,
+      "snippet": "2026-06-09 14:37:40.439 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 620,
+      "snippet": "2026-06-09 14:37:40.962 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 630,
+      "snippet": "2026-06-09 14:37:54.306 [warning] [Git][config] git config failed: Failed to execute git"
+    },
+    {
+      "type": "file_changes",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/vscode.git/Git.log",
+      "line": 644,
+      "snippet": "2026-06-09 14:40:45.365 [info] > git diff --name-status -z --diff-filter=ADMR --find-renames=50% d86391a1e8ecb9225b5430086e0a5366f9810b25...refs/remotes/origin/participant-ai-03 -- [1ms]"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 21,
+      "snippet": "2026-06-09 13:42:02.576 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 22,
+      "snippet": "2026-06-09 13:43:00.398 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 23,
+      "snippet": "2026-06-09 13:43:04.810 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 25,
+      "snippet": "2026-06-09 13:45:27.491 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 26,
+      "snippet": "2026-06-09 13:45:32.723 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 28,
+      "snippet": "2026-06-09 13:48:26.533 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 29,
+      "snippet": "2026-06-09 13:48:29.472 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 30,
+      "snippet": "2026-06-09 13:48:52.469 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 32,
+      "snippet": "2026-06-09 13:50:45.833 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 33,
+      "snippet": "2026-06-09 13:50:49.794 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 34,
+      "snippet": "2026-06-09 13:51:21.518 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 35,
+      "snippet": "2026-06-09 13:52:09.358 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 36,
+      "snippet": "2026-06-09 13:52:13.374 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 37,
+      "snippet": "2026-06-09 13:52:27.519 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 38,
+      "snippet": "2026-06-09 13:52:32.618 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 39,
+      "snippet": "2026-06-09 13:52:37.901 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 41,
+      "snippet": "2026-06-09 13:52:43.543 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 42,
+      "snippet": "2026-06-09 13:52:48.307 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 43,
+      "snippet": "2026-06-09 13:55:26.691 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 44,
+      "snippet": "2026-06-09 13:55:30.689 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 45,
+      "snippet": "2026-06-09 13:55:38.962 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 46,
+      "snippet": "2026-06-09 13:56:31.435 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 47,
+      "snippet": "2026-06-09 13:56:42.905 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 48,
+      "snippet": "2026-06-09 13:56:49.528 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 49,
+      "snippet": "2026-06-09 13:56:55.662 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 50,
+      "snippet": "2026-06-09 13:57:01.362 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 51,
+      "snippet": "2026-06-09 13:57:06.187 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 54,
+      "snippet": "2026-06-09 14:02:09.501 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 55,
+      "snippet": "2026-06-09 14:02:16.605 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 56,
+      "snippet": "2026-06-09 14:02:23.558 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 57,
+      "snippet": "2026-06-09 14:02:42.926 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 58,
+      "snippet": "2026-06-09 14:02:53.124 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 59,
+      "snippet": "2026-06-09 14:02:57.771 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 60,
+      "snippet": "2026-06-09 14:03:02.594 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 61,
+      "snippet": "2026-06-09 14:03:13.367 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 62,
+      "snippet": "2026-06-09 14:03:35.108 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 63,
+      "snippet": "2026-06-09 14:03:39.213 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 65,
+      "snippet": "2026-06-09 14:05:01.129 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 66,
+      "snippet": "2026-06-09 14:05:13.267 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 68,
+      "snippet": "2026-06-09 14:08:10.327 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 69,
+      "snippet": "2026-06-09 14:08:19.586 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 70,
+      "snippet": "2026-06-09 14:08:48.563 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 71,
+      "snippet": "2026-06-09 14:08:55.066 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 72,
+      "snippet": "2026-06-09 14:09:24.721 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 74,
+      "snippet": "2026-06-09 14:11:15.346 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 75,
+      "snippet": "2026-06-09 14:11:21.224 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 76,
+      "snippet": "2026-06-09 14:11:26.660 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 77,
+      "snippet": "2026-06-09 14:11:51.128 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 78,
+      "snippet": "2026-06-09 14:12:07.894 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 79,
+      "snippet": "2026-06-09 14:12:11.820 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 80,
+      "snippet": "2026-06-09 14:12:18.103 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 81,
+      "snippet": "2026-06-09 14:12:36.385 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 82,
+      "snippet": "2026-06-09 14:13:02.925 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 83,
+      "snippet": "2026-06-09 14:15:30.346 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 84,
+      "snippet": "2026-06-09 14:15:42.469 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 85,
+      "snippet": "2026-06-09 14:15:47.664 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 86,
+      "snippet": "2026-06-09 14:15:52.010 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 87,
+      "snippet": "2026-06-09 14:16:03.359 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 89,
+      "snippet": "2026-06-09 14:17:43.468 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 90,
+      "snippet": "2026-06-09 14:19:03.974 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 91,
+      "snippet": "2026-06-09 14:19:10.447 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 93,
+      "snippet": "2026-06-09 14:21:20.533 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 95,
+      "snippet": "2026-06-09 14:22:42.913 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 96,
+      "snippet": "2026-06-09 14:23:06.421 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 98,
+      "snippet": "2026-06-09 14:23:32.277 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 99,
+      "snippet": "2026-06-09 14:23:51.743 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 100,
+      "snippet": "2026-06-09 14:24:12.483 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 101,
+      "snippet": "2026-06-09 14:24:41.364 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 102,
+      "snippet": "2026-06-09 14:24:46.971 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 103,
+      "snippet": "2026-06-09 14:24:51.659 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 104,
+      "snippet": "2026-06-09 14:25:07.121 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 105,
+      "snippet": "2026-06-09 14:25:27.929 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 106,
+      "snippet": "2026-06-09 14:25:45.608 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 107,
+      "snippet": "2026-06-09 14:26:24.284 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 108,
+      "snippet": "2026-06-09 14:27:59.368 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 109,
+      "snippet": "2026-06-09 14:28:06.346 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 110,
+      "snippet": "2026-06-09 14:28:10.462 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 112,
+      "snippet": "2026-06-09 14:28:45.829 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 113,
+      "snippet": "2026-06-09 14:28:58.232 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 114,
+      "snippet": "2026-06-09 14:29:05.339 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 115,
+      "snippet": "2026-06-09 14:29:30.202 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 116,
+      "snippet": "2026-06-09 14:29:52.679 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 118,
+      "snippet": "2026-06-09 14:33:50.409 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 119,
+      "snippet": "2026-06-09 14:33:57.350 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 120,
+      "snippet": "2026-06-09 14:34:32.676 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    },
+    {
+      "type": "errors",
+      "file": "/home/participant/.config/Kiro/logs/20260609T082737/window1/exthost/kiro.kiroAgent/q-client.log",
+      "line": 121,
+      "snippet": "2026-06-09 14:34:45.268 [info] {\"clientName\":\"<redacted_string>\",\"commandName\":\"<redacted_string>\",\"input\":{\"conversationState\":{\"conversationId\":\"<redacted_string>\",\"agentContinuationId\":\"<redacted_string>\",\"agentTaskType\":\"vibe\",\"currentM"
+    }
+  ]
+}

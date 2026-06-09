@@ -1,0 +1,14 @@
+{
+  "_metadata": {
+    "form": "post_experiment_survey",
+    "generated_at": "2026-06-09T14:43:16.709Z",
+    "participant_id": "ai-03"
+  },
+  "date": "2026-06-09",
+  "participant_id": "ai-03",
+  "session_type": "ai-assisted",
+  "ai_regular_use": "yes",
+  "ai_used_experiment": "yes",
+  "ai_used_extensively": "yes",
+  "notes": "Was unclear what model was being used, may have gotten quicker results with a better model.\nI think there was some issues with Kiro running commands on its own, unclear though if this was tests actually timing out but input latency to the VM in an unfamiliar environment did not help"
+}
