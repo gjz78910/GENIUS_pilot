@@ -38,7 +38,7 @@ Check these values:
 - `participant_roster`: one row per participant.
 - `condition`: `manual` uses VS Code, `ai` uses Kiro.
 - `repo_ref`: commit or branch that VMs must clone.
-- `dcv_allowed_cidrs`: organizer and participant public IPs only.
+- `dcv_allowed_cidrs`: set to `["0.0.0.0/0"]` when participants join from unknown or variable IPs. DCV is still secured by HTTPS cert + per-VM password.
 - `auto_stop_hours`: experiment time plus buffer.
 - `enable_trusted_dcv_cert = true`
 - `dynamic_dns_provider = "sslip"`
@@ -102,6 +102,27 @@ Username: participant
 Password: <their-password>
 ```
 
+## Post-Launch Patches
+
+After `terraform apply`, apply two screen recorder bug-fixes to every VM before participants connect. Run each VM sequentially (not all at once) to avoid overloading the SSM agent queue.
+
+```bash
+for INSTANCE_ID in <id-1> <id-2> ...; do
+  AWS_PROFILE=genius-dcv aws ssm send-command \
+    --region eu-west-2 \
+    --instance-ids "$INSTANCE_ID" \
+    --document-name AWS-RunShellScript \
+    --parameters 'commands=[
+      "sed -i \"/-use_shm 0/d\" /usr/local/bin/genius-screen-recorder",
+      "sed -i \"s|nohup ffmpeg|XAUTHORITY=\\\"\\$xauthority\\\" DISPLAY=\\\"\\$display_value\\\" nohup ffmpeg|\" /usr/local/bin/genius-screen-recorder",
+      "echo patched"
+    ]'
+  # Wait for this command to finish before sending to the next VM.
+done
+```
+
+**Important:** Send SSM commands to one VM at a time when running git operations or heavy commands. Sending to all VMs simultaneously can saturate the SSM agent queue and leave all agents unresponsive.
+
 ## Readiness Check
 
 Do not open the DCV link too early. Wait for SSM and cloud-init first.
@@ -130,6 +151,18 @@ The DCV session should show:
 ```text
 Session: 'genius'
 ```
+
+If `dcv list-sessions` returns `There are no sessions available`, create the session manually:
+
+```bash
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 \
+  --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters 'commands=["dcv create-session --type=virtual --user=participant --owner=participant genius","dcv list-sessions"]'
+```
+
+This is commonly needed after a VM stop/start — see [DCV session missing after stop/start](#dcv-session-missing-after-stopstart).
 
 ## Start Recording
 
@@ -276,6 +309,27 @@ AWS_PROFILE=genius-dcv terraform apply -destroy \
 ```
 
 ## Common Failures
+
+### DCV session missing after stop/start
+
+Cause: the DCV session startup script runs once at first boot via cloud-init. If a VM is stopped and restarted, cloud-init does not re-run, so the `genius` session is not recreated automatically.
+
+Symptom: DCV URL shows "No session is available or you are not authorised to join the session."
+
+Fix:
+
+```bash
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 \
+  --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters 'commands=[
+    "dcv create-session --type=virtual --user=participant --owner=participant genius 2>&1 || true",
+    "dcv list-sessions"
+  ]'
+```
+
+Do this for every VM that was stopped and restarted before handing credentials to participants.
 
 ### DCV login form does nothing
 
