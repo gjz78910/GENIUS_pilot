@@ -649,13 +649,12 @@ PY
 case "$${1:-}" in
   start)
     # Enable watchdog so recording auto-restarts if ffmpeg crashes
-    echo '* * * * * root /usr/local/bin/genius-recorder-watchdog' >/etc/cron.d/genius-recorder-watchdog
-    chmod 0644 /etc/cron.d/genius-recorder-watchdog
+    sudo /usr/local/bin/genius-watchdog-enable
     start_recording
     ;;
   stop)
     # Disable watchdog so recording stays stopped
-    rm -f /etc/cron.d/genius-recorder-watchdog
+    sudo /usr/local/bin/genius-watchdog-disable
     stop_recording
     ;;
   status)
@@ -681,7 +680,25 @@ cat >/usr/local/bin/genius-recorder-watchdog <<'EOF'
 sudo -u participant /usr/local/bin/genius-screen-recorder start 2>/dev/null || true
 EOF
 chmod 0755 /usr/local/bin/genius-recorder-watchdog
-# Watchdog cron is NOT installed at boot — it is enabled/disabled by genius-screen-recorder start/stop
+
+# Root helpers so participant can enable/disable the watchdog cron without full sudo
+cat >/usr/local/bin/genius-watchdog-enable <<'EOF'
+#!/bin/bash
+echo '* * * * * root /usr/local/bin/genius-recorder-watchdog' >/etc/cron.d/genius-recorder-watchdog
+chmod 0644 /etc/cron.d/genius-recorder-watchdog
+EOF
+chmod 0755 /usr/local/bin/genius-watchdog-enable
+
+cat >/usr/local/bin/genius-watchdog-disable <<'EOF'
+#!/bin/bash
+rm -f /etc/cron.d/genius-recorder-watchdog
+EOF
+chmod 0755 /usr/local/bin/genius-watchdog-disable
+
+echo "participant ALL=(root) NOPASSWD: /usr/local/bin/genius-watchdog-enable, /usr/local/bin/genius-watchdog-disable" \
+  >/etc/sudoers.d/genius-recorder
+chmod 0440 /etc/sudoers.d/genius-recorder
+# Watchdog cron is NOT installed at boot — enabled by genius-screen-recorder start, disabled by stop
 
 cat >/usr/local/bin/genius-dcv-init <<'EOF'
 #!/usr/bin/env bash
