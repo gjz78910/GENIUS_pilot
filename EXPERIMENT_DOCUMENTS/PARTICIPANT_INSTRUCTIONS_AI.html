@@ -842,26 +842,12 @@ git branch --show-current</code></pre>
         </label>
       </div>
 
-      <div class="subsection-title">Start screen recording</div>
-
-      <div class="code-block">
-        <div class="code-label">
-          <span>bash</span>
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        </div>
-        <pre><code>/usr/local/bin/genius-screen-recorder start
-/usr/local/bin/genius-screen-recorder status</code></pre>
-      </div>
-
-      <div class="callout success">
-        <span class="callout-icon">✅</span>
-        <span>Expected output: <code>running</code></span>
+      <div class="callout info">
+        <span class="callout-icon">🎥</span>
+        <span>Screen recording starts automatically in the background. You do not need to start or stop it.</span>
       </div>
 
       <div class="checklist" style="margin-top:10px;">
-        <label class="check-item">
-          <input type="checkbox"> <label>Screen recorder is running. Status shows <code>running</code>.</label>
-        </label>
         <label class="check-item">
           <input type="checkbox"> <label>Resource monitoring is running in its terminal. Do not close it.</label>
         </label>
@@ -1229,7 +1215,6 @@ reports/                generated CSV reports</pre></div>
         </div>
         <pre><code>source /etc/genius/session.env
 cd ~/GENIUS_pilot
-/usr/local/bin/genius-screen-recorder stop
 sudo systemctl stop genius-resource-monitor.service || true
 ./SCRIPTS/store_participant_work.sh "$PARTICIPANT_ID" "$SESSION_ID"
 git push -u origin "participant-$PARTICIPANT_ID" --tags</code></pre>
