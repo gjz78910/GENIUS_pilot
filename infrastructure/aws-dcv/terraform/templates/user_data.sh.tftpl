@@ -1,0 +1,759 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PARTICIPANT_ID="${participant_id}"
+SESSION_ID="${session_id}"
+CONDITION="${condition}"
+PARTICIPANT_PASSWORD="${participant_password}"
+ARTIFACT_BUCKET="${artifact_bucket}"
+REPO_URL="${repo_url}"
+REPO_REF="${repo_ref}"
+MONITOR_INTERVAL="${monitor_interval_seconds}"
+AUTO_STOP_MINUTES="${auto_stop_minutes}"
+TRUSTED_DCV_CERT_ENABLED="${trusted_dcv_cert_enabled}"
+DYNAMIC_DNS_PROVIDER="${dynamic_dns_provider}"
+DUCKDNS_TOKEN="${duckdns_token}"
+DUCKDNS_DOMAIN="${duckdns_domain}"
+DCV_HOSTNAME="${dcv_hostname}"
+EXPECTED_PUBLIC_IP="${expected_public_ip}"
+LETSENCRYPT_EMAIL="${letsencrypt_email}"
+PROJECT_DIR="/home/participant/GENIUS_pilot"
+RUNTIME_DIR="/home/participant/genius-runtime"
+
+echo "participant:$PARTICIPANT_PASSWORD" | chpasswd
+usermod -aG audio,video participant
+
+# Unattended upgrades can restart DCV during the login window and leave the
+# web client with a stale auth socket. Experiment VMs are short-lived, so keep
+# package changes under this bootstrap script's control.
+systemctl disable --now apt-daily.timer apt-daily-upgrade.timer unattended-upgrades.service 2>/dev/null || true
+systemctl stop apt-daily.service apt-daily-upgrade.service unattended-upgrades.service 2>/dev/null || true
+
+# Install a non-snap browser and register it as default.
+# Snap Firefox cannot access DCV Xauthority paths under AppArmor.
+install -d -m 0755 /etc/apt/keyrings
+if [ ! -f /etc/apt/keyrings/google-chrome.gpg ]; then
+  curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
+  chmod 0644 /etc/apt/keyrings/google-chrome.gpg
+fi
+cat >/etc/apt/sources.list.d/google-chrome.list <<EOF
+deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main
+EOF
+if ! command -v google-chrome-stable >/dev/null 2>&1; then
+  apt-get update -qq
+  DEBIAN_FRONTEND=noninteractive apt-get install -y google-chrome-stable
+fi
+update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/google-chrome-stable 300
+update-alternatives --install /usr/bin/gnome-www-browser gnome-www-browser /usr/bin/google-chrome-stable 300
+update-alternatives --set x-www-browser /usr/bin/google-chrome-stable
+update-alternatives --set gnome-www-browser /usr/bin/google-chrome-stable
+
+if ! command -v kazam >/dev/null 2>&1; then
+  apt-get update -qq
+  DEBIAN_FRONTEND=noninteractive apt-get install -y kazam
+fi
+
+if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v xdpyinfo >/dev/null 2>&1 || ! command -v xterm >/dev/null 2>&1; then
+  apt-get update -qq
+  DEBIAN_FRONTEND=noninteractive apt-get install -y ffmpeg x11-utils xterm
+fi
+
+install -d -m 0755 /etc/polkit-1/rules.d
+cat >/etc/polkit-1/rules.d/49-genius-color.rules <<'EOF'
+polkit.addRule(function(action, subject) {
+  if ((action.id == "org.freedesktop.color-manager.create-device" ||
+       action.id == "org.freedesktop.color-manager.create-profile" ||
+       action.id == "org.freedesktop.color-manager.delete-device" ||
+       action.id == "org.freedesktop.color-manager.delete-profile" ||
+       action.id == "org.freedesktop.color-manager.modify-device" ||
+       action.id == "org.freedesktop.color-manager.modify-profile") &&
+      subject.user == "participant") {
+    return polkit.Result.YES;
+  }
+});
+EOF
+systemctl restart polkit || true
+
+configure_trusted_dcv_certificate() {
+  if [ "$TRUSTED_DCV_CERT_ENABLED" != "true" ]; then
+    return
+  fi
+
+  if [ "$DYNAMIC_DNS_PROVIDER" != "duckdns" ] && [ "$DYNAMIC_DNS_PROVIDER" != "sslip" ]; then
+    echo "Unsupported DNS provider: $DYNAMIC_DNS_PROVIDER" >&2
+    exit 1
+  fi
+
+  if [ -z "$DCV_HOSTNAME" ] || [ -z "$LETSENCRYPT_EMAIL" ]; then
+    echo "Trusted DCV certificate setup requires hostname and Let's Encrypt email." >&2
+    exit 1
+  fi
+
+  if [ "$DYNAMIC_DNS_PROVIDER" = "duckdns" ] && { [ -z "$DUCKDNS_TOKEN" ] || [ -z "$DUCKDNS_DOMAIN" ]; }; then
+    echo "DuckDNS setup requires DuckDNS token and domain." >&2
+    exit 1
+  fi
+
+  if [ "$DYNAMIC_DNS_PROVIDER" = "sslip" ] && [ -z "$EXPECTED_PUBLIC_IP" ]; then
+    echo "sslip setup requires expected Elastic IP." >&2
+    exit 1
+  fi
+
+  if ! command -v certbot >/dev/null 2>&1; then
+    apt-get update -qq
+    DEBIAN_FRONTEND=noninteractive apt-get install -y certbot
+  fi
+
+  METADATA_TOKEN="$(curl -fsS -X PUT http://169.254.169.254/latest/api/token -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")"
+
+  for attempt in $(seq 1 60); do
+    PUBLIC_IP="$(curl -fsS -H "X-aws-ec2-metadata-token: $METADATA_TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)"
+    if [ "$DYNAMIC_DNS_PROVIDER" != "sslip" ] || [ "$PUBLIC_IP" = "$EXPECTED_PUBLIC_IP" ]; then
+      break
+    fi
+    sleep 10
+  done
+
+  if [ "$DYNAMIC_DNS_PROVIDER" = "sslip" ] && [ "$PUBLIC_IP" != "$EXPECTED_PUBLIC_IP" ]; then
+    echo "Instance public IP is '$PUBLIC_IP', expected Elastic IP '$EXPECTED_PUBLIC_IP'." >&2
+    exit 1
+  fi
+
+  if [ "$DYNAMIC_DNS_PROVIDER" = "duckdns" ]; then
+    DUCKDNS_RESPONSE="$(curl -sS -w "\n%%{http_code}" "https://www.duckdns.org/update?domains=$DUCKDNS_DOMAIN&token=$DUCKDNS_TOKEN&ip=$PUBLIC_IP" || true)"
+    DUCKDNS_STATUS="$(printf "%s" "$DUCKDNS_RESPONSE" | tail -n 1)"
+    DUCKDNS_RESULT="$(printf "%s" "$DUCKDNS_RESPONSE" | sed '$d')"
+    if [ "$DUCKDNS_STATUS" != "200" ] || [ "$DUCKDNS_RESULT" != "OK" ]; then
+      RESOLVED_IP="$(getent ahostsv4 "$DCV_HOSTNAME" | awk '{print $1; exit}' || true)"
+      if [ "$RESOLVED_IP" != "$PUBLIC_IP" ]; then
+        echo "DuckDNS update failed for $DUCKDNS_DOMAIN with HTTP $DUCKDNS_STATUS and hostname still resolves to '$RESOLVED_IP'." >&2
+        exit 1
+      fi
+      echo "DuckDNS update returned HTTP $DUCKDNS_STATUS, but $DCV_HOSTNAME already resolves to $PUBLIC_IP; continuing."
+    fi
+  fi
+
+  for attempt in $(seq 1 30); do
+    RESOLVED_IP="$(getent ahostsv4 "$DCV_HOSTNAME" | awk '{print $1; exit}' || true)"
+    if [ "$RESOLVED_IP" = "$PUBLIC_IP" ]; then
+      break
+    fi
+    sleep 10
+  done
+
+  RESOLVED_IP="$(getent ahostsv4 "$DCV_HOSTNAME" | awk '{print $1; exit}' || true)"
+  if [ "$RESOLVED_IP" != "$PUBLIC_IP" ]; then
+    echo "$DCV_HOSTNAME resolves to '$RESOLVED_IP', expected '$PUBLIC_IP'." >&2
+    exit 1
+  fi
+
+  systemctl stop dcvserver 2>/dev/null || true
+  certbot certonly \
+    --standalone \
+    --non-interactive \
+    --agree-tos \
+    --email "$LETSENCRYPT_EMAIL" \
+    --preferred-challenges http \
+    --keep-until-expiring \
+    -d "$DCV_HOSTNAME"
+
+  DCV_CERT_OWNER="root"
+  if id -u dcv >/dev/null 2>&1; then
+    DCV_CERT_OWNER="dcv"
+  fi
+  install -m 0600 -o "$DCV_CERT_OWNER" -g "$DCV_CERT_OWNER" "/etc/letsencrypt/live/$DCV_HOSTNAME/fullchain.pem" /etc/dcv/dcv.pem
+  install -m 0600 -o "$DCV_CERT_OWNER" -g "$DCV_CERT_OWNER" "/etc/letsencrypt/live/$DCV_HOSTNAME/privkey.pem" /etc/dcv/dcv.key
+
+  install -d -m 0755 /etc/letsencrypt/renewal-hooks/deploy
+  cat >/etc/letsencrypt/renewal-hooks/deploy/reload-dcv.sh <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+DCV_CERT_OWNER="root"
+if id -u dcv >/dev/null 2>&1; then
+  DCV_CERT_OWNER="dcv"
+fi
+install -m 0600 -o "\$DCV_CERT_OWNER" -g "\$DCV_CERT_OWNER" "/etc/letsencrypt/live/$DCV_HOSTNAME/fullchain.pem" /etc/dcv/dcv.pem
+install -m 0600 -o "\$DCV_CERT_OWNER" -g "\$DCV_CERT_OWNER" "/etc/letsencrypt/live/$DCV_HOSTNAME/privkey.pem" /etc/dcv/dcv.key
+systemctl restart dcvserver || true
+systemctl restart genius-dcv-session.service || true
+EOF
+  chmod 0755 /etc/letsencrypt/renewal-hooks/deploy/reload-dcv.sh
+}
+
+install -d -m 0755 /etc/genius
+printf "%s\n" "$CONDITION" >/etc/genius/condition
+cat >/etc/genius/session.env <<EOF
+PARTICIPANT_ID=$PARTICIPANT_ID
+SESSION_ID=$SESSION_ID
+CONDITION=$CONDITION
+ARTIFACT_BUCKET=$ARTIFACT_BUCKET
+PROJECT_DIR=$PROJECT_DIR
+RUNTIME_DIR=$RUNTIME_DIR
+DCV_HOSTNAME=$DCV_HOSTNAME
+EOF
+
+if [ ! -d "$PROJECT_DIR/.git" ]; then
+  rm -rf "$PROJECT_DIR"
+  mkdir -p "$PROJECT_DIR"
+  rsync -a /opt/genius/base/ "$PROJECT_DIR/"
+fi
+
+chown -R participant:participant "$PROJECT_DIR"
+mkdir -p "$RUNTIME_DIR"
+chown -R participant:participant "$RUNTIME_DIR"
+sudo -u participant -H bash -lc "
+  set -euo pipefail
+  cd '$PROJECT_DIR'
+  git remote set-url origin '$REPO_URL'
+  git fetch --depth 1 origin '$REPO_REF'
+  git checkout --detach FETCH_HEAD
+  git checkout -B 'participant-$PARTICIPANT_ID'
+  git config user.name 'Participant $PARTICIPANT_ID'
+  git config user.email '$PARTICIPANT_ID@example.invalid'
+  mkdir -p DATA_COLLECTION
+  find DATA_COLLECTION -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+  find '$RUNTIME_DIR' -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+  git add -Af DATA_COLLECTION 2>/dev/null || true
+  if ! git diff --cached --quiet; then
+    git commit -m 'Initialize clean session data'
+  fi
+  START_COMMIT=\$(git rev-parse HEAD)
+  git tag -f initial
+  CREATED_AT=\$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  cat > '$RUNTIME_DIR/session_metadata_$PARTICIPANT_ID-$SESSION_ID.json' <<JSON
+{
+  \"participant_id\": \"$PARTICIPANT_ID\",
+  \"session_id\": \"$SESSION_ID\",
+  \"condition\": \"$CONDITION\",
+  \"artifact_bucket\": \"$ARTIFACT_BUCKET\",
+  \"start_commit\": \"\$START_COMMIT\",
+  \"created_at\": \"\$CREATED_AT\"
+}
+JSON
+"
+
+mkdir -p /home/participant/Desktop /home/participant/.config/autostart /home/participant/dcv-storage
+mkdir -p /home/participant/.config/xfce4/xfconf/xfce-perchannel-xml
+cat >/home/participant/.config/mimeapps.list <<EOF
+[Default Applications]
+x-scheme-handler/http=google-chrome.desktop
+x-scheme-handler/https=google-chrome.desktop
+text/html=google-chrome.desktop
+application/xhtml+xml=google-chrome.desktop
+EOF
+cat >/home/participant/.config/xfce4/xfconf/xfce-perchannel-xml/exo.xml <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="exo" version="1.0">
+  <property name="preferred-applications" type="empty">
+    <property name="WebBrowser" type="empty">
+      <property name="custom" type="bool" value="true"/>
+      <property name="command" type="string" value="google-chrome-stable"/>
+    </property>
+  </property>
+</channel>
+EOF
+
+configure_group_dock() {
+  local app_name app_exec app_icon app_comment app_file
+
+  if [ "$CONDITION" = "ai" ]; then
+    app_name="Kiro"
+    app_exec="kiro /home/participant/GENIUS_pilot"
+    app_icon="kiro"
+    app_comment="Open Kiro for the GENIUS AI group"
+    app_file="genius-kiro.desktop"
+  else
+    app_name="VS Code"
+    app_exec="code /home/participant/GENIUS_pilot"
+    app_icon="code"
+    app_comment="Open VS Code for the GENIUS manual group"
+    app_file="genius-vscode.desktop"
+  fi
+
+  mkdir -p /home/participant/.config/xfce4/panel/launcher-17 /home/participant/.config/xfce4/panel/launcher-18
+  cat >/home/participant/.config/xfce4/panel/launcher-17/"$app_file" <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=$app_name
+Comment=$app_comment
+Exec=$app_exec
+Icon=$app_icon
+Terminal=false
+StartupNotify=true
+Categories=Development;
+EOF
+  cat >/home/participant/.config/xfce4/panel/launcher-18/genius-chrome.desktop <<'EOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Chrome
+Comment=Open Google Chrome
+Exec=google-chrome-stable
+Icon=google-chrome
+Terminal=false
+StartupNotify=true
+Categories=Network;WebBrowser;
+EOF
+  cat >/home/participant/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+  <property name="panels" type="array">
+    <value type="int" value="1"/>
+    <value type="int" value="2"/>
+    <property name="dark-mode" type="bool" value="true"/>
+    <property name="panel-1" type="empty">
+      <property name="position" type="string" value="p=6;x=0;y=0"/>
+      <property name="length" type="uint" value="100"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="icon-size" type="uint" value="16"/>
+      <property name="size" type="uint" value="26"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="2"/>
+        <value type="int" value="3"/>
+        <value type="int" value="6"/>
+        <value type="int" value="8"/>
+        <value type="int" value="12"/>
+        <value type="int" value="14"/>
+      </property>
+    </property>
+    <property name="panel-2" type="empty">
+      <property name="autohide-behavior" type="uint" value="1"/>
+      <property name="position" type="string" value="p=10;x=0;y=0"/>
+      <property name="length" type="uint" value="1"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="48"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="15"/>
+        <value type="int" value="16"/>
+        <value type="int" value="17"/>
+        <value type="int" value="18"/>
+      </property>
+    </property>
+  </property>
+  <property name="plugins" type="empty">
+    <property name="plugin-1" type="string" value="applicationsmenu"/>
+    <property name="plugin-2" type="string" value="tasklist">
+      <property name="grouping" type="uint" value="1"/>
+    </property>
+    <property name="plugin-3" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <property name="plugin-6" type="string" value="systray">
+      <property name="square-icons" type="bool" value="true"/>
+    </property>
+    <property name="plugin-8" type="string" value="pulseaudio">
+      <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
+      <property name="show-notifications" type="bool" value="true"/>
+    </property>
+    <property name="plugin-12" type="string" value="clock"/>
+    <property name="plugin-14" type="string" value="actions"/>
+    <property name="plugin-15" type="string" value="showdesktop"/>
+    <property name="plugin-16" type="string" value="separator"/>
+    <property name="plugin-17" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="$app_file"/>
+      </property>
+    </property>
+    <property name="plugin-18" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="genius-chrome.desktop"/>
+      </property>
+    </property>
+  </property>
+</channel>
+EOF
+}
+
+configure_group_dock
+
+cat >/home/participant/Desktop/open-genius.desktop <<EOF
+[Desktop Entry]
+Type=Application
+Name=Open GENIUS Project
+Exec=/usr/local/bin/open-genius-ide
+Terminal=false
+Categories=Development;
+EOF
+cp /home/participant/Desktop/open-genius.desktop /home/participant/.config/autostart/open-genius.desktop
+chmod 0755 /home/participant/Desktop/open-genius.desktop /home/participant/.config/autostart/open-genius.desktop
+chown -R participant:participant /home/participant/Desktop /home/participant/.config /home/participant/dcv-storage
+
+sudo -u participant -H bash -lc "
+  cd '$PROJECT_DIR'
+  /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/collect_system_info.py --participant-id '$PARTICIPANT_ID' --output '$RUNTIME_DIR/system_info.json' || true
+"
+
+cat >/home/participant/SESSION_INFO.txt <<EOF
+Participant ID: $PARTICIPANT_ID
+Session ID: $SESSION_ID
+Condition: $CONDITION
+Project: $PROJECT_DIR
+Remote desktop hostname: $DCV_HOSTNAME
+
+Manual condition: use VS Code only.
+AI condition: use Kiro and the Kiro account assigned by the organizer.
+EOF
+chown participant:participant /home/participant/SESSION_INFO.txt
+
+cat >/usr/local/bin/genius-screen-recorder <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+. /etc/genius/session.env
+
+VIDEO_DIR="/home/participant/Videos"
+RUNTIME_DIR="$${RUNTIME_DIR:-/home/participant/genius-runtime}"
+PID_FILE="$RUNTIME_DIR/screen_recording.pid"
+CURRENT_FILE="$RUNTIME_DIR/screen_recording_current_path"
+LOG_FILE="$RUNTIME_DIR/screen_recording.log"
+METADATA_FILE="$RUNTIME_DIR/screen_recording_$${PARTICIPANT_ID}_$${SESSION_ID}.json"
+
+start_recording() {
+  mkdir -p "$VIDEO_DIR" "$RUNTIME_DIR"
+
+  if [ -s "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+    exit 0
+  fi
+
+  rm -f "$VIDEO_DIR"/GENIUS_"$PARTICIPANT_ID"_"$SESSION_ID"*.mp4
+
+  local xauthority="" xdcv_pid="" xdcv_args=""
+  xdcv_pid="$(pgrep -u "$(id -u participant)" -f "Xdcv.*-sessionid genius" | head -n 1 || true)"
+  if [ -n "$xdcv_pid" ] && [ -r "/proc/$xdcv_pid/cmdline" ]; then
+    xdcv_args="$(tr '\0' ' ' <"/proc/$xdcv_pid/cmdline")"
+    xauthority="$(printf '%s\n' "$xdcv_args" | awk '{for (i=1; i<=NF; i++) if ($i == "-auth") {print $(i+1); exit}}' || true)"
+  fi
+  if [ -z "$xauthority" ]; then
+    xauthority="/run/user/$(id -u participant)/dcv/genius.xauth"
+  fi
+
+  local display_value="" screen_size=""
+  for candidate in "$${DISPLAY:-}" :1 :2 :3 :4 :5 :0; do
+    if [ -z "$candidate" ]; then
+      continue
+    fi
+    screen_size="$(DISPLAY="$candidate" XAUTHORITY="$xauthority" xdpyinfo 2>/dev/null | awk '/dimensions:/{print $2; exit}' || true)"
+    if [ -n "$screen_size" ]; then
+      display_value="$candidate"
+      break
+    fi
+  done
+
+  if [ -z "$display_value" ]; then
+    echo "Could not find an accessible DCV X display for recording." >&2
+    exit 1
+  fi
+
+  if [ -z "$screen_size" ]; then
+    screen_size="1920x1080"
+  fi
+
+  local output_file
+  output_file="$VIDEO_DIR/GENIUS_$${PARTICIPANT_ID}_$${SESSION_ID}.mp4"
+
+  nohup ffmpeg \
+    -y \
+    -hide_banner \
+    -loglevel info \
+    -f x11grab \
+    -thread_queue_size 1024 \
+    -framerate 15 \
+    -video_size "$screen_size" \
+    -i "$display_value" \
+    -r 15 \
+    -an \
+    -c:v libx264 \
+    -preset ultrafast \
+    -crf 23 \
+    -pix_fmt yuv420p \
+    "$output_file" >"$LOG_FILE" 2>&1 &
+
+  sleep 2
+  if ! kill -0 "$!" 2>/dev/null; then
+    echo "Screen recorder failed to start. See $LOG_FILE." >&2
+    exit 1
+  fi
+
+  echo "$!" >"$PID_FILE"
+  printf "%s\n" "$output_file" >"$CURRENT_FILE"
+  cat >"$METADATA_FILE" <<JSON
+{
+  "participant_id": "$PARTICIPANT_ID",
+  "session_id": "$SESSION_ID",
+  "started_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "display": "$display_value",
+  "xauthority": "$xauthority",
+  "screen_size": "$screen_size",
+  "output_file": "$output_file"
+}
+JSON
+}
+
+test_recording() {
+  mkdir -p "$VIDEO_DIR" "$RUNTIME_DIR"
+
+  local xauthority="" xdcv_pid="" xdcv_args=""
+  xdcv_pid="$(pgrep -u "$(id -u participant)" -f "Xdcv.*-sessionid genius" | head -n 1 || true)"
+  if [ -n "$xdcv_pid" ] && [ -r "/proc/$xdcv_pid/cmdline" ]; then
+    xdcv_args="$(tr '\0' ' ' <"/proc/$xdcv_pid/cmdline")"
+    xauthority="$(printf '%s\n' "$xdcv_args" | awk '{for (i=1; i<=NF; i++) if ($i == "-auth") {print $(i+1); exit}}' || true)"
+  fi
+  if [ -z "$xauthority" ]; then
+    xauthority="/run/user/$(id -u participant)/dcv/genius.xauth"
+  fi
+
+  local display_value="" screen_size=""
+  for candidate in "$${DISPLAY:-}" :1 :2 :3 :4 :5 :0; do
+    if [ -z "$candidate" ]; then
+      continue
+    fi
+    screen_size="$(DISPLAY="$candidate" XAUTHORITY="$xauthority" xdpyinfo 2>/dev/null | awk '/dimensions:/{print $2; exit}' || true)"
+    if [ -n "$screen_size" ]; then
+      display_value="$candidate"
+      break
+    fi
+  done
+
+  if [ -z "$display_value" ]; then
+    echo "Could not find an accessible DCV X display for recording test." >&2
+    exit 1
+  fi
+
+  local test_file="$VIDEO_DIR/GENIUS_$${PARTICIPANT_ID}_$${SESSION_ID}_recording_test.mp4"
+  rm -f "$test_file"
+
+  (sleep 2; DISPLAY="$display_value" XAUTHORITY="$xauthority" xterm -geometry 40x6+20+20 -T GENIUS_RECORDING_TEST -e 'for i in $(seq 1 8); do clear; echo "GENIUS recording motion test $i"; date -u; sleep 1; done' >/dev/null 2>&1 || true) &
+
+  ffmpeg \
+    -y \
+    -hide_banner \
+    -loglevel warning \
+    -f x11grab \
+    -framerate 15 \
+    -video_size "$screen_size" \
+    -i "$display_value" \
+    -t 10 \
+    -r 15 \
+    -an \
+    -c:v libx264 \
+    -preset ultrafast \
+    -crf 23 \
+    -pix_fmt yuv420p \
+    "$test_file" >"$RUNTIME_DIR/screen_recording_test.log" 2>&1
+
+  python3 - "$test_file" "$RUNTIME_DIR/screen_recording_test.json" <<'PY'
+import json
+import os
+import sys
+
+path, metadata_path = sys.argv[1], sys.argv[2]
+data = {
+    "test_file": path,
+    "file_exists": os.path.exists(path),
+    "file_size_bytes": os.path.getsize(path) if os.path.exists(path) else 0,
+}
+with open(metadata_path, "w", encoding="utf-8") as handle:
+    json.dump(data, handle, indent=2)
+    handle.write("\n")
+if data["file_size_bytes"] < 100000:
+    raise SystemExit("Recording test file is too small; recording is likely invalid.")
+PY
+  rm -f "$test_file"
+}
+
+stop_recording() {
+  if [ ! -s "$PID_FILE" ]; then
+    local output_file=""
+    if [ -s "$CURRENT_FILE" ]; then
+      output_file="$(cat "$CURRENT_FILE")"
+    fi
+    if [ -n "$output_file" ] && [ -f "$output_file" ]; then
+      python3 - "$METADATA_FILE" "$output_file" <<'PY' || true
+import json
+import os
+import sys
+from datetime import datetime, timezone
+
+metadata_path, output_path = sys.argv[1], sys.argv[2]
+try:
+    with open(metadata_path, "r", encoding="utf-8") as handle:
+        data = json.load(handle)
+except FileNotFoundError:
+    data = {}
+
+data["stopped_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+data["output_file"] = output_path
+data["file_exists"] = bool(output_path and os.path.exists(output_path))
+data["file_size_bytes"] = os.path.getsize(output_path) if data["file_exists"] else 0
+
+with open(metadata_path, "w", encoding="utf-8") as handle:
+    json.dump(data, handle, indent=2)
+    handle.write("\n")
+PY
+    fi
+    exit 0
+  fi
+
+  local pid
+  pid="$(cat "$PID_FILE")"
+  if kill -0 "$pid" 2>/dev/null; then
+    kill -INT "$pid" 2>/dev/null || true
+    for _ in $(seq 1 20); do
+      if ! kill -0 "$pid" 2>/dev/null; then
+        break
+      fi
+      sleep 1
+    done
+    if kill -0 "$pid" 2>/dev/null; then
+      kill -TERM "$pid" 2>/dev/null || true
+    fi
+  fi
+
+  local output_file=""
+  if [ -s "$CURRENT_FILE" ]; then
+    output_file="$(cat "$CURRENT_FILE")"
+  fi
+
+  python3 - "$METADATA_FILE" "$output_file" <<'PY' || true
+import json
+import os
+import sys
+from datetime import datetime, timezone
+
+metadata_path, output_path = sys.argv[1], sys.argv[2]
+try:
+    with open(metadata_path, "r", encoding="utf-8") as handle:
+        data = json.load(handle)
+except FileNotFoundError:
+    data = {}
+
+data["stopped_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+data["output_file"] = output_path
+data["file_exists"] = bool(output_path and os.path.exists(output_path))
+data["file_size_bytes"] = os.path.getsize(output_path) if data["file_exists"] else 0
+
+with open(metadata_path, "w", encoding="utf-8") as handle:
+    json.dump(data, handle, indent=2)
+    handle.write("\n")
+PY
+
+  rm -f "$PID_FILE"
+}
+
+case "$${1:-}" in
+  start)
+    start_recording
+    ;;
+  stop)
+    stop_recording
+    ;;
+  status)
+    if [ -s "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+      echo "running"
+    else
+      echo "stopped"
+    fi
+    ;;
+  test)
+    test_recording
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|status|test}" >&2
+    exit 2
+    ;;
+esac
+EOF
+chmod 0755 /usr/local/bin/genius-screen-recorder
+
+cat >/usr/local/bin/genius-dcv-init <<'EOF'
+#!/usr/bin/env bash
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+exec dbus-launch --exit-with-session startxfce4
+EOF
+chmod 0755 /usr/local/bin/genius-dcv-init
+
+cat >/etc/systemd/system/genius-resource-monitor.service <<EOF
+[Unit]
+Description=GENIUS participant resource monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=participant
+WorkingDirectory=$PROJECT_DIR
+ExecStart=/opt/conda/bin/conda run --no-capture-output -n genius_pilot python SCRIPTS/monitor_resources.py --output $RUNTIME_DIR/resource_usage_$${PARTICIPANT_ID}_$${SESSION_ID}.jsonl -i $MONITOR_INTERVAL
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat >/usr/local/bin/genius-ensure-dcv-session <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+. /etc/genius/session.env
+
+dcv set-config --section display --key enable-client-resize "false"
+dcv set-config --section session-management --key virtual-session-default-layout "[{'w': 1920, 'h': 1080, 'x': 0, 'y': 0}]"
+
+systemctl enable --now dcvserver
+for attempt in $(seq 1 30); do
+  if systemctl is-active --quiet dcvserver; then
+    break
+  fi
+  sleep 2
+done
+
+update-alternatives --set x-session-manager /usr/bin/xfce4-session
+printf "[Desktop]\nSession=xfce\n" > /home/participant/.dmrc
+chown participant:participant /home/participant/.dmrc
+
+if dcv list-sessions | grep -q "Session: 'genius'"; then
+  exit 0
+fi
+
+dcv create-session \
+  --type=virtual \
+  --owner participant \
+  --user participant \
+  --name "GENIUS $PARTICIPANT_ID" \
+  --storage-root %home%/dcv-storage \
+  --max-concurrent-clients 2 \
+  --init /usr/local/bin/genius-dcv-init \
+  genius
+EOF
+chmod 0755 /usr/local/bin/genius-ensure-dcv-session
+
+cat >/etc/systemd/system/genius-dcv-session.service <<EOF
+[Unit]
+Description=Ensure GENIUS Amazon DCV session
+After=network-online.target dcvserver.service
+Wants=network-online.target
+Requires=dcvserver.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/genius-ensure-dcv-session
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+configure_trusted_dcv_certificate
+
+systemctl daemon-reload
+systemctl enable --now genius-resource-monitor.service
+systemctl enable --now genius-dcv-session.service
+
+if [ "$AUTO_STOP_MINUTES" -gt 0 ]; then
+  shutdown -h +"$AUTO_STOP_MINUTES" "GENIUS experiment auto-stop"
+fi
