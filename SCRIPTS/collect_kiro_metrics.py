@@ -259,7 +259,11 @@ def model_from_message(message: Any) -> str | None:
 
 def parse_chat_api_logs(log_files: list[Path]) -> dict[str, object]:
     """Parse Kiro Q Chat API logs for privacy-safe interaction metrics."""
-    chat_api_logs = [path for path in log_files if CHAT_API_LOG_NAME in path.name]
+    # Match both "Q Chat API.log" and rotated versions "Q Chat API.1.log", "Q Chat API.2.log", …
+    chat_api_logs = [
+        path for path in log_files
+        if re.match(r".*Q Chat API(\.\d+)?\.log$", path.name)
+    ]
     request_queue: list[dict[str, object]] = []
     turns: list[dict[str, object]] = []
 
