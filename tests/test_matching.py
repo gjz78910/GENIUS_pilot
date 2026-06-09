@@ -205,3 +205,150 @@ class TestMatching(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestBuildEligibilityMap(unittest.TestCase):
+    """Unit tests for the _build_eligibility_map helper."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        from src.optimization.matching import _build_eligibility_map
+
+        self.build_map = _build_eligibility_map
+
+    def test_single_skill_match(self):
+        """Engineers with required skill are included."""
+        engineers = [
+            Engineer(id=1, name="Alice", location="A", skills=["repair"]),
+            Engineer(id=2, name="Bob", location="B", skills=["install"]),
+        ]
+        jobs = [Job(id=1, location="A", time="09:00", required_skills=["repair"], length=1.0)]
+
+        emap = self.build_map(engineers, jobs)
+        self.assertEqual(len(emap[1]), 1)
+        self.assertEqual(emap[1][0].id, 1)
+
+    def test_multiple_skills_all_required(self):
+        """Only engineers with ALL required skills are eligible."""
+        engineers = [
+            Engineer(id=1, name="Alice", location="A", skills=["repair"]),
+            Engineer(id=2, name="Bob", location="B", skills=["repair", "install"]),
+        ]
+        jobs = [Job(id=1, location="A", time="09:00", required_skills=["repair", "install"], length=1.0)]
+
+        emap = self.build_map(engineers, jobs)
+        self.assertEqual(len(emap[1]), 1)
+        self.assertEqual(emap[1][0].id, 2)
+
+    def test_no_engineer_qualified(self):
+        """Empty list when no engineer has required skills."""
+        engineers = [
+            Engineer(id=1, name="Alice", location="A", skills=["install"]),
+        ]
+        jobs = [Job(id=1, location="A", time="09:00", required_skills=["repair"], length=1.0)]
+
+        emap = self.build_map(engineers, jobs)
+        self.assertEqual(emap[1], [])
+
+    def test_no_required_skills_all_eligible(self):
+        """All engineers eligible when job requires no skills."""
+        engineers = [
+            Engineer(id=1, name="Alice", location="A", skills=["repair"]),
+            Engineer(id=2, name="Bob", location="B", skills=["install"]),
+        ]
+        jobs = [Job(id=1, location="A", time="09:00", required_skills=[], length=1.0)]
+
+        emap = self.build_map(engineers, jobs)
+        self.assertEqual(len(emap[1]), 2)
+
+    def test_multiple_jobs(self):
+        """Each job gets its own eligibility list."""
+        engineers = [
+            Engineer(id=1, name="Alice", location="A", skills=["repair", "install"]),
+            Engineer(id=2, name="Bob", location="B", skills=["repair"]),
+        ]
+        jobs = [
+            Job(id=1, location="A", time="09:00", required_skills=["repair"], length=1.0),
+            Job(id=2, location="B", time="10:00", required_skills=["install"], length=1.0),
+        ]
+
+        emap = self.build_map(engineers, jobs)
+        self.assertEqual(len(emap[1]), 2)  # Both can repair
+        self.assertEqual(len(emap[2]), 1)  # Only Alice can install
+        self.assertEqual(emap[2][0].id, 1)
+
+    def test_empty_engineers(self):
+        """Empty eligibility for all jobs when no engineers."""
+        engineers = []
+        jobs = [Job(id=1, location="A", time="09:00", required_skills=["repair"], length=1.0)]
+
+        emap = self.build_map(engineers, jobs)
+        self.assertEqual(emap[1], [])
+
+    def test_empty_jobs(self):
+        """Empty map when no jobs."""
+        engineers = [Engineer(id=1, name="Alice", location="A", skills=["repair"])]
+        jobs = []
+
+        emap = self.build_map(engineers, jobs)
+        self.assertEqual(emap, {})
+
+
+class TestHasCapacity(unittest.TestCase):
+    """Unit tests for the _has_capacity helper."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        from src.optimization.matching import _has_capacity
+
+        self.has_capacity = _has_capacity
+        self.travel_matrix = {
+            "A": {"A": 0.0, "B": 1.0, "C": 2.0},
+            "B": {"A": 1.0, "B": 0.0, "C": 1.0},
+            "C": {"A": 2.0, "B": 1.0, "C": 0.0},
+        }
+
+    def test_fits_with_no_existing_jobs(self):
+        """New job fits when engineer has plenty of capacity."""
+        engineer = Engineer(id=1, name="Alice", location="A", skills=["repair"], working_hours=8.0)
+        new_job = Job(id=1, location="A", time="09:00", required_skills=["repair"], length=2.0)
+
+        self.assertTrue(self.has_capacity(engineer, [], new_job, self.travel_matrix))
+
+    def test_exceeds_capacity(self):
+        """New job does not fit when it would exceed working hours."""
+        engineer = Engineer(id=1, name="Alice", location="A", skills=["repair"], working_hours=3.0)
+        existing = [Job(id=1, location="B", time="09:00", required_skills=["repair"], length=2.0)]
+        new_job = Job(id=2, location="C", time="10:00", required_skills=["repair"], length=2.0)
+
+        # existing job (2h) + new job (2h) + travel A->B->C->A (1+1+2=4h) = 8h > 3h
+        self.assertFalse(self.has_capacity(engineer, existing, new_job, self.travel_matrix))
+
+    def test_exact_capacity(self):
+        """Job fits when total equals exactly working hours."""
+        engineer = Engineer(id=1, name="Alice", location="A", skills=["repair"], working_hours=4.0)
+        # Job at A: 2h job + travel A->A->A = 0h travel. Total = 2h fits in 4h.
+        existing = [Job(id=1, location="A", time="09:00", required_skills=["repair"], length=2.0)]
+        new_job = Job(id=2, location="A", time="10:00", required_skills=["repair"], length=2.0)
+
+        # 2 + 2 + 0 (all at A) = 4.0 == 4.0
+        self.assertTrue(self.has_capacity(engineer, existing, new_job, self.travel_matrix))
+
+    def test_travel_time_counted(self):
+        """Travel time prevents job from fitting."""
+        engineer = Engineer(id=1, name="Alice", location="A", skills=["repair"], working_hours=4.0)
+        # Job at B: 2h job, travel A->B->A = 2h. Total = 4h, exact fit.
+        # Adding another at C: 2+2 + travel(A->B->C->A or A->C->B->A) > 4h
+        existing = [Job(id=1, location="B", time="09:00", required_skills=["repair"], length=2.0)]
+        new_job = Job(id=2, location="C", time="10:00", required_skills=["repair"], length=2.0)
+
+        self.assertFalse(self.has_capacity(engineer, existing, new_job, self.travel_matrix))
+
+    def test_zero_travel_same_location(self):
+        """No travel overhead when all jobs are at engineer's location."""
+        engineer = Engineer(id=1, name="Alice", location="A", skills=["repair"], working_hours=6.0)
+        existing = [Job(id=1, location="A", time="09:00", required_skills=["repair"], length=2.0)]
+        new_job = Job(id=2, location="A", time="10:00", required_skills=["repair"], length=2.0)
+
+        # 2 + 2 + 0 = 4.0 <= 6.0
+        self.assertTrue(self.has_capacity(engineer, existing, new_job, self.travel_matrix))
