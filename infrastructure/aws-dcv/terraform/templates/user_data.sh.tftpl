@@ -415,6 +415,10 @@ METADATA_FILE="$RUNTIME_DIR/screen_recording_$${PARTICIPANT_ID}_$${SESSION_ID}.j
 start_recording() {
   mkdir -p "$VIDEO_DIR" "$RUNTIME_DIR"
 
+  # Lock to prevent concurrent starts (race between watchdog and manual call)
+  exec 9>"$RUNTIME_DIR/screen_recording.lock"
+  flock -n 9 || exit 0
+
   if [ -s "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
     exit 0
   fi
