@@ -2,7 +2,7 @@
 
 **Experiment date:** 2026-06-09  
 **Group:** AI-assisted coding with Kiro  
-**Participants:** 6 VMs — ai-01 (organiser dry-run), ai-02–ai-06 (real participants)  
+**Participants:** 6 VMs — ai-01–ai-06 (all real participants)  
 **Data confirmed collected and downloaded:** 2026-06-09  
 
 ---
@@ -11,7 +11,7 @@
 
 | VM | Role | Seniority | Main Language | Session Start | Session End | DevOps Maturity | MLOps Maturity | Pre-Survey | Post-Survey |
 |----|------|-----------|---------------|---------------|-------------|-----------------|----------------|------------|-------------|
-| ai-01 | Developer *(dry-run)* | Mid | Go/Elixir | 09:00 | 17:00 | 4/5 | 2/5 | Yes | Yes |
+| ai-01 | Developer | Mid | Go/Elixir | 09:00 | 17:00 | 4/5 | 2/5 | Yes | Yes |
 | ai-02 | Developer | Senior | Java | ~10:49 | ~14:47 | 1/5 | 1/5 | Yes | Yes |
 | ai-03 | DevOps Engineer | Mid | Python | 14:09 | 16:08 | 5/5 | 3/5 | Yes | Yes |
 | ai-04 | — | — | — | — | ~14:23 | — | — | **Not submitted** | **Not submitted** |
@@ -40,7 +40,7 @@ All participant branches on GitHub: `github.com/gjz78910/GENIUS_pilot`
 
 | VM | Branch | Participant Work Commit | Commit Timestamp | Clean at End |
 |----|--------|------------------------|------------------|--------------|
-| ai-01 | `participant/ai-01` | None (dry-run only) | — | Yes |
+| ai-01 | `participant/ai-01` | In `ai-01_S1` session archive | 2026-06-09 ~10:31 | Yes |
 | ai-02 | `participant/ai-02` | `45bb0ae` | 2026-06-09 14:44:38 | Yes |
 | ai-03 | `participant/ai-03` | `d86391a` | 2026-06-09 14:40:13 | Yes |
 | ai-04 | `participant/ai-04` | `d74e1ef` | 2026-06-09 14:22:36 | Yes |
@@ -126,8 +126,8 @@ S3 bucket: `genius-dcv-artifacts-684638912478-82c72ce8` (eu-west-2)
 
 | Data Type | Available For | What You Can Analyze |
 |-----------|--------------|----------------------|
-| Pre-experiment survey | ai-01, ai-02, ai-03, ai-05 | Background, experience level, commute mode, DevOps/MLOps maturity |
-| Post-experiment survey | ai-01, ai-02, ai-03, ai-05, ai-06 | Kiro usage patterns, qualitative session feedback |
+| Pre-experiment survey | ai-01, ai-02, ai-03, ai-05 (4/6) | Background, experience level, commute mode, DevOps/MLOps maturity |
+| Post-experiment survey | ai-01, ai-02, ai-03, ai-05, ai-06 (5/6) | Kiro usage patterns, qualitative session feedback |
 | Kiro chat history (raw API log) | All 6 | Prompt patterns, volume, conversation structure, tool calls |
 | Kiro session JSONs | All 6 | Workspace sessions, agent task breakdown |
 | Resource usage (CPU/RAM) | ai-02 through ai-06 | System load timeline correlated with coding activity |
@@ -144,7 +144,7 @@ S3 bucket: `genius-dcv-artifacts-684638912478-82c72ce8` (eu-west-2)
 |-------|---------|
 | No surveys at all | ai-04 — participant never submitted pre or post survey |
 | No pre-survey | ai-06 — participant skipped pre-survey; post-survey completed |
-| ai-01 is organiser dry-run, not a real participant | ai-01 — data valid for tooling/infra testing only |
+| ai-01 participant work not committed to git branch | ai-01 — code changes are in the `ai-01_S1` session archive, not in `participant/ai-01` branch |
 | Resource/metadata files mislabelled `manual-02`/`manual-03` | ai-05, ai-06 — VMs were repurposed from manual group provisioning |
 | Screen recordings are split into segments | ai-02–ai-06 — concatenate for continuous playback |
 | Full video set not downloaded locally | ai-02–ai-06 — only first segment local; full set on S3 (~2.9 GB) |
