@@ -1,0 +1,37 @@
+{
+  "aggregation_timestamp": "2026-06-09T10:30:32.312273",
+  "participant_id": "ai-01",
+  "session_id": "S1",
+  "data_sources": {
+    "survey": "DATA_COLLECTION/survey_ai-01.json"
+  },
+  "data": {
+    "survey": {
+      "_metadata": {
+        "form": "pre_experiment_survey",
+        "generated_at": "2026-06-09T08:34:08.307Z",
+        "participant_id": "ai-01"
+      },
+      "date": "2026-06-09",
+      "participant_id": "ai-01",
+      "session_type": "ai-assisted",
+      "role": "developer",
+      "experience_level": "mid",
+      "main_language": "Go/Elixir",
+      "city_home": "Ipswich",
+      "city_work": "Ipswich",
+      "commute_public_transport": false,
+      "commute_car": true,
+      "commute_active": false,
+      "commute_remote": false,
+      "car_trips_per_day": "1",
+      "hours_per_day": "8",
+      "start_time": "09:00",
+      "end_time": "17:00",
+      "sse_completed": "no",
+      "devops_maturity": "4",
+      "mlops_maturity": "2"
+    }
+  },
+  "summary": {}
+}

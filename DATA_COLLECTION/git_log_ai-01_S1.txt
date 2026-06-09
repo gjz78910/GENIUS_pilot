@@ -1,0 +1,33 @@
+* 1212856 (HEAD -> participant-ai-01, tag: participant-ai-01-S1-20260609-103010, tag: participant-ai-01-S1-20260609-102358) Data loader fixes
+* 7978974 Report bug fixes`
+* 45ea6a3 matching
+* 65b14df Finished routing rework
+* 0bd2e76 tasks 2
+* ff0d5f0 Task one
+* f1bc878 (grafted, tag: initial) Restructure experiment docs: organiser subfolder, HTML participant instructions
+* 023395c (origin/main, origin/HEAD, main) Add psutil to environment dependencies
+* ee608fc Update README to point participants to HTML checklist
+* 44d4349 Rewrite experiment checklist as interactive HTML and update survey docs
+* d2d3624 Add post-experiment survey and update pre-experiment survey
+* 8e97129 Add AI tooling usage questions to pre-experiment survey
+| * 8111f04 (origin/KCL-01) Complete Jing pilot-test-1 dry-run workflow on KCL-01
+|/  
+* 96c8d1d Simplify source comments and add 2-hour participant limit
+* 8ac737b Refine experiment workflow, checkpoints, and data collection docs
+* dcc8ec2 Move pre-experiment survey to experiment docs
+* 6b5ed8c Remove design documents
+* 51ee19d Replace dry run checklist with experiment checklist
+* 5d0411e Align dry run checklist with participant instructions
+* 4d84646 Update experiment docs and report test coverage
+* fa1b937 Add harder quality benchmarks and update participant instructions
+* 4c68772 Update existing report tests to handle TOTAL summary row
+* 1ed997c Make Task 2 and Task 3 harder with bugs and missing validations
+* 5be470e Redesign scalability tests with realistic progressive scenarios
+* 175fbc5 Simplify README to focus on essential setup and structure info
+* 87afa6d Remove PARTICIPANT_INSTRUCTIONS.md from root folder
+*   dab9591 Merge branch 'main' of https://github.com/gjz78910/GENIUS_pilot
+|\  
+| * 530a314 Remove IDE-specific files (.amazonq, .cursor) and GitLab CI config
+* | bbc6392 Update codebase: add scalability tests, update participant instructions, and improve routing optimization
+|/  
+* 4ef5d82 Update to new version: add features, tests, and documentation

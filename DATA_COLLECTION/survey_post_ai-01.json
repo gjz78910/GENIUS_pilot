@@ -1,0 +1,14 @@
+{
+  "_metadata": {
+    "form": "post_experiment_survey",
+    "generated_at": "2026-06-09T10:27:17.877Z",
+    "participant_id": "ai-01"
+  },
+  "date": "2026-06-09",
+  "participant_id": "ai-01",
+  "session_type": "ai-assisted",
+  "ai_regular_use": "yes",
+  "ai_used_experiment": "yes",
+  "ai_used_extensively": "yes",
+  "notes": "During the refactoring work it was very useful and good about creating design, requirement, tasks documents which ensured it stayed on track. During the bug fixes, it also started to create docs etc which took a lot of time - it would have been quicker for me to go in and fix manually. At the end I asked it to go back and remove the asymetric handling parts of the code. It attempted this without making any docs first and it started going down a rabit hole and failed to complete."
+}
