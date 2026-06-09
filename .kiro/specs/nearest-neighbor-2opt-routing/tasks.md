@@ -38,8 +38,8 @@ Implement a hybrid routing strategy in `src/optimization/routing.py` that preser
     - Verify each successive destination is the closest unvisited from the previous position at time of selection
     - **Validates: Requirement 2.2**
 
-- [ ] 3. Implement the `two_opt_improve` function
-  - [ ] 3.1 Implement `two_opt_improve` in `src/optimization/routing.py`
+- [x] 3. Implement the `two_opt_improve` function
+  - [x] 3.1 Implement `two_opt_improve` in `src/optimization/routing.py`
     - Accept a valid route tuple and travel matrix
     - Iteratively test all (i, j) segment reversals for improvement
     - Apply reversal when `new_dist < old_dist` and restart the scan
@@ -47,28 +47,28 @@ Implement a hybrid routing strategy in `src/optimization/routing.py` that preser
     - Return `(improved_route_tuple, improved_distance)`
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-  - [ ]* 3.2 Write property test for 2-opt non-degradation
+  - [x]* 3.2 Write property test for 2-opt non-degradation
     - **Property 4: 2-opt Non-degradation**
     - Generate random valid routes, apply `two_opt_improve`
     - Verify `improved_distance <= initial_distance`
     - **Validates: Requirement 3.1**
 
-  - [ ]* 3.3 Write property test for 2-opt local optimality
+  - [x]* 3.3 Write property test for 2-opt local optimality
     - **Property 5: 2-opt Local Optimality**
     - For the returned route, verify no single 2-opt swap produces a shorter route
     - **Validates: Requirement 3.2**
 
-  - [ ]* 3.4 Write property test for 2-opt destination preservation
+  - [x]* 3.4 Write property test for 2-opt destination preservation
     - **Property 2: Route Circularity** and **Property 1: Route Completeness**
     - Verify `improved_route[0] == improved_route[-1] == start`
     - Verify the set of destinations is unchanged after improvement
     - **Validates: Requirements 3.3, 3.4**
 
-- [ ] 4. Checkpoint - Ensure all tests pass
+- [x] 4. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Update `find_optimal_route` with hybrid dispatch logic
-  - [ ] 5.1 Add `BRUTE_FORCE_THRESHOLD` constant and update `find_optimal_route`
+- [x] 5. Update `find_optimal_route` with hybrid dispatch logic
+  - [x] 5.1 Add `BRUTE_FORCE_THRESHOLD` constant and update `find_optimal_route`
     - Define `BRUTE_FORCE_THRESHOLD = 8` at module level
     - Keep the empty destinations early return `(start, start), 0.0`
     - Dispatch to `brute_force_tsp` when `len(destinations) <= BRUTE_FORCE_THRESHOLD`
@@ -86,14 +86,14 @@ Implement a hybrid routing strategy in `src/optimization/routing.py` that preser
     - For inputs with `len(destinations) <= 8`, verify returned distance equals brute-force optimal
     - **Validates: Requirements 1.2, 6.3**
 
-- [ ] 6. Verify backward compatibility and performance
-  - [ ] 6.1 Run existing test suites to confirm backward compatibility
+- [x] 6. Verify backward compatibility and performance
+  - [x] 6.1 Run existing test suites to confirm backward compatibility
     - Run `tests/test_routing.py` — all tests must pass unchanged
     - Run `tests/test_routing_checkpoint_a.py` — must pass the <0.25s performance gate for 10 destinations
     - Run `tests/test_matching.py` and `tests/test_scheduler_integration.py` to confirm integration
     - _Requirements: 6.1, 6.2, 7.4, 8.1, 8.2, 8.3_
 
-- [ ] 7. Final checkpoint - Ensure all tests pass
+- [x] 7. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

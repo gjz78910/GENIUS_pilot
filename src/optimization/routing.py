@@ -12,6 +12,14 @@ from itertools import permutations
 from typing import Sequence, Tuple, Dict
 
 
+BRUTE_FORCE_THRESHOLD: int = 8
+"""Maximum number of destinations for which brute-force is used.
+
+At or below this threshold, brute_force_tsp guarantees an optimal result.
+Above it, nearest_neighbor_tsp + two_opt_improve provides a fast heuristic.
+"""
+
+
 def brute_force_tsp(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
 ) -> Tuple[Tuple[str, ...], float]:
@@ -131,6 +139,54 @@ def _calculate_route_distance(
     )
 
 
+def two_opt_improve(
+    route: Tuple[str, ...], travel_matrix: Dict[str, Dict[str, float]]
+) -> Tuple[Tuple[str, ...], float]:
+    """Improve a route using 2-opt local search.
+
+    Iteratively reverses sub-segments of the route when doing so reduces
+    the total distance. Terminates when no single 2-opt swap yields an
+    improvement (the route is locally optimal).
+
+    Parameters
+    ----------
+    route : Tuple[str, ...]
+        A valid route tuple starting and ending at the same location.
+    travel_matrix : Dict[str, Dict[str, float]]
+        A dictionary representing the travel distance between locations.
+
+    Returns
+    -------
+    Tuple[Tuple[str, ...], float]
+        A tuple containing the improved route and its total distance.
+        The distance is guaranteed to be <= the input route's distance.
+    """
+    current_route = list(route)
+    n = len(current_route)
+    current_distance = _calculate_route_distance(tuple(current_route), travel_matrix)
+    improved = True
+
+    while improved:
+        improved = False
+        for i in range(1, n - 2):
+            for j in range(i + 1, n - 1):
+                # Reverse the segment between i and j (inclusive)
+                new_route = current_route[:]
+                new_route[i:j + 1] = new_route[i:j + 1][::-1]
+                new_distance = _calculate_route_distance(tuple(new_route), travel_matrix)
+
+                if new_distance < current_distance:
+                    current_route = new_route
+                    current_distance = new_distance
+                    improved = True
+                    break
+            if improved:
+                break
+
+    improved_route = tuple(current_route)
+    return improved_route, current_distance
+
+
 def find_optimal_route(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
 ) -> Tuple[Tuple[str, ...], float]:
@@ -151,4 +207,13 @@ def find_optimal_route(
         A tuple containing the route (including start at the beginning
         and end) and its total distance.
     """
-    return brute_force_tsp(start, destinations, travel_matrix)
+    if not destinations:
+        return (start, start), 0.0
+
+    if len(destinations) <= BRUTE_FORCE_THRESHOLD:
+        return brute_force_tsp(start, destinations, travel_matrix)
+
+    # Heuristic path: construct with nearest-neighbor, then improve with 2-opt
+    route, distance = nearest_neighbor_tsp(start, destinations, travel_matrix)
+    route, distance = two_opt_improve(route, travel_matrix)
+    return route, distance

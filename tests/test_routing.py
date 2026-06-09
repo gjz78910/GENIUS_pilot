@@ -393,3 +393,207 @@ class TestNearestNeighborTSP(unittest.TestCase):
                              f"At step {step}, expected {nearest} but got {route[step]}")
             unvisited.remove(nearest)
             current = nearest
+
+
+class TestTwoOptImprove(unittest.TestCase):
+    """Unit and property tests for the two_opt_improve function."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        from src.optimization.routing import (
+            two_opt_improve,
+            nearest_neighbor_tsp,
+            _calculate_route_distance,
+        )
+
+        self.two_opt = two_opt_improve
+        self.nn_tsp = nearest_neighbor_tsp
+        self.calc_dist = _calculate_route_distance
+
+        # Symmetric matrix
+        self.travel_matrix = {
+            "A": {"A": 0.0, "B": 10.0, "C": 15.0, "D": 20.0},
+            "B": {"A": 10.0, "B": 0.0, "C": 35.0, "D": 25.0},
+            "C": {"A": 15.0, "B": 35.0, "C": 0.0, "D": 30.0},
+            "D": {"A": 20.0, "B": 25.0, "C": 30.0, "D": 0.0},
+        }
+
+        # Matrix where nearest-neighbor gives a suboptimal route that 2-opt can improve
+        self.improvable_matrix = {
+            "S": {"S": 0.0, "A": 1.0, "B": 5.0, "C": 2.0, "D": 9.0},
+            "A": {"S": 1.0, "A": 0.0, "B": 3.0, "C": 8.0, "D": 7.0},
+            "B": {"S": 5.0, "A": 3.0, "B": 0.0, "C": 4.0, "D": 2.0},
+            "C": {"S": 2.0, "A": 8.0, "B": 4.0, "C": 0.0, "D": 6.0},
+            "D": {"S": 9.0, "A": 7.0, "B": 2.0, "C": 6.0, "D": 0.0},
+        }
+
+    # ========================================
+    # Non-degradation (Property 4)
+    # ========================================
+
+    def test_never_worsens_route(self):
+        """2-opt result distance is <= input route distance."""
+        # Build a suboptimal route manually
+        route = ("A", "C", "B", "D", "A")
+        initial_dist = self.calc_dist(route, self.travel_matrix)
+        improved_route, improved_dist = self.two_opt(route, self.travel_matrix)
+        self.assertLessEqual(improved_dist, initial_dist)
+
+    def test_non_degradation_from_nn(self):
+        """2-opt never worsens the nearest-neighbor route."""
+        nn_route, nn_dist = self.nn_tsp("S", ["A", "B", "C", "D"], self.improvable_matrix)
+        opt_route, opt_dist = self.two_opt(nn_route, self.improvable_matrix)
+        self.assertLessEqual(opt_dist, nn_dist)
+
+    def test_already_optimal_route_unchanged(self):
+        """If route is already 2-optimal, distance stays the same."""
+        # A->B->A is trivially 2-optimal (only 1 destination, no swap possible)
+        route = ("A", "B", "A")
+        improved_route, improved_dist = self.two_opt(route, self.travel_matrix)
+        original_dist = self.calc_dist(route, self.travel_matrix)
+        self.assertAlmostEqual(improved_dist, original_dist)
+
+    # ========================================
+    # Local Optimality (Property 5)
+    # ========================================
+
+    def test_no_improving_swap_exists(self):
+        """After 2-opt, no single segment reversal can reduce distance."""
+        route = ("A", "C", "B", "D", "A")
+        improved_route, improved_dist = self.two_opt(route, self.travel_matrix)
+
+        # Check all possible 2-opt swaps yield no improvement
+        route_list = list(improved_route)
+        n = len(route_list)
+        for i in range(1, n - 2):
+            for j in range(i + 1, n - 1):
+                candidate = route_list[:]
+                candidate[i:j + 1] = candidate[i:j + 1][::-1]
+                candidate_dist = self.calc_dist(tuple(candidate), self.travel_matrix)
+                self.assertGreaterEqual(
+                    candidate_dist, improved_dist,
+                    f"Improving swap found at ({i},{j})"
+                )
+
+    def test_local_optimality_larger_route(self):
+        """Local optimality holds for a larger route."""
+        nn_route, _ = self.nn_tsp("S", ["A", "B", "C", "D"], self.improvable_matrix)
+        improved_route, improved_dist = self.two_opt(nn_route, self.improvable_matrix)
+
+        route_list = list(improved_route)
+        n = len(route_list)
+        for i in range(1, n - 2):
+            for j in range(i + 1, n - 1):
+                candidate = route_list[:]
+                candidate[i:j + 1] = candidate[i:j + 1][::-1]
+                candidate_dist = self.calc_dist(tuple(candidate), self.improvable_matrix)
+                self.assertGreaterEqual(candidate_dist, improved_dist)
+
+    # ========================================
+    # Destination Preservation (Properties 1 & 2)
+    # ========================================
+
+    def test_preserves_destinations(self):
+        """2-opt does not add or remove destinations."""
+        route = ("A", "C", "B", "D", "A")
+        improved_route, _ = self.two_opt(route, self.travel_matrix)
+        self.assertEqual(sorted(improved_route[1:-1]), sorted(route[1:-1]))
+
+    def test_preserves_start_and_end(self):
+        """2-opt preserves start and end location."""
+        route = ("A", "C", "B", "D", "A")
+        improved_route, _ = self.two_opt(route, self.travel_matrix)
+        self.assertEqual(improved_route[0], "A")
+        self.assertEqual(improved_route[-1], "A")
+
+    def test_preserves_route_length(self):
+        """2-opt does not change route length."""
+        route = ("A", "C", "B", "D", "A")
+        improved_route, _ = self.two_opt(route, self.travel_matrix)
+        self.assertEqual(len(improved_route), len(route))
+
+    # ========================================
+    # Distance Accuracy
+    # ========================================
+
+    def test_reported_distance_matches_calculation(self):
+        """Returned distance matches recomputed edge-weight sum."""
+        route = ("A", "C", "B", "D", "A")
+        improved_route, improved_dist = self.two_opt(route, self.travel_matrix)
+        expected = self.calc_dist(improved_route, self.travel_matrix)
+        self.assertAlmostEqual(improved_dist, expected)
+
+    # ========================================
+    # Property Tests with Randomized Inputs
+    # ========================================
+
+    def _generate_random_matrix(self, locations, seed=42):
+        """Helper to generate a random travel matrix."""
+        import random
+
+        rng = random.Random(seed)
+        matrix = {}
+        for a in locations:
+            matrix[a] = {}
+            for b in locations:
+                if a == b:
+                    matrix[a][b] = 0.0
+                else:
+                    matrix[a][b] = rng.uniform(1.0, 100.0)
+        return matrix
+
+    def test_property_non_degradation_random(self):
+        """Property: 2-opt never increases distance (random inputs)."""
+        locations = [f"L{i}" for i in range(12)]
+        matrix = self._generate_random_matrix(locations, seed=77)
+        start = "L0"
+        destinations = locations[1:]
+
+        nn_route, nn_dist = self.nn_tsp(start, destinations, matrix)
+        opt_route, opt_dist = self.two_opt(nn_route, matrix)
+        self.assertLessEqual(opt_dist, nn_dist)
+
+    def test_property_preservation_random(self):
+        """Property: destinations and circularity preserved (random inputs)."""
+        locations = [f"L{i}" for i in range(12)]
+        matrix = self._generate_random_matrix(locations, seed=88)
+        start = "L0"
+        destinations = locations[1:]
+
+        nn_route, _ = self.nn_tsp(start, destinations, matrix)
+        opt_route, _ = self.two_opt(nn_route, matrix)
+
+        self.assertEqual(opt_route[0], start)
+        self.assertEqual(opt_route[-1], start)
+        self.assertEqual(sorted(opt_route[1:-1]), sorted(destinations))
+
+    def test_property_local_optimality_random(self):
+        """Property: no single 2-opt swap improves route (random inputs)."""
+        locations = [f"L{i}" for i in range(10)]
+        matrix = self._generate_random_matrix(locations, seed=55)
+        start = "L0"
+        destinations = locations[1:]
+
+        nn_route, _ = self.nn_tsp(start, destinations, matrix)
+        opt_route, opt_dist = self.two_opt(nn_route, matrix)
+
+        route_list = list(opt_route)
+        n = len(route_list)
+        for i in range(1, n - 2):
+            for j in range(i + 1, n - 1):
+                candidate = route_list[:]
+                candidate[i:j + 1] = candidate[i:j + 1][::-1]
+                candidate_dist = self.calc_dist(tuple(candidate), matrix)
+                self.assertGreaterEqual(candidate_dist, opt_dist)
+
+    def test_property_distance_accuracy_random(self):
+        """Property: reported distance matches edge sum (random inputs)."""
+        locations = [f"L{i}" for i in range(10)]
+        matrix = self._generate_random_matrix(locations, seed=33)
+        start = "L0"
+        destinations = locations[1:]
+
+        nn_route, _ = self.nn_tsp(start, destinations, matrix)
+        opt_route, opt_dist = self.two_opt(nn_route, matrix)
+        expected = self.calc_dist(opt_route, matrix)
+        self.assertAlmostEqual(opt_dist, expected)
