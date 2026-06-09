@@ -108,7 +108,7 @@ Videos split into segments due to recording restarts — concatenate with `ffmpe
 | Participant code backup | All 6 | Full working tree snapshot at session end |
 | Screen recordings | All 6 | Coding process, Kiro interaction, time-on-task |
 | Git activity log | All 6 | Commit frequency, timing, files changed |
-| Task checkpoint results | ai-01 only | Pass/fail per task checkpoint |
+| Task checkpoint results | ai-01 only | Pass/fail per task checkpoint (ai-02–ai-06 did not run the checkpoint script) |
 
 ---
 
@@ -119,5 +119,4 @@ Videos split into segments due to recording restarts — concatenate with `ffmpe
 | `survey_ai-04.json` (pre) | ai-04 | Never submitted — unrecoverable |
 | `survey_post_ai-04.json` | ai-04 | Never submitted — unrecoverable |
 | `survey_ai-06.json` (pre) | ai-06 | Never submitted — unrecoverable |
-| Task checkpoint run JSONs | ai-02–ai-06 | Not collected at session end |
 | Screen recording segments | ai-02–ai-06 | 19 segments (~2.5 GB) on S3, not downloaded locally |
