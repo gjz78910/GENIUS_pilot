@@ -419,8 +419,6 @@ start_recording() {
     exit 0
   fi
 
-  rm -f "$VIDEO_DIR"/GENIUS_"$PARTICIPANT_ID"_"$SESSION_ID"*.mp4
-
   local xauthority="" xdcv_pid="" xdcv_args=""
   xdcv_pid="$(pgrep -u "$(id -u participant)" -f "Xdcv.*-sessionid genius" | head -n 1 || true)"
   if [ -n "$xdcv_pid" ] && [ -r "/proc/$xdcv_pid/cmdline" ]; then
@@ -453,9 +451,9 @@ start_recording() {
   fi
 
   local output_file
-  output_file="$VIDEO_DIR/GENIUS_$${PARTICIPANT_ID}_$${SESSION_ID}.mp4"
+  output_file="$VIDEO_DIR/GENIUS_$${PARTICIPANT_ID}_$${SESSION_ID}_$(date -u +%Y%m%dT%H%M%SZ).mp4"
 
-  nohup ffmpeg \
+  XAUTHORITY="$xauthority" DISPLAY="$display_value" nohup ffmpeg \
     -y \
     -hide_banner \
     -loglevel info \
@@ -669,6 +667,14 @@ esac
 EOF
 chmod 0755 /usr/local/bin/genius-screen-recorder
 
+cat >/usr/local/bin/genius-recorder-watchdog <<'EOF'
+#!/bin/bash
+sudo -u participant /usr/local/bin/genius-screen-recorder start 2>/dev/null || true
+EOF
+chmod 0755 /usr/local/bin/genius-recorder-watchdog
+echo '* * * * * root /usr/local/bin/genius-recorder-watchdog' >/etc/cron.d/genius-recorder-watchdog
+chmod 0644 /etc/cron.d/genius-recorder-watchdog
+
 cat >/usr/local/bin/genius-dcv-init <<'EOF'
 #!/usr/bin/env bash
 unset SESSION_MANAGER
@@ -701,8 +707,7 @@ set -euo pipefail
 
 . /etc/genius/session.env
 
-dcv set-config --section display --key enable-client-resize "false"
-dcv set-config --section session-management --key virtual-session-default-layout "[{'w': 1920, 'h': 1080, 'x': 0, 'y': 0}]"
+dcv set-config --section display --key enable-client-resize "true"
 
 systemctl enable --now dcvserver
 for attempt in $(seq 1 30); do
@@ -729,6 +734,10 @@ dcv create-session \
   --max-concurrent-clients 2 \
   --init /usr/local/bin/genius-dcv-init \
   genius
+
+# Start recording in background; ignore if display not ready yet (watchdog will retry)
+sleep 5
+sudo -u participant /usr/local/bin/genius-screen-recorder start 2>/dev/null || true
 EOF
 chmod 0755 /usr/local/bin/genius-ensure-dcv-session
 
