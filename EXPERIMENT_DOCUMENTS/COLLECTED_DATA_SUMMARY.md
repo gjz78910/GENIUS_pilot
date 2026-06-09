@@ -13,9 +13,9 @@
 | ai-01 | — (organiser dry-run) | — | — | — | — | No | No |
 | ai-02 | Developer | Senior | Java | ~10:49 | ~14:47 | Yes | Yes |
 | ai-03 | DevOps Engineer | Mid | Python | 14:09 | 16:08 | Yes | Yes |
-| ai-04 | — (no survey completed) | — | — | — | ~14:23 | No | No |
+| ai-04 | — | — | — | — | ~14:23 | **MISSING** (not submitted) | **MISSING** (not submitted) |
 | ai-05 | AI Researcher | Junior | Python | 14:00 | 16:00 | Yes | Yes |
-| ai-06 | — (no pre-survey) | — | — | — | ~14:03 | No | Yes |
+| ai-06 | — | — | — | — | ~14:03 | **MISSING** (not submitted) | Yes |
 
 ---
 
@@ -42,8 +42,8 @@ Local clone: `~/Downloads/GENIUS_experiment_data/{ai-01..ai-06}/`
 | `kiro_metrics_{id}_S1.json` | No | Yes | Yes | Yes | Yes | Yes |
 | `participant_state_{id}_S1.json` | No | Yes | Yes | Yes | Yes | Yes |
 | `git_log_{id}_S1.txt` | No | Yes | Yes | Yes | Yes | Yes |
-| `survey_{id}.json` (pre) | No | Yes | Yes | No | Yes | No |
-| `survey_post_{id}.json` | No | Yes | Yes | No | Yes | Yes |
+| `survey_{id}.json` (pre) | No | Yes | Yes | **No — not submitted** | Yes | **No — not submitted** |
+| `survey_post_{id}.json` | No | Yes | Yes | **No — not submitted** | Yes | Yes |
 | `participant_backups/*.tar.gz` | No | Yes (~6.1MB) | Yes (~6.1MB) | Yes (~6.1MB) | Yes (~6.1MB) | Yes (~6.1MB) |
 
 ---
@@ -113,8 +113,8 @@ These are complete snapshots of `/home/participant/GENIUS_pilot` taken at sessio
 
 | Issue | Affected |
 |-------|---------|
-| No pre-survey | ai-04, ai-06 |
-| No post-survey | ai-04 |
+| No pre-survey | ai-04, ai-06 — confirmed absent in rescue archives; HTML form was present but never submitted |
+| No post-survey | ai-04 — confirmed absent; participant never submitted either survey |
 | ai-01 was organiser dry-run, not a real participant | ai-01 |
 | ai-05, ai-06 originally provisioned as `manual-02`/`manual-03` — some filenames reference wrong ID | ai-05, ai-06 |
 | Video segments are split (watchdog restarts) — need to concatenate for continuous playback | ai-02 through ai-06 |
