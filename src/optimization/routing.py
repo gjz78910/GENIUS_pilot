@@ -59,6 +59,30 @@ def brute_force_tsp(
     return best_route, best_distance
 
 
+def _calculate_route_distance(
+    route: Tuple[str, ...], travel_matrix: Dict[str, Dict[str, float]]
+) -> float:
+    """Calculate the total travel distance for a given route.
+
+    Sums the travel distance between all consecutive location pairs in the route.
+
+    Parameters
+    ----------
+    route : Tuple[str, ...]
+        A tuple of location strings representing the route to measure.
+    travel_matrix : Dict[str, Dict[str, float]]
+        A dictionary representing the travel distance between locations.
+
+    Returns
+    -------
+    float
+        The total distance of the route (non-negative).
+    """
+    return sum(
+        travel_matrix[route[i]][route[i + 1]] for i in range(len(route) - 1)
+    )
+
+
 def find_optimal_route(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
 ) -> Tuple[Tuple[str, ...], float]:

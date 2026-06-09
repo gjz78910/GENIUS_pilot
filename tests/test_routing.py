@@ -132,3 +132,73 @@ class TestRouting(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestCalculateRouteDistance(unittest.TestCase):
+    """Unit tests for the _calculate_route_distance helper."""
+
+    def setUp(self):
+        """Set up a symmetric travel matrix for testing."""
+        from src.optimization.routing import _calculate_route_distance
+
+        self.calc = _calculate_route_distance
+        self.travel_matrix = {
+            "A": {"A": 0.0, "B": 10.0, "C": 15.0, "D": 20.0},
+            "B": {"A": 10.0, "B": 0.0, "C": 35.0, "D": 25.0},
+            "C": {"A": 15.0, "B": 35.0, "C": 0.0, "D": 30.0},
+            "D": {"A": 20.0, "B": 25.0, "C": 30.0, "D": 0.0},
+        }
+
+    def test_known_route_distance(self):
+        """Test distance calculation with a known route."""
+        # A->B->C->A = 10 + 35 + 15 = 60
+        route = ("A", "B", "C", "A")
+        self.assertEqual(self.calc(route, self.travel_matrix), 60.0)
+
+    def test_different_route_order(self):
+        """Test that route order affects distance."""
+        # A->C->B->A = 15 + 35 + 10 = 60
+        route = ("A", "C", "B", "A")
+        self.assertEqual(self.calc(route, self.travel_matrix), 60.0)
+
+        # A->B->D->A = 10 + 25 + 20 = 55
+        route = ("A", "B", "D", "A")
+        self.assertEqual(self.calc(route, self.travel_matrix), 55.0)
+
+    def test_trivial_route_returns_zero(self):
+        """Test that a trivial route (start, start) returns 0.0."""
+        route = ("A", "A")
+        self.assertEqual(self.calc(route, self.travel_matrix), 0.0)
+
+    def test_single_destination_round_trip(self):
+        """Test distance for a single-destination round trip."""
+        # A->B->A = 10 + 10 = 20
+        route = ("A", "B", "A")
+        self.assertEqual(self.calc(route, self.travel_matrix), 20.0)
+
+    def test_asymmetric_matrix(self):
+        """Test with an asymmetric travel matrix where A->B != B->A."""
+        asymmetric_matrix = {
+            "X": {"X": 0.0, "Y": 3.0, "Z": 7.0},
+            "Y": {"X": 5.0, "Y": 0.0, "Z": 2.0},
+            "Z": {"X": 4.0, "Y": 6.0, "Z": 0.0},
+        }
+        # X->Y->Z->X = 3 + 2 + 4 = 9
+        route = ("X", "Y", "Z", "X")
+        self.assertEqual(self.calc(route, asymmetric_matrix), 9.0)
+
+        # X->Z->Y->X = 7 + 6 + 5 = 18
+        route = ("X", "Z", "Y", "X")
+        self.assertEqual(self.calc(route, asymmetric_matrix), 18.0)
+
+    def test_result_is_non_negative(self):
+        """Test that the result is always non-negative for valid matrices."""
+        route = ("A", "B", "C", "D", "A")
+        distance = self.calc(route, self.travel_matrix)
+        self.assertGreaterEqual(distance, 0.0)
+
+    def test_full_tour_distance(self):
+        """Test distance for a complete tour visiting all nodes."""
+        # A->B->C->D->A = 10 + 35 + 30 + 20 = 95
+        route = ("A", "B", "C", "D", "A")
+        self.assertEqual(self.calc(route, self.travel_matrix), 95.0)
