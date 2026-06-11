@@ -1,0 +1,27 @@
+{
+  "run_key": "task1_cp3",
+  "filename_prefix": "Task1_cp3",
+  "started_at": "2026-06-11T13:30:18.519783",
+  "finished_at": "2026-06-11T13:30:20.467761",
+  "duration_seconds": 1.948,
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "tests.performance.test_scalability",
+    "tests.test_routing",
+    "tests.test_matching",
+    "tests.test_benchmarks",
+    "-v"
+  ],
+  "return_code": 0,
+  "success": true,
+  "test_statistics": {
+    "tests_run": 28,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success": true
+  },
+  "output": "<omitted>"
+}
