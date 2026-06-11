@@ -67,7 +67,28 @@
 
 ---
 
-## 5. Task Checkpoint Results
+## 5. Kiro Analytics
+
+All participants used **Kiro Pro** (1000 credits/month, $0.04/credit overage). Default model: `auto` (Kiro routes internally). All sessions within the free monthly quota — **no overage charges**.
+
+| VM | Credits Used | Model Selection | Auto Calls | Opus 4.8 Calls | Chat Messages | Agent Actions | Autocomplete |
+|----|:------------:|-----------------|:----------:|:--------------:|:-------------:|:-------------:|:------------:|
+| ai-01 | 63.14 | auto | 22,183 | — | 29 | 29 | 0 |
+| ai-02 | 155.94 | **claude-opus-4.8** (explicit) | 2,033 | 530 | — | — | 0 |
+| ai-03 | 151.84 | auto | 4,998 | — | — | — | 0 |
+| ai-04 | 155.94 | auto | 2,776 | — | — | — | 0 |
+| ai-05 | N/A† | auto | N/A† | — | 15 | 15 | 0 |
+| ai-06 | N/A† | auto | N/A† | — | 13 | 13 | 0 |
+
+> † ai-05 and ai-06 VMs were terminated before credit/model logs were extracted; q-client.log not in S3 archive.  
+> Chat messages and agent actions for ai-02–ai-04 are countable from kiro_session JSONs but not tallied here.  
+> Autocomplete log was 0 bytes for all participants — inline autocomplete was not used.  
+> Raw logs per participant: `q-client.log`, `kiro_llm_promptcompletion.log`, `tokens_generated.jsonl` in `{id}_S1/kiro_logs/` (ai-01–ai-04 only).  
+> Credit rate multipliers: `auto` = 1×, Claude Opus 4.8 = 2.2×, Claude Sonnet = 1.3×.
+
+---
+
+## 6. Task Checkpoint Results
 
 Pass/fail for each task checkpoint run post-session against participant code.
 
@@ -85,7 +106,7 @@ Pass/fail for each task checkpoint run post-session against participant code.
 
 ---
 
-## 6. What Is Analyzable
+## 7. What Is Analyzable
 
 
 | Data Type | Available For | What You Can Analyze |
