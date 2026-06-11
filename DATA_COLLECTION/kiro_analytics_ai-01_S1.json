@@ -1,0 +1,46 @@
+{
+  "participant_id": "ai-01",
+  "session_id": "S1",
+  "subscription": "KIRO PRO",
+  "credits": {
+    "credits_used_session": 63.14,
+    "credits_start": 1.68,
+    "credits_end": 64.82,
+    "monthly_limit": 1000,
+    "overage_rate_usd_per_credit": 0.04,
+    "estimated_cost_usd": 0.0
+  },
+  "model_usage": {
+    "default_model": "auto",
+    "actual_calls": {
+      "auto": 22183
+    },
+    "internal_classifier_calls": 8,
+    "available_models": [
+      "claude-haiku-4.5",
+      "claude-opus-4.5",
+      "claude-opus-4.6",
+      "claude-opus-4.7",
+      "claude-opus-4.8",
+      "claude-sonnet-4",
+      "claude-sonnet-4.5",
+      "claude-sonnet-4.6",
+      "deepseek-3.2",
+      "glm-5",
+      "minimax-m2.1",
+      "minimax-m2.5",
+      "qwen3-coder-next"
+    ]
+  },
+  "tokens": {
+    "total_prompt_tokens": 7516,
+    "total_generated_tokens": 0,
+    "note": "generated_tokens=0 because Kiro uses streaming and does not log completion tokens in tokens_generated.jsonl"
+  },
+  "chat_sessions": 1,
+  "chat_messages_sent": 28,
+  "agent_actions": 28,
+  "autocomplete_completions": 0,
+  "autocomplete_note": "Autocomplete log was empty \u2014 participants did not use inline autocomplete or it was disabled",
+  "powers": "Standard Kiro Powers registered (no custom powers installed)"
+}
