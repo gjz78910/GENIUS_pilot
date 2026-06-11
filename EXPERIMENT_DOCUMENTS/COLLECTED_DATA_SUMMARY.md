@@ -77,13 +77,12 @@ All participants used **Kiro Pro** (1000 credits/month, $0.04/credit overage). D
 | ai-02 | 155.94 | **claude-opus-4.8** (explicit) | 2,033 | 530 | — | — | 0 |
 | ai-03 | 151.84 | auto | 4,998 | — | — | — | 0 |
 | ai-04 | 155.94 | auto | 2,776 | — | — | — | 0 |
-| ai-05 | N/A† | auto | N/A† | — | 15 | 15 | 0 |
-| ai-06 | N/A† | auto | N/A† | — | 13 | 13 | 0 |
+| ai-05 | 155.94 | auto | 3,009 | — | 15 | 15 | 0 |
+| ai-06 | 96.05 | auto | 1,036 | — | 13 | 13 | 0 |
 
-> † ai-05 and ai-06 VMs were terminated before credit/model logs were extracted; q-client.log not in S3 archive.  
 > Chat messages and agent actions for ai-02–ai-04 are countable from kiro_session JSONs but not tallied here.  
 > Autocomplete log was 0 bytes for all participants — inline autocomplete was not used.  
-> Raw logs per participant: `q-client.log`, `kiro_llm_promptcompletion.log`, `tokens_generated.jsonl` in `{id}_S1/kiro_logs/` (ai-01–ai-04 only).  
+> Raw logs per participant: `q-client.log`, `kiro_llm_promptcompletion.log`, `tokens_generated.jsonl` in `{id}_S1/kiro_logs/`.  
 > Credit rate multipliers: `auto` = 1×, Claude Opus 4.8 = 2.2×, Claude Sonnet = 1.3×.
 
 ---
