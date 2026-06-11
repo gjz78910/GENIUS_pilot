@@ -3,25 +3,44 @@
   "session_id": "S1",
   "subscription": "KIRO PRO",
   "credits": {
-    "credits_used_session": null,
-    "note": "VM no longer exists; q-client.log was not included in S3 archive. Credit usage unrecoverable."
+    "credits_used_session": 96.05,
+    "credits_start": 1.68,
+    "credits_end": 97.73,
+    "monthly_limit": 1000,
+    "overage_rate_usd_per_credit": 0.04,
+    "estimated_cost_usd": 0.0
   },
   "model_usage": {
     "default_model": "auto",
     "actual_calls": {
-      "auto": "unknown \u2014 q-client.log unavailable"
+      "auto": 1036
     },
-    "note": "Model usage counts unrecoverable; VM terminated before extraction."
+    "internal_classifier_calls": 38,
+    "available_models": [
+      "claude-haiku-4.5",
+      "claude-opus-4.5",
+      "claude-opus-4.6",
+      "claude-opus-4.7",
+      "claude-opus-4.8",
+      "claude-sonnet-4",
+      "claude-sonnet-4.5",
+      "claude-sonnet-4.6",
+      "deepseek-3.2",
+      "glm-5",
+      "minimax-m2.1",
+      "minimax-m2.5",
+      "qwen3-coder-next"
+    ]
   },
   "tokens": {
-    "total_prompt_tokens": null,
-    "total_generated_tokens": null,
-    "note": "tokens_generated.jsonl not in S3 archive. Unrecoverable."
+    "total_prompt_tokens": 2199,
+    "total_generated_tokens": 0,
+    "note": "generated_tokens=0 because Kiro uses streaming and does not log completion tokens in tokens_generated.jsonl"
   },
   "chat_sessions": 1,
   "chat_messages_sent": 13,
   "agent_actions": 13,
   "autocomplete_completions": 0,
-  "autocomplete_note": "Autocomplete log was 0 bytes in S3 archive",
+  "autocomplete_note": "Autocomplete log was empty \u2014 inline autocomplete not used",
   "powers": "Standard Kiro Powers registered (no custom powers installed)"
 }
