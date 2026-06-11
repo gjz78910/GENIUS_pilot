@@ -258,12 +258,22 @@ All sessions within the free monthly 1000-credit quota. Hypothetical overage at 
 | CPU usage over time | `resource_usage_{id}_S1.jsonl` (1Hz samples) | Spikes during agent file writes / test runs | Yes |
 | RAM usage over time | Same | Baseline ~1–2 GB; spikes during Python test execution | Yes |
 | GPU usage | Same | Expected 0 — no ML training in tasks | Yes |
-| CPU/RAM spike correlation with AI events | Cross-reference with kiro_session JSON timestamps | When agent ran tests: CPU spike; when writing files: I/O | Partial — **local script**: both files already downloaded |
+| CPU/RAM spike correlation with AI events | Cross-reference with kiro_session JSON timestamps | When agent ran tests: CPU spike; when writing files: I/O | **Yes — computed below** |
 
-**Further analyzable:**
-- Identify periods of high activity (agent runs) vs idle (reading/thinking)
-- Estimate "agent-active" time vs "human-active" time from CPU patterns
-- Validate session duration estimates against resource activity end time
+**CPU and RAM at AI call times vs overall session average** (computed from q-client.log timestamps × resource_usage_jsonl):
+
+| VM | CPU avg at AI calls | CPU session avg | CPU lift | RAM avg at AI calls | RAM session avg |
+|----|:-------------------:|:---------------:|:--------:|:-------------------:|:---------------:|
+| ai-01 | 39.5% | 32.7% | +6.8pp | 38.3% | 36.1% |
+| ai-02 | 71.0% | 20.8% | +50.2pp | 41.4% | 31.0% |
+| ai-03 | 54.7% | 17.4% | +37.3pp | 37.8% | 28.6% |
+| ai-04 | 34.2% | 10.8% | +23.4pp | 36.7% | 27.8% |
+| ai-05 | 69.7% | 13.4% | +56.3pp | 37.8% | 26.7% |
+| ai-06 | 36.8% | 11.0% | +25.8pp | 33.8% | 25.9% |
+
+> "CPU lift" = CPU during AI calls minus session average. High lift (ai-02: +50pp, ai-05: +56pp) indicates the agent was actively running tests/writes during its turns. Low lift (ai-01: +7pp) reflects ai-01's long idle session with steady background activity.  
+> Matched 251–131/56 of AI calls to resource records within a 30s window.  
+> All participants: GPU usage = 0% throughout (no ML workloads).
 
 ---
 
@@ -285,9 +295,9 @@ All sessions within the free monthly 1000-credit quota. Hypothetical overage at 
 
 | Further Analysis | Method | Data Available |
 |-----------------|--------|:--------------:|
-| Error timeline clustering | Cross-reference kiro_metrics error events with kiro_session JSON timestamps | Partial — **local script**: both files already downloaded |
-| Error type classification | Parse kiro_metrics log file entries: Python tracebacks vs test failures vs system warnings | Partial — **local script**: raw logs in `{id}_S1/kiro_logs/` already downloaded |
-| Error → AI request latency | Did participants immediately ask AI after an error? Timestamp correlation | Partial — **local script**: timestamps in session JSONs and logs already downloaded |
+| Error timeline clustering | Cross-reference kiro_metrics error events with kiro_session JSON timestamps | **VM needed** — kiro_metrics errors come from VS Code extension host logs (`Kiro Logs.log`) not captured in kiro_logs/ export; only aggregate count is local |
+| Error type classification | Parse VS Code extension host log for Python tracebacks vs test failures vs system warnings | **VM needed** — same reason; raw event logs not downloaded |
+| Error → AI request latency | Did participants immediately ask AI after an error? Timestamp correlation | **VM needed** — requires per-event error timestamps from VS Code logs |
 
 ---
 
@@ -340,7 +350,7 @@ Kiro's "Specs" feature generates a task breakdown before coding. Present in part
 | Spec accuracy | Did the AI correctly identify required modules and functions? | Partial — ai-01 **manual** (spec text already local); ai-02–06 **VM needed** |
 | Spec completeness | Did it cover all 3 tasks or only the first one? | Partial — ai-01 **manual** (spec text already local); ai-02–06 **VM needed** |
 | Spec vs implementation divergence | Lines in spec that weren't implemented; code written beyond spec | Partial — ai-01 **manual** (spec text already local); ai-02–06 **VM needed** |
-| Spec creation time | From session JSON timestamps — when was spec created vs when did coding start? | Partial — **local script**: session JSONs already downloaded for all 6 |
+| Spec creation time | From session JSON timestamps — when was spec created vs when did coding start? | **VM needed** — spec IDs not referenced in q-client.log; `.config.kiro` has no timestamps; VS Code log needed |
 
 ---
 
@@ -350,10 +360,25 @@ Kiro's "Specs" feature generates a task breakdown before coding. Present in part
 
 | Dimension | Data Source | Notes | Data Available |
 |-----------|-------------|-------|:--------------:|
-| AI compute energy proxy | Kiro credits consumed (63–156 credits per session) | Credits as proxy for GPU-compute time; Anthropic's Claude API energy cost estimates available | Yes |
-| Commute carbon | Pre-survey commute mode + distance | Car vs public transport vs cycling; multiply by CO₂/km estimates | Yes |
-| Cloud VM energy | AWS EC2 instance-hours (t3.medium in eu-west-2) | ~3.5W TDP; eu-west-2 carbon intensity ~0.225 kg CO₂/kWh | Yes |
-| Aggregate calculation | (AI compute + VM) vs commute avoided | AI-assisted session from home vs commuting to office | Partial — **local script**: all inputs already downloaded |
+| AI compute energy proxy | Kiro credits / prompt tokens from `kiro_analytics_{id}_S1.json` | ~0.002 kWh per 1000 prompt tokens (literature estimate, high uncertainty) | Yes |
+| Commute carbon | Pre-survey `city_home`, `commute_car`, `commute_public_transport`, `car_trips_per_day` | Intra-city distance estimated by city: Ipswich ~5 km, London ~12 km, Oxford ~8 km | Yes |
+| Cloud VM energy | Session duration × t3.medium avg 5 W, UK grid 0.207 kg CO₂/kWh | eu-west-2 = UK region | Yes |
+| Aggregate calculation | All inputs combined | **Computed below** | Yes |
+
+**Computed carbon estimates per participant per session:**
+
+| VM | Commute mode | Commute kg CO₂ | VM kWh | VM kg CO₂ | AI energy kWh | AI kg CO₂ | **Total kg CO₂** |
+|----|:-------------|:--------------:|:------:|:---------:|:-------------:|:---------:|:----------------:|
+| ai-01 | car ~5 km/day | 0.855 | 0.0076 | 0.0016 | 0.044 | 0.009 | **0.866** |
+| ai-02 | remote (no commute) | 0.000 | 0.0037 | 0.0008 | 0.004 | 0.001 | **0.002** |
+| ai-03 | remote (no commute) | 0.000 | 0.0107 | 0.0022 | 0.010 | 0.002 | **0.004** |
+| ai-04 | car ~10 km/day | 1.710 | 0.0018 | 0.0004 | 0.006 | 0.001 | **1.712** |
+| ai-05 | car ~10 km/day | 1.710 | 0.0013 | 0.0003 | 0.006 | 0.001 | **1.712** |
+| ai-06 | bus ~10 km/day | 0.890 | 0.0002 | 0.0000 | 0.002 | 0.000 | **0.890** |
+
+> Key finding: commute CO₂ dominates by ~100×. For car commuters (ai-01/04/05), the entire cloud VM + AI inference adds <1% to the daily carbon footprint versus not commuting.  
+> ai-02 and ai-03 (remote workers) had near-zero session CO₂ (0.002–0.004 kg).  
+> Assumptions: car = 0.171 kg CO₂/km (UK BEIS 2024), bus = 0.089 kg/km, UK grid = 0.207 kg CO₂/kWh.
 
 ---
 
