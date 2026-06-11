@@ -144,6 +144,19 @@ Pass/fail for each task checkpoint run post-session against participant code.
 
 **Inflated log counts** (from `kiro_metrics_{id}_S1.json`): chat_messages 119/231/149/189/149/102 — these count log events per request (not user turns); useful for comparing relative logging intensity.
 
+**Agent intent classification** (from `Kiro_Logs.log` `[Agent Classifier]` events — "chat" = question/explain, "do" = implement/run, "spec" = generate spec document):
+
+| VM | Chat % | Do % | Spec % | Total classified |
+|----|:------:|:----:|:------:|:---------------:|
+| ai-01 | 0% | 67% | 33% | 3 |
+| ai-02 | 48% | 52% | 0% | 27 |
+| ai-03 | — | — | — | (spec agent triggered directly — see 7.12) |
+| ai-04 | 62% | 31% | 8% | 26 |
+| ai-05 | 27% | 73% | 0% | 15 |
+| ai-06 | 62% | 31% | 8% | 13 |
+
+> ai-01 almost entirely "do" mode (agent tasks); ai-05 similarly "do"-heavy. ai-02/04/06 split between chat and do. ai-02 (Supervised mode) had higher chat% — consistent with a more question-and-verify pattern vs autonomous agent execution.
+
 ---
 
 ### 7.3 AI Efficiency & Credit Economics
@@ -281,6 +294,8 @@ All sessions within the free monthly 1000-credit quota. Hypothetical overage at 
 
 **Research question:** How many errors occurred and how did participants use AI to recover?
 
+**kiro_metrics error counts** (stderr events from terminal/test output — not Kiro extension errors):
+
 | VM | kiro_metrics Errors | LLM Requests | Errors per LLM Request | Task Outcome | Data Available |
 |----|:-------------------:|:------------:|:----------------------:|:------------:|:--------------:|
 | ai-01 | 1,666 | 10 | 166.6 | 5/5 pass | Yes |
@@ -290,14 +305,35 @@ All sessions within the free monthly 1000-credit quota. Hypothetical overage at 
 | ai-05 | 339 | 90 | 3.8 | 5/5 pass | Yes |
 | ai-06 | 170 | 56 | 3.0 | 4/5 pass | Yes |
 
-> `errors` in kiro_metrics counts stderr events in logs (includes Python warnings, test failures, stack traces).  
-> ai-01's extreme ratio (166 errors per LLM request) reflects a single large session that accumulated test errors over time, not necessarily more failure — they still passed all 5 checkpoints.
+> kiro_metrics `errors` counts stderr events from terminal commands run by the agent (test failures, tracebacks, warnings). These are NOT the same as Kiro extension errors below.  
+> ai-01's extreme ratio reflects accumulated test output across a long single session; all checkpoints still passed.
 
-| Further Analysis | Method | Data Available |
-|-----------------|--------|:--------------:|
-| Error timeline clustering | Cross-reference kiro_metrics error events with kiro_session JSON timestamps | **VM needed** — kiro_metrics errors come from VS Code extension host logs (`Kiro Logs.log`) not captured in kiro_logs/ export; only aggregate count is local |
-| Error type classification | Parse VS Code extension host log for Python tracebacks vs test failures vs system warnings | **VM needed** — same reason; raw event logs not downloaded |
-| Error → AI request latency | Did participants immediately ask AI after an error? Timestamp correlation | **VM needed** — requires per-event error timestamps from VS Code logs |
+**Kiro extension errors** (from `Kiro_Logs.log`, excluding auth startup errors present on all VMs):
+
+| VM | Total Kiro Errors | Model Throttle | Agent Execution Stuck | Test/Assert | Other | Data Available |
+|----|:-----------------:|:--------------:|:---------------------:|:-----------:|:-----:|:--------------:|
+| ai-01 | 4 | 1 | 0 | 3 | 0 | Yes |
+| ai-02 | 13 | 13 | 0 | 0 | 0 | Yes |
+| ai-03 | 115 | 1 | 113 | 1 | 0 | Yes |
+| ai-04 | 20 | 20 | 0 | 0 | 0 | Yes |
+| ai-05 | 6 | 6 | 0 | 0 | 0 | Yes |
+| ai-06 | 9 | 9 | 0 | 0 | 0 | Yes |
+
+> **ai-03 critical finding**: 113 "Execution is not running, current state: yielded" errors — the agent's execution engine got stuck in a yielded/suspended state repeatedly across the session, requiring Kiro to cancel and restart each execution. This explains ai-03's 128-min session (longest of all), the 2 sessions, and the post-survey note about model uncertainty. Despite this, ai-03 passed all 5 checkpoints.  
+> **ai-02/04/05/06 model throttle errors**: model rate limiting during the session. ai-02 (Opus 4.8 explicit) and ai-04 both hit 13–20 throttle errors; ai-05/06 hit 6–9. ai-01 barely throttled (1 event) despite highest auto-call count.
+
+**Error → AI request latency** (time between a Kiro error and the next LLM API call — proxy for how quickly participants asked AI for help after an error):
+
+| VM | Errors → AI call | Median latency | Within 60s | Data Available |
+|----|:----------------:|:--------------:|:----------:|:--------------:|
+| ai-01 | 4/4 | 10s | 75% | Yes |
+| ai-02 | 13/13 | 12s | 69% | Yes |
+| ai-03 | 115/115 | 15s | 80% | Yes |
+| ai-04 | 20/20 | 4s | 85% | Yes |
+| ai-05 | 6/6 | 3s | 100% | Yes |
+| ai-06 | 9/9 | 1s | 100% | Yes |
+
+> Every error was followed by an AI call. Shorter-session participants (ai-05: 3s, ai-06: 1s) asked immediately; longer-session participants (ai-01: 10s, ai-03: 15s) paused briefly before asking. 69–100% of errors prompted an AI call within 60 seconds.
 
 ---
 
@@ -343,14 +379,32 @@ All sessions within the free monthly 1000-credit quota. Hypothetical overage at 
 
 **Research question:** How did the AI decompose tasks, and did the spec match the implementation?
 
-Kiro's "Specs" feature generates a task breakdown before coding. Present in participant backups (confirmed in ai-01's backup: `.kiro/specs/nearest-neighbor-2opt-routing/`, `.kiro/specs/report-g...`).
+Kiro's "Specs" feature generates a task breakdown before coding. **Only ai-01 used it** — confirmed by checking all 6 VMs and backup tarballs. ai-02–06 have no `.kiro/specs` anywhere on disk.
+
+**ai-01 spec creation timeline** (from file modification timestamps in Kiro globalStorage, UTC):
+
+| Spec | Document | Created (UTC) | BST | Elapsed (from 08:00 UTC session start) |
+|------|----------|:-------------:|:---:|:--------------------------------------:|
+| nearest-neighbor-2opt-routing | `.config.kiro` | 08:53 | 09:53 | +53 min |
+| nearest-neighbor-2opt-routing | `requirements.md` | 08:57 | 09:57 | +57 min |
+| nearest-neighbor-2opt-routing | `design.md` | 08:59 | 09:59 | +59 min |
+| nearest-neighbor-2opt-routing | `tasks.md` | 09:00 | 10:00 | +60 min |
+| two-pass-matching | `.config.kiro` | 09:33 | 10:33 | +93 min |
+| two-pass-matching | `design.md` | 09:38 | 10:38 | +98 min |
+| two-pass-matching | `tasks.md` | 09:40 | 10:40 | +100 min |
+| report-generation-fix | `.config.kiro` | 09:58 | 10:58 | +118 min |
+| report-generation-fix | `design.md` | 10:00 | 11:00 | +120 min |
+| report-generation-fix | `tasks.md` | 10:01 | 11:01 | +121 min |
+
+> ai-01 created specs for all 3 tasks at ~60, 93, and 118 minutes into the session. Each spec took ~7 minutes to generate (config → requirements → design → tasks). First spec aligned with Task 1 (routing). ai-03 triggered `spec-generation` agent at 13:31 BST but no spec files were written to disk — likely cancelled.
 
 | Metric | What to Look For | Data Available |
 |--------|-----------------|:--------------:|
-| Spec accuracy | Did the AI correctly identify required modules and functions? | Partial — ai-01 **manual** (spec text already local); ai-02–06 **VM needed** |
-| Spec completeness | Did it cover all 3 tasks or only the first one? | Partial — ai-01 **manual** (spec text already local); ai-02–06 **VM needed** |
-| Spec vs implementation divergence | Lines in spec that weren't implemented; code written beyond spec | Partial — ai-01 **manual** (spec text already local); ai-02–06 **VM needed** |
-| Spec creation time | From session JSON timestamps — when was spec created vs when did coding start? | **VM needed** — spec IDs not referenced in q-client.log; `.config.kiro` has no timestamps; VS Code log needed |
+| Spec accuracy (ai-01) | Did the AI correctly identify required modules and functions? | Partial — **manual**: spec text already local (backup tarball) |
+| Spec completeness (ai-01) | Did it cover all 3 tasks? | Yes — confirmed 3 specs: routing, matching, report |
+| Spec vs implementation divergence (ai-01) | Lines in spec not implemented; code beyond spec | Partial — **manual**: spec text and code diff both local |
+| Spec creation times (ai-01) | When was spec created vs when did coding start? | **Yes — computed above** |
+| ai-02–06 spec usage | Did they use specs? | Yes — **none did** (confirmed on VMs) |
 
 ---
 
