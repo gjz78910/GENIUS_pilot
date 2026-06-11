@@ -1,0 +1,24 @@
+{
+  "run_key": "task3",
+  "filename_prefix": "Task3",
+  "started_at": "2026-06-11T14:29:27.570985",
+  "finished_at": "2026-06-11T14:29:27.619595",
+  "duration_seconds": 0.049,
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "tests.test_data_loader",
+    "-v"
+  ],
+  "return_code": 0,
+  "success": true,
+  "test_statistics": {
+    "tests_run": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success": true
+  },
+  "output": "test_integration_with_scheduler (tests.test_data_loader.TestDataLoader.test_integration_with_scheduler)\nTest integration with scheduler. ... ok\ntest_load_asymmetric_travel_matrix (tests.test_data_loader.TestDataLoader.test_load_asymmetric_travel_matrix)\nTest error handling for asymmetric travel matrix. ... ok\ntest_load_benchmark_file (tests.test_data_loader.TestDataLoader.test_load_benchmark_file)\nTest loading one of the benchmark files. ... ok\ntest_load_default_values (tests.test_data_loader.TestDataLoader.test_load_default_values)\nTest that default values are applied correctly. ... ok\ntest_load_duplicate_ids (tests.test_data_loader.TestDataLoader.test_load_duplicate_ids)\nTest error handling for duplicate IDs. ... ok\ntest_load_invalid_job_location (tests.test_data_loader.TestDataLoader.test_load_invalid_job_location)\nTest error handling for job locations not in travel matrix. ... ok\ntest_load_invalid_location (tests.test_data_loader.TestDataLoader.test_load_invalid_location)\nTest error handling for locations not in travel matrix. ... ok\ntest_load_invalid_time_format (tests.test_data_loader.TestDataLoader.test_load_invalid_time_format)\nTest error handling for invalid job time format. ... ok\ntest_load_invalid_working_hours (tests.test_data_loader.TestDataLoader.test_load_invalid_working_hours)\nTest error handling for invalid working hours. ... ok\ntest_load_missing_required_fields (tests.test_data_loader.TestDataLoader.test_load_missing_required_fields)\nTest error handling for missing required fields. ... ok\ntest_load_nonzero_diagonal (tests.test_data_loader.TestDataLoader.test_load_nonzero_diagonal)\nTest error handling for non-zero diagonal in travel matrix. ... ok\ntest_load_valid_json_file (tests.test_data_loader.TestDataLoader.test_load_valid_json_file)\nTest loading a valid JSON file. ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 0.003s\n\nOK\n"
+}
