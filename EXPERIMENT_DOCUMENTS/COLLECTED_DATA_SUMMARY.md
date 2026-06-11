@@ -3,7 +3,6 @@
 **Experiment date:** 2026-06-09  
 **Group:** AI-assisted coding with Kiro  
 **Participants:** ai-01–ai-06 (6 participants)  
-**Data collected and downloaded:** 2026-06-09  
 
 ---
 
@@ -12,14 +11,12 @@
 | VM | Role | Seniority | Main Language | Session Start | Session End | DevOps Maturity | MLOps Maturity | Pre-Survey | Post-Survey |
 |----|------|-----------|---------------|---------------|-------------|-----------------|----------------|------------|-------------|
 | ai-01 | Developer | Mid | Go/Elixir | 09:00 | ~10:31 | 4/5 | 2/5 | Yes | Yes |
-| ai-02 | Developer | Senior | Java | ~10:49 | ~14:47 | 1/5 | 1/5 | Yes | Yes |
-| ai-03 | DevOps Engineer | Mid | Python | 14:09 | 16:08 | 5/5 | 3/5 | Yes | Yes |
-| ai-04 | Developer | Mid | Python | — | ~14:23 | 1/5 | 1/5 | Yes | Yes |
+| ai-02 | Developer | Senior | Java | 14:00 | ~14:47 | 1/5 | 1/5 | Yes | Yes |
+| ai-03 | DevOps Engineer | Mid | Python | 14:00 | 16:08 | 5/5 | 3/5 | Yes | Yes |
+| ai-04 | Developer | Mid | Python | 14:00 | ~14:23 | 1/5 | 1/5 | Yes | Yes |
 | ai-05 | AI Researcher | Junior | Python | 14:00 | 16:00 | 1/5 | 2/5 | Yes | Yes |
-| ai-06 | Developer | Mid | Python | ~13:08 | ~14:03 | 1/5 | 4/5 | Yes | Yes |
+| ai-06 | Developer | Mid | Python | 14:00 | ~14:03 | 1/5 | 4/5 | Yes | Yes |
 
-> ai-06 pre-survey was recovered from the participant's Downloads folder on the VM.  
-> ai-04 surveys were recovered from the participant's Downloads folder on the VM after the session.
 
 ---
 
@@ -38,9 +35,6 @@
 
 ## 3. Code & Git
 
-All participant branches on GitHub: `github.com/gjz78910/GENIUS_pilot`  
-Local clones: `~/Downloads/GENIUS_experiment_data/{id}/`
-
 | VM | Branch | Participant Work Commit | Commit Timestamp | Clean at End |
 |----|--------|------------------------|------------------|--------------|
 | ai-01 | `participant/ai-01` | `c4d77c9` | 2026-06-09 ~10:31 | Yes |
@@ -52,10 +46,10 @@ Local clones: `~/Downloads/GENIUS_experiment_data/{id}/`
 
 ---
 
-## 4. DATA_COLLECTION Files (GitHub branch + local clone)
+## 4. Data Inventory
 
-| File | ai-01 | ai-02 | ai-03 | ai-04 | ai-05 | ai-06 |
-|------|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
+| Data File | ai-01 | ai-02 | ai-03 | ai-04 | ai-05 | ai-06 |
+|-----------|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
 | `aggregated_{id}_S1.json` | Yes | Yes | Yes | Yes | Yes | Yes |
 | `kiro_metrics_{id}_S1.json` | Yes | Yes | Yes | Yes | Yes | Yes |
 | `participant_state_{id}_S1.json` | Yes | Yes | Yes | Yes | Yes | Yes |
@@ -63,41 +57,36 @@ Local clones: `~/Downloads/GENIUS_experiment_data/{id}/`
 | `survey_{id}.json` (pre) | Yes | Yes | Yes | Yes | Yes | Yes |
 | `survey_post_{id}.json` | Yes | Yes | Yes | Yes | Yes | Yes |
 | `participant_backups/*.tar.gz` | Yes | Yes | Yes | Yes | Yes | Yes |
-
----
-
-## 5. Supplemental Data (local: `{id}_S1/supplemental/`)
-
-| File | ai-01 | ai-02 | ai-03 | ai-04 | ai-05 | ai-06 |
-|------|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
-| Kiro Chat API log | Yes (overflow, 29.9 MB) | Yes (23.5 MB) | Yes (5.3 MB + 29.6 MB rotated) | Yes (15.8 MB) | Yes (21.9 MB) | Yes (8.4 MB) |
-| Kiro session JSON(s) | Yes (1) | Yes (4) | Yes (2) | Yes (1) | Yes (1) | Yes (1) |
+| Kiro Chat API log | Yes | Yes | Yes | Yes | Yes | Yes |
+| Kiro session JSON(s) | Yes | Yes | Yes | Yes | Yes | Yes |
 | `resource_usage_{id}_S1.jsonl` | Yes | Yes | Yes | Yes | Yes | Yes |
 | `session_metadata_{id}-S1.json` | Yes | Yes | Yes | Yes | Yes | Yes |
 | `system_info_{id}.json` | Yes | Yes | Yes | Yes | Yes | Yes |
-| Task checkpoint run JSONs | Yes (5 files) | — | — | — | — | — |
-
-> ai-01 also has `kiro_chat_api_overflow.log` (the rotated overflow log from a long session).
-
----
-
-## 6. Screen Recordings (local: `{id}_S1/videos/`)
-
-| VM | Local Segments | Local Size | Full Set on S3 |
-|----|---------------|------------|----------------|
-| ai-01 | 1 | ~158 MB | ~158 MB (complete) |
-| ai-02 | 3 of 9 | ~134 MB | ~620 MB |
-| ai-03 | 1 of 4 | ~132 MB | ~552 MB |
-| ai-04 | 1 of 4 | ~130 MB | ~470 MB |
-| ai-05 | 1 of 4 | ~130 MB | ~390 MB |
-| ai-06 | 1 of 7 | ~130 MB | ~327 MB |
-
-Full recordings on S3: `experiment-data/{id}_S1/videos/` (~2.9 GB total)  
-Videos split into segments due to recording restarts — concatenate with `ffmpeg -f concat` for continuous playback.
+| Screen recordings | Yes | Yes | Yes | Yes | Yes | Yes |
+| Task checkpoint results (5 files) | Yes | Yes | Yes | Yes | Yes | Yes |
 
 ---
 
-## 7. What Is Analyzable
+## 5. Task Checkpoint Results
+
+Pass/fail for each task checkpoint run post-session against participant code.
+
+| VM | Task1_cp1 | Task1_cp2 | Task1_cp3 | Task2 | Task3 |
+|----|:---------:|:---------:|:---------:|:-----:|:-----:|
+| ai-01 | Pass | Pass | Pass | Pass | Pass |
+| ai-02 | Pass | Pass | **Fail** | Pass | Pass |
+| ai-03 | Pass | Pass | Pass | Pass | Pass |
+| ai-04 | Pass | Pass | Pass | Pass | Pass |
+| ai-05 | Pass | Pass | Pass | Pass | Pass |
+| ai-06 | Pass | Pass | **Fail** | Pass | Pass |
+
+> Task1_cp3 tests scalability performance. ai-02 and ai-06 failed this checkpoint.  
+> ai-01 ran a more comprehensive test suite (47/65/74 tests per checkpoint vs 13/19/28 for others).
+
+---
+
+## 6. What Is Analyzable
+
 
 | Data Type | Available For | What You Can Analyze |
 |-----------|--------------|----------------------|
@@ -110,12 +99,5 @@ Videos split into segments due to recording restarts — concatenate with `ffmpe
 | Participant code backup | All 6 | Full working tree snapshot at session end |
 | Screen recordings | All 6 | Coding process, Kiro interaction, time-on-task |
 | Git activity log | All 6 | Commit frequency, timing, files changed |
-| Task checkpoint results | ai-01 only | Pass/fail per task checkpoint (ai-02–ai-06 did not run the checkpoint script) |
+| Task checkpoint results | All 6 | Pass/fail per task (Task1_cp1, Task1_cp2, Task1_cp3, Task2, Task3) |
 
----
-
-## 8. Still Missing
-
-| File | Participant | Status |
-|------|-------------|--------|
-| Screen recording segments | ai-02–ai-06 | 19 segments (~2.5 GB) on S3, not downloaded locally |
