@@ -136,7 +136,7 @@ Pass/fail for each task checkpoint run post-session against participant code.
 | Kiro sessions opened | kiro_session JSON session count | 1 / 4 / 2 / 1 / 1 / 1 | Yes |
 | Agent actions triggered | kiro_session JSON `agentExecutions` | Same count as chat turns (1:1 ratio — each chat turn became an agent action) | Yes |
 | AI autonomy mode | kiro_session JSON `autonomyMode` | ai-02: Supervised; all others: Autopilot | Yes |
-| Chat content types | kiro_session JSON `chatMessages[].content` | Can be coded: implement / debug / explain / refactor / other | Partial — raw text in session JSONs; manual coding required |
+| Chat content types | kiro_session JSON `chatMessages[].content` | Can be coded: implement / debug / explain / refactor / other | Partial — **manual**: raw text in local session JSONs; semantic classification by human |
 | Agent tools used per session | kiro_session JSON `agentExecutions[].toolCalls` | Tool types: file_read, file_write, terminal, search | Yes |
 | Prompt length distribution | kiro_session JSON or Chat API log | Character/word counts per user message | Yes |
 | Response length distribution | Chat API log `5-Q Chat API.log` | Token counts per response; correlate with task complexity | Yes |
@@ -258,7 +258,7 @@ All sessions within the free monthly 1000-credit quota. Hypothetical overage at 
 | CPU usage over time | `resource_usage_{id}_S1.jsonl` (1Hz samples) | Spikes during agent file writes / test runs | Yes |
 | RAM usage over time | Same | Baseline ~1–2 GB; spikes during Python test execution | Yes |
 | GPU usage | Same | Expected 0 — no ML training in tasks | Yes |
-| CPU/RAM spike correlation with AI events | Cross-reference with kiro_session JSON timestamps | When agent ran tests: CPU spike; when writing files: I/O | Partial — raw data exists; cross-reference not yet done |
+| CPU/RAM spike correlation with AI events | Cross-reference with kiro_session JSON timestamps | When agent ran tests: CPU spike; when writing files: I/O | Partial — **local script**: both files already downloaded |
 
 **Further analyzable:**
 - Identify periods of high activity (agent runs) vs idle (reading/thinking)
@@ -285,9 +285,9 @@ All sessions within the free monthly 1000-credit quota. Hypothetical overage at 
 
 | Further Analysis | Method | Data Available |
 |-----------------|--------|:--------------:|
-| Error timeline clustering | Cross-reference kiro_metrics error events with kiro_session JSON timestamps | Partial — both files exist; cross-reference not yet done |
-| Error type classification | Parse kiro_metrics log file entries: Python tracebacks vs test failures vs system warnings | Partial — raw logs in `{id}_S1/kiro_logs/`; parsing not yet done |
-| Error → AI request latency | Did participants immediately ask AI after an error? Timestamp correlation | Partial — timestamps in session JSONs and logs; analysis not yet done |
+| Error timeline clustering | Cross-reference kiro_metrics error events with kiro_session JSON timestamps | Partial — **local script**: both files already downloaded |
+| Error type classification | Parse kiro_metrics log file entries: Python tracebacks vs test failures vs system warnings | Partial — **local script**: raw logs in `{id}_S1/kiro_logs/` already downloaded |
+| Error → AI request latency | Did participants immediately ask AI after an error? Timestamp correlation | Partial — **local script**: timestamps in session JSONs and logs already downloaded |
 
 ---
 
@@ -300,7 +300,7 @@ All sessions within the free monthly 1000-credit quota. Hypothetical overage at 
 | Pre-survey (`survey_{id}.json`) | Background, prior AI experience, DevOps/MLOps maturity, commute | Yes — all 6 |
 | Post-survey (`survey_post_{id}.json`) | AI usefulness rating, task-specific feedback, frustrations, suggestions | Yes — all 6 |
 | Post-survey free text | See Section 2 highlights; full text in JSON for thematic analysis | Yes — all 6 |
-| Kiro spec files (`.kiro/specs/`) | Agent-generated task decomposition specs; quality/accuracy assessment | Partial — confirmed ai-01 only; others need extraction from participant backups |
+| Kiro spec files (`.kiro/specs/`) | Agent-generated task decomposition specs; quality/accuracy assessment | Partial — ai-01 **Yes** (in backup); ai-02–06 **VM needed** (`.kiro/` not included in their backup tarballs) |
 
 **Coding scheme for post-survey themes:**
 - AI helpfulness: high (ai-01, ai-04, ai-05) / mixed (ai-02, ai-03) / unclear (ai-06)
@@ -316,13 +316,13 @@ All sessions within the free monthly 1000-credit quota. Hypothetical overage at 
 
 | Metric | How to Measure | Data Available |
 |--------|----------------|:--------------:|
-| Time in Kiro chat panel | Screen region classification — identify Kiro chat window open | Partial — recordings exist; manual review required |
-| Time in code editor | Screen region — VS Code / editor focus | Partial — recordings exist; manual review required |
-| Time in terminal | Terminal window visible and active | Partial — recordings exist; manual review required |
-| Number of AI chat interactions (manual count) | Count message send events visible on screen | Partial — recordings exist; manual review required |
-| Scrolling / review behaviour | Passive reading vs active typing | Partial — recordings exist; manual review required |
-| Copy-paste of AI output | Ctrl+C/V events visible; clipboard content | Partial — recordings exist; manual review required |
-| Kiro agent taking actions on screen | Agent progress bar / file modification indicators | Partial — recordings exist; manual review required |
+| Time in Kiro chat panel | Screen region classification — identify Kiro chat window open | Partial — **manual**: recordings already downloaded |
+| Time in code editor | Screen region — VS Code / editor focus | Partial — **manual**: recordings already downloaded |
+| Time in terminal | Terminal window visible and active | Partial — **manual**: recordings already downloaded |
+| Number of AI chat interactions (manual count) | Count message send events visible on screen | Partial — **manual**: recordings already downloaded |
+| Scrolling / review behaviour | Passive reading vs active typing | Partial — **manual**: recordings already downloaded |
+| Copy-paste of AI output | Ctrl+C/V events visible; clipboard content | Partial — **manual**: recordings already downloaded |
+| Kiro agent taking actions on screen | Agent progress bar / file modification indicators | Partial — **manual**: recordings already downloaded |
 
 > Screen recordings are in `{id}_S1/videos/`. Duration and timestamps can be cross-referenced with git commit timestamps and resource usage.  
 > ai-06 and ai-05 warrant close review given their very short session durations (2 min and 15 min).
@@ -337,10 +337,10 @@ Kiro's "Specs" feature generates a task breakdown before coding. Present in part
 
 | Metric | What to Look For | Data Available |
 |--------|-----------------|:--------------:|
-| Spec accuracy | Did the AI correctly identify required modules and functions? | Partial — ai-01 confirmed; others need extraction from participant backups |
-| Spec completeness | Did it cover all 3 tasks or only the first one? | Partial — ai-01 confirmed; others need extraction from participant backups |
-| Spec vs implementation divergence | Lines in spec that weren't implemented; code written beyond spec | Partial — ai-01 confirmed; others need extraction from participant backups |
-| Spec creation time | From session JSON timestamps — when was spec created vs when did coding start? | Partial — session JSON timestamps available; spec-specific timestamps need parsing |
+| Spec accuracy | Did the AI correctly identify required modules and functions? | Partial — ai-01 **manual** (spec text already local); ai-02–06 **VM needed** |
+| Spec completeness | Did it cover all 3 tasks or only the first one? | Partial — ai-01 **manual** (spec text already local); ai-02–06 **VM needed** |
+| Spec vs implementation divergence | Lines in spec that weren't implemented; code written beyond spec | Partial — ai-01 **manual** (spec text already local); ai-02–06 **VM needed** |
+| Spec creation time | From session JSON timestamps — when was spec created vs when did coding start? | Partial — **local script**: session JSONs already downloaded for all 6 |
 
 ---
 
@@ -353,7 +353,7 @@ Kiro's "Specs" feature generates a task breakdown before coding. Present in part
 | AI compute energy proxy | Kiro credits consumed (63–156 credits per session) | Credits as proxy for GPU-compute time; Anthropic's Claude API energy cost estimates available | Yes |
 | Commute carbon | Pre-survey commute mode + distance | Car vs public transport vs cycling; multiply by CO₂/km estimates | Yes |
 | Cloud VM energy | AWS EC2 instance-hours (t3.medium in eu-west-2) | ~3.5W TDP; eu-west-2 carbon intensity ~0.225 kg CO₂/kWh | Yes |
-| Aggregate calculation | (AI compute + VM) vs commute avoided | AI-assisted session from home vs commuting to office | Partial — inputs available; calculation not yet done |
+| Aggregate calculation | (AI compute + VM) vs commute avoided | AI-assisted session from home vs commuting to office | Partial — **local script**: all inputs already downloaded |
 
 ---
 
