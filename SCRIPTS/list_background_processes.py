@@ -126,7 +126,7 @@ def main():
     print_category("HIGH CPU USAGE (>5%)", categories['high_cpu'])
     print_category("HIGH MEMORY USAGE (>5%)", categories['high_memory'])
     print_category("BROWSERS (consider closing)", categories['browsers'])
-    print_category("IDEs (keep VS Code, close others)", categories['ides'])
+    print_category("IDEs (keep only the assigned IDE)", categories['ides'])
     print_category("MEDIA PLAYERS (consider closing)", categories['media'])
     print_category("COMMUNICATION APPS (consider closing)", categories['communication'])
     
@@ -141,7 +141,7 @@ def main():
         recommendations.append("Close browsers (Chrome, Firefox, Safari, etc.) - they use significant CPU/memory")
     
     if len(categories['ides']) > 1:
-        recommendations.append("Close other IDEs - keep only VS Code")
+        recommendations.append("Close other IDEs - keep only the assigned IDE")
     
     if categories['media']:
         recommendations.append("Close media players (Spotify, iTunes, etc.) - they use CPU/memory")

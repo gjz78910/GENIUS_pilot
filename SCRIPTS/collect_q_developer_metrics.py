@@ -254,6 +254,63 @@ def collect_q_developer_metrics():
     return metrics
 
 
-if __name__ == "__main__":
+def _build_output_path(
+    explicit_output: str | None, participant_id: str | None, session_id: str | None
+) -> Path | None:
+    """Build output path based on CLI options."""
+    if explicit_output:
+        return Path(explicit_output)
+
+    if participant_id and session_id:
+        return Path(f"DATA_COLLECTION/q_developer_metrics_{participant_id}_{session_id}.json")
+    if participant_id:
+        return Path(f"DATA_COLLECTION/q_developer_metrics_{participant_id}.json")
+    return None
+
+
+def main() -> int:
+    """CLI entry point.
+
+    By default this script keeps legacy behavior and prints JSON to stdout.
+    If --output or --participant-id is provided, it writes to file.
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Collect Amazon Q Developer interaction metrics"
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="Output JSON file path",
+    )
+    parser.add_argument(
+        "--participant-id",
+        type=str,
+        help="Participant ID to include in output filename",
+    )
+    parser.add_argument(
+        "--session-id",
+        type=str,
+        help="Session ID to include in output filename",
+    )
+
+    args = parser.parse_args()
     metrics = collect_q_developer_metrics()
+    output_path = _build_output_path(args.output, args.participant_id, args.session_id)
+
+    if output_path is not None:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as handle:
+            json.dump(metrics, handle, indent=2)
+        print(f"Q Developer metrics saved to: {output_path}")
+        print(f"Total interactions: {metrics['data']['total_interactions']}")
+        return 0
+
     print(json.dumps(metrics, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

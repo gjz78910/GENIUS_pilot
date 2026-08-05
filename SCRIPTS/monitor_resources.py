@@ -219,11 +219,11 @@ def main():
     args = parser.parse_args()
     
     # Determine output path
-    output_path = args.output
+    output_path = Path(args.output)
     if args.participant_id and args.session_id:
-        output_path = f"DATA_COLLECTION/resource_usage_{args.participant_id}_{args.session_id}.jsonl"
+        output_path = output_path.parent / f"resource_usage_{args.participant_id}_{args.session_id}.jsonl"
     elif args.participant_id:
-        output_path = f"DATA_COLLECTION/resource_usage_{args.participant_id}.jsonl"
+        output_path = output_path.parent / f"resource_usage_{args.participant_id}.jsonl"
     
     # Create and run monitor
     monitor = ResourceMonitor(output_path, interval=args.interval)

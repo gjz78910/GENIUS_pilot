@@ -132,7 +132,7 @@ def get_commit_stats(repo_path="."):
                     "lines_added": 0,
                     "lines_removed": 0,
                 }
-        elif current_commit and line.startswith("\t"):
+        elif current_commit and ("\t" in line):
             # File stats
             parts = line.split("\t")
             if len(parts) >= 3:
@@ -205,6 +205,23 @@ def get_merge_events(repo_path="."):
     return merges
 
 
+def _parse_time_bound(value):
+    """Parse CLI time bound into datetime.
+
+    Supports ISO strings; if timezone marker 'Z' is used it is normalized.
+    Relative formats are not parsed here.
+    """
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if parsed.tzinfo is not None:
+            return parsed.replace(tzinfo=None)
+        return parsed
+    except ValueError:
+        return None
+
+
 def analyze_git_activity(repo_path=".", since=None, until=None):
     """Analyze all Git activity.
     
@@ -217,22 +234,31 @@ def analyze_git_activity(repo_path=".", since=None, until=None):
         Dictionary with all metrics
     """
     commits = get_commit_stats(repo_path)
+    merges = get_merge_events(repo_path)
+    since_time = _parse_time_bound(since)
+    until_time = _parse_time_bound(until)
     
     # Filter by date range if specified
-    if since or until:
+    if since_time or until_time:
         filtered_commits = []
         for commit in commits:
             commit_time = datetime.fromtimestamp(commit["timestamp"])
-            if since:
-                since_time = datetime.fromisoformat(since.replace("Z", "+00:00"))
-                if commit_time < since_time:
+            if since_time and commit_time < since_time:
                     continue
-            if until:
-                until_time = datetime.fromisoformat(until.replace("Z", "+00:00"))
-                if commit_time > until_time:
+            if until_time and commit_time > until_time:
                     continue
             filtered_commits.append(commit)
         commits = filtered_commits
+
+        filtered_merges = []
+        for merge in merges:
+            merge_time = datetime.fromtimestamp(merge["timestamp"])
+            if since_time and merge_time < since_time:
+                continue
+            if until_time and merge_time > until_time:
+                continue
+            filtered_merges.append(merge)
+        merges = filtered_merges
     
     total_lines_added = sum(c["lines_added"] for c in commits)
     total_lines_removed = sum(c["lines_removed"] for c in commits)
@@ -258,7 +284,7 @@ def analyze_git_activity(repo_path=".", since=None, until=None):
             },
         },
         "branch_activity": get_branch_activity(repo_path),
-        "merge_events": get_merge_events(repo_path),
+        "merge_events": merges,
         "commits": commits,
     }
 
