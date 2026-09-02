@@ -1102,17 +1102,6 @@ for attempt in $(seq 1 30); do
   sleep 2
 done
 
-# The DCV web frontend can accept TCP but stall HTTPS immediately after first
-# boot/certificate setup. A clean restart before session creation makes the
-# listener reliably serve the browser login page.
-systemctl restart dcvserver
-for attempt in $(seq 1 30); do
-  if systemctl is-active --quiet dcvserver; then
-    break
-  fi
-  sleep 2
-done
-
 if dcv list-sessions | grep -q "Session: 'genius'"; then
   exit 0
 fi
@@ -1149,6 +1138,19 @@ configure_trusted_dcv_certificate
 
 systemctl daemon-reload
 systemctl enable --now genius-resource-monitor.service
+
+# After certificate setup on first boot, DCV can accept TCP connections while
+# stalling the HTTPS handshake. Restart it before the dependent session service
+# runs so the browser login page is available without manual repair.
+systemctl reset-failed dcvserver || true
+systemctl restart dcvserver
+for attempt in $(seq 1 30); do
+  if systemctl is-active --quiet dcvserver; then
+    break
+  fi
+  sleep 2
+done
+
 systemctl enable --now genius-dcv-session.service
 
 if [ "$AUTO_STOP_MINUTES" -gt 0 ]; then
