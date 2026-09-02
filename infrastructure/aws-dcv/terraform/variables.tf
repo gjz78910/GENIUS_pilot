@@ -15,7 +15,7 @@ variable "ami_id" {
 
 variable "instance_type" {
   type    = string
-  default = "m7i.large"
+  default = "m7i.xlarge"
 }
 
 variable "volume_size_gb" {
@@ -31,8 +31,8 @@ variable "participant_roster" {
   }))
 
   validation {
-    condition     = length(var.participant_roster) > 0 && length(var.participant_roster) <= 10
-    error_message = "participant_roster must contain between 1 and 10 entries."
+    condition     = length(var.participant_roster) > 0 && length(var.participant_roster) <= 30
+    error_message = "participant_roster must contain between 1 and 30 entries."
   }
 
   validation {
@@ -127,6 +127,24 @@ variable "repo_ref" {
 variable "monitor_interval_seconds" {
   type    = number
   default = 60
+}
+
+variable "claude_code_bedrock_region" {
+  type        = string
+  description = "AWS region Claude Code should use for Amazon Bedrock on AI-condition VMs."
+  default     = "eu-west-2"
+}
+
+variable "claude_code_model" {
+  type        = string
+  description = "Optional Claude Code model pin for Bedrock, for example an inference profile or model ID enabled in the AWS account."
+  default     = ""
+}
+
+variable "claude_code_small_fast_model" {
+  type        = string
+  description = "Optional Claude Code small/fast model pin for Bedrock."
+  default     = ""
 }
 
 variable "auto_stop_hours" {

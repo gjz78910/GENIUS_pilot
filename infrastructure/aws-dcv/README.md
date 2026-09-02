@@ -7,7 +7,7 @@ Build one Ubuntu 24.04 golden AMI, then launch one Amazon DCV desktop per partic
 - One EC2 instance per participant.
 - Browser access at `https://<public-dns>:8443`.
 - Manual participants use VS Code.
-- AI participants use Kiro.
+- AI participants use VS Code with the Claude Code extension.
 - Resource monitoring starts automatically.
 - End-session collection runs through AWS Systems Manager and uploads artifacts to S3.
 
@@ -17,7 +17,8 @@ Build one Ubuntu 24.04 golden AMI, then launch one Amazon DCV desktop per partic
 - Packer `>= 1.10`.
 - Terraform `>= 1.6`.
 - Participant and organizer public IP ranges for DCV allowlisting.
-- Kiro user subscriptions for AI participants only.
+- Amazon Bedrock access to the selected Anthropic Claude models for AI participants.
+- EC2/Bedrock quotas sized for the planned parallel session count.
 - A public subnet if you set `subnet_id`; direct DCV needs an internet route.
 
 ## Authenticate AWS
@@ -81,7 +82,7 @@ aws ssm send-command \
   --region eu-west-2
 ```
 
-The command stops monitoring, stores participant work, runs checkpoint scripts, collects Kiro logs when present, archives `DATA_COLLECTION/`, and uploads the archive to the Terraform-created S3 bucket.
+The command stops monitoring, stores participant work, runs checkpoint scripts, collects Claude Code artifacts when present, archives `DATA_COLLECTION/`, and uploads the archive to the Terraform-created S3 bucket.
 
 ## Cost Controls
 

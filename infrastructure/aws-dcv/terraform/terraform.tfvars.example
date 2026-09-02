@@ -22,6 +22,13 @@ monthly_budget_usd = 100
 auto_stop_hours    = 3
 shutdown_behavior  = "stop"
 
+claude_code_bedrock_region = "eu-west-2"
+
+# Optional: pin Claude Code to a Bedrock model ID, inference profile ID, or
+# application inference profile that is enabled for the AWS account.
+claude_code_model            = ""
+claude_code_small_fast_model = ""
+
 enable_trusted_dcv_cert = true
 dynamic_dns_provider    = "duckdns"
 dcv_hostname_domain     = "duckdns.org"

@@ -6,7 +6,6 @@ export DEBIAN_FRONTEND=noninteractive
 
 GENIUS_REPO_URL="${GENIUS_REPO_URL:-https://github.com/gjz78910/GENIUS_pilot.git}"
 GENIUS_REPO_REF="${GENIUS_REPO_REF:-main}"
-KIRO_METADATA_URL="${KIRO_METADATA_URL:-https://prod.download.desktop.kiro.dev/stable/metadata-linux-x64-deb-stable.json}"
 DCV_PACKAGE_URL="https://d1uj6qtbmh3dt5.cloudfront.net/nice-dcv-ubuntu2404-x86_64.tgz"
 MINIFORGE_URL="https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh"
 
@@ -28,11 +27,15 @@ apt-get install -y \
   libxkbfile1 \
   libxshmfence1 \
   libxss1 \
+  nodejs \
+  npm \
   pulseaudio-utils \
   rsync \
   software-properties-common \
   unzip \
   wget \
+  ffmpeg \
+  x11-utils \
   x11-xserver-utils \
   xfce4 \
   xfce4-terminal \
@@ -88,17 +91,6 @@ disconnection-idle-timeout=0
 EOF
 systemctl enable dcvserver
 
-kiro_deb_url="$(curl -fsSL "$KIRO_METADATA_URL" | jq -r '.releases[].updateTo.url | select(endswith(".deb"))' | head -n 1)"
-if [ -z "$kiro_deb_url" ]; then
-  echo "Could not discover Kiro .deb URL from $KIRO_METADATA_URL" >&2
-  exit 1
-fi
-curl -fsSL "$kiro_deb_url" -o "$tmp_dir/kiro.deb"
-apt-get install -y "$tmp_dir/kiro.deb"
-
-curl -fsSL https://desktop-release.q.us-east-1.amazonaws.com/latest/kiro-cli.deb -o "$tmp_dir/kiro-cli.deb"
-apt-get install -y "$tmp_dir/kiro-cli.deb" || apt-get install -f -y
-
 curl -fsSL "$MINIFORGE_URL" -o "$tmp_dir/miniforge.sh"
 bash "$tmp_dir/miniforge.sh" -b -p /opt/conda
 ln -sf /opt/conda/bin/conda /usr/local/bin/conda
@@ -125,9 +117,88 @@ if ! id participant >/dev/null 2>&1; then
   useradd -m -s /bin/bash participant
 fi
 usermod -aG audio,video participant
+install -d -m 0755 /usr/local/share/genius
+cat >/usr/local/bin/genius-configure-claude-code <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+participant_home="/home/participant"
+project_dir="${PROJECT_DIR:-$participant_home/GENIUS_pilot}"
+bedrock_region="${CLAUDE_CODE_BEDROCK_REGION:-${AWS_REGION:-eu-west-2}}"
+model="${CLAUDE_CODE_MODEL:-}"
+small_model="${CLAUDE_CODE_SMALL_FAST_MODEL:-}"
+
+install -d -o participant -g participant \
+  "$participant_home/.config/Code/User" \
+  "$participant_home/.config/Code/CachedExtensionVSIXs" \
+  "$participant_home/.config/Code/logs" \
+  "$participant_home/.claude"
+chown -R participant:participant "$participant_home/.config" "$participant_home/.claude"
+
+sudo -u participant -H code --install-extension anthropic.claude-code --force >/tmp/genius-claude-code-extension.log 2>&1 || {
+  cat /tmp/genius-claude-code-extension.log >&2 || true
+  exit 1
+}
+
+sudo -u participant -H bash -lc '
+  set -euo pipefail
+  if ! command -v claude >/dev/null 2>&1; then
+    curl -fsSL https://claude.ai/install.sh | bash
+  fi
+' || true
+
+python3 - "$participant_home/.claude/settings.json" "$bedrock_region" "$model" "$small_model" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+region, model, small_model = sys.argv[2:5]
+settings = {}
+if path.exists():
+    try:
+        settings = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        settings = {}
+settings["$schema"] = "https://json.schemastore.org/claude-code-settings.json"
+env = dict(settings.get("env", {}))
+env["CLAUDE_CODE_USE_BEDROCK"] = "1"
+env["AWS_REGION"] = region
+env["AWS_DEFAULT_REGION"] = region
+if model:
+    env["ANTHROPIC_MODEL"] = model
+if small_model:
+    env["ANTHROPIC_SMALL_FAST_MODEL"] = small_model
+settings["env"] = env
+path.write_text(json.dumps(settings, indent=2) + "\n")
+PY
+
+python3 - "$participant_home/.config/Code/User/settings.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+settings = {}
+if path.exists():
+    try:
+        settings = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        settings = {}
+settings["claudeCode.disableLoginPrompt"] = True
+settings["claudeCode.preferredLocation"] = "sidebar"
+settings["security.workspace.trust.enabled"] = False
+path.write_text(json.dumps(settings, indent=2) + "\n")
+PY
+
+chown -R participant:participant "$participant_home/.config/Code" "$participant_home/.claude"
+EOF
+chmod 0755 /usr/local/bin/genius-configure-claude-code
+CLAUDE_CODE_BEDROCK_REGION="${CLAUDE_CODE_BEDROCK_REGION:-eu-west-2}" genius-configure-claude-code || true
 cat >>/home/participant/.bashrc <<'EOF'
 . /opt/conda/etc/profile.d/conda.sh
 conda activate genius_pilot
+export PATH="$HOME/.local/bin:$HOME/.claude/local:$PATH"
 cd ~/GENIUS_pilot 2>/dev/null || true
 EOF
 install -d -m 0755 /home/participant/.config /home/participant/.config/xfce4/xfconf/xfce-perchannel-xml
@@ -172,13 +243,7 @@ if [ -f /etc/genius/condition ]; then
 fi
 
 if [ "$CONDITION" = "ai" ]; then
-  for candidate in kiro kiro-ide kiro-cli; do
-    if command -v "$candidate" >/dev/null 2>&1; then
-      exec "$candidate" "$PROJECT_DIR"
-    fi
-  done
-  xdg-open https://kiro.dev/downloads/ >/dev/null 2>&1 || true
-  exit 1
+  exec code "$PROJECT_DIR"
 fi
 
 exec code "$PROJECT_DIR"

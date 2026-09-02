@@ -2,6 +2,8 @@
 
 Use this guide to run the GENIUS experiment on AWS remote desktops.
 
+> **AI-condition note:** The KCL-01 pilot used Kiro. Future AI-condition VMs use VS Code with the Claude Code extension, configured for Amazon Bedrock through the VM IAM role so organisers do not need to log in to each VM manually.
+
 ## Fixed Setup
 
 - AWS profile: `genius-dcv`
@@ -36,14 +38,16 @@ infrastructure/aws-dcv/terraform/terraform.tfvars
 Check these values:
 
 - `participant_roster`: one row per participant.
-- `condition`: `manual` uses VS Code, `ai` uses Kiro.
+- `condition`: `manual` uses VS Code. `ai` uses VS Code with the Claude Code extension.
+- `claude_code_bedrock_region`: Bedrock region used by Claude Code on AI VMs.
+- `claude_code_model`: optional model or inference profile pin for Claude Code.
 - `repo_ref`: commit or branch that VMs must clone.
 - `dcv_allowed_cidrs`: set to `["0.0.0.0/0"]` when participants join from unknown or variable IPs. DCV is still secured by HTTPS cert + per-VM password.
 - `auto_stop_hours`: experiment time plus buffer.
 - `enable_trusted_dcv_cert = true`
 - `dynamic_dns_provider = "sslip"`
 
-Current Terraform validation allows up to 10 roster entries. For a 20-participant day, launch two batches or intentionally raise that limit after checking AWS capacity and budget.
+Current Terraform validation allows up to 30 roster entries. For a 30-participant day, request or confirm EC2 and Bedrock throughput quotas before launch, then run a one-VM dry run and a small fleet dry run.
 
 Example roster:
 
@@ -62,7 +66,7 @@ participant_roster = [
 ]
 ```
 
-AI participants need assigned Kiro accounts. Kiro login can be prepared before the session, but Kiro chat history is local to each VM and is not synced by account.
+AI participants do not need individual Claude browser logins when the AWS account has Bedrock access and the VM instance role has Bedrock invoke permissions. The bootstrap writes `~/.claude/settings.json` for the participant user and sets `claudeCode.disableLoginPrompt` in VS Code user settings.
 
 ## Launch VMs
 
@@ -104,22 +108,9 @@ Password: <their-password>
 
 ## Post-Launch Patches
 
-After `terraform apply`, apply two screen recorder bug-fixes to every VM before participants connect. Run each VM sequentially (not all at once) to avoid overloading the SSM agent queue.
+New VMs provisioned from the current `user_data.sh.tftpl` already include the screen recorder fixes below (DCV display detection, `DISPLAY`/`XAUTHORITY` for ffmpeg, minimum 1280×720 gate, 15-second systemd watchdog, segment merge on stop).
 
-```bash
-for INSTANCE_ID in <id-1> <id-2> ...; do
-  AWS_PROFILE=genius-dcv aws ssm send-command \
-    --region eu-west-2 \
-    --instance-ids "$INSTANCE_ID" \
-    --document-name AWS-RunShellScript \
-    --parameters 'commands=[
-      "sed -i \"/-use_shm 0/d\" /usr/local/bin/genius-screen-recorder",
-      "sed -i \"s|nohup ffmpeg|XAUTHORITY=\\\"\\$xauthority\\\" DISPLAY=\\\"\\$display_value\\\" nohup ffmpeg|\" /usr/local/bin/genius-screen-recorder",
-      "echo patched"
-    ]'
-  # Wait for this command to finish before sending to the next VM.
-done
-```
+For VMs created **before** this update, either replace the instance with `terraform apply` or copy `/usr/local/bin/genius-screen-recorder`, `/usr/local/bin/genius-recorder-watchdog`, and the `genius-recorder-watchdog.*` systemd units from a freshly provisioned VM.
 
 **Important:** Send SSM commands to one VM at a time when running git operations or heavy commands. Sending to all VMs simultaneously can saturate the SSM agent queue and leave all agents unresponsive.
 
@@ -168,21 +159,23 @@ This is commonly needed after a VM stop/start — see [DCV session missing after
 
 Screen recording is started by the participant from their own terminal as part of the setup steps in the participant instructions. Resource monitoring starts automatically.
 
-As organiser, verify the recording is running after the participant confirms they have started it:
+As organiser, verify the recorder, watchdog, and resource monitor after the
+participant confirms recording has started:
 
 ```bash
 AWS_PROFILE=genius-dcv aws ssm send-command \
   --region eu-west-2 \
   --instance-ids <instance-id> \
   --document-name AWS-RunShellScript \
-  --parameters 'commands=["sudo -u participant -H bash -lc \"/usr/local/bin/genius-screen-recorder status\"","ls -lh /home/participant/Videos"]'
+  --parameters 'commands=["sudo -u participant -H bash -lc \"/usr/local/bin/genius-screen-recorder status\"","/usr/local/bin/genius-collection-health snapshot","ls -lh /home/participant/Videos"]'
 ```
 
 Expected:
 
 ```text
 running
-/home/participant/Videos/GENIUS_<participant-id>_<session-id>.mp4
+file=/home/participant/Videos/GENIUS_<participant-id>_<session-id>_YYYYMMDDTHHMMSSZ.mp4
+display=:1 size=1920x1080
 ```
 
 Also verify the recording resolution matches the participant's browser window (not 800×600):
@@ -206,22 +199,55 @@ Participant steps:
 3. Log in as `participant`.
 4. Follow the setup steps in the participant instructions (activate conda, confirm branch, **start screen recording**).
 5. Manual group: use VS Code only.
-6. AI group: use Kiro only.
+6. AI group: use VS Code with Claude Code only.
 7. Complete the assigned task.
 8. Complete the post-experiment survey.
 9. Stop screen recording.
+10. Run the unified submission command and review the authoritative checkpoint
+    report. Claude Code statements that a task is complete are not completion evidence.
 
 For AI participants:
 
-- Kiro account login can persist after closing and reopening the DCV browser tab.
-- The same Kiro account can connect on more than one VM, but do not use a shared account in the formal experiment.
-- Kiro chat history is stored on the VM, not synced across machines.
+- Claude Code should already be available in the VS Code sidebar.
+- Claude Code is configured for Amazon Bedrock through the VM IAM role.
+- If the Claude panel shows an Anthropic login prompt, run `/usr/local/bin/genius-configure-claude-code` through SSM or in a participant terminal, then reload VS Code.
 
-**Clipboard in DCV browser:** Participants cannot paste directly into the Kiro terminal with Ctrl+V. Tell them to use **Ctrl+Shift+V** in the Kiro terminal, or right-click → Paste. If the DCV clipboard relay is needed (e.g. pasting from local machine), they must use the DCV toolbar clipboard icon on the left edge of the browser window first, paste text there, and then paste into the VM.
+**Clipboard in DCV browser:** Participants should use **Ctrl+Shift+V** in the VS Code terminal, or right-click → Paste. If the DCV clipboard relay is needed, they must use the DCV toolbar clipboard icon on the left edge of the browser window first, paste text there, and then paste into the VM.
+
+## Fast Claude Code Fleet Setup
+
+Use the AMI and bootstrap path, not manual desktop login.
+
+1. Build a fresh AMI from `infrastructure/aws-dcv/packer`. The build installs VS Code, the Claude Code extension, and a reusable `/usr/local/bin/genius-configure-claude-code` helper.
+2. Ensure the AWS account has access to the target Anthropic Claude model in Amazon Bedrock.
+3. Launch AI VMs with an instance role that includes `bedrock:InvokeModel`, `bedrock:InvokeModelWithResponseStream`, `bedrock:ListInferenceProfiles`, and `bedrock:GetInferenceProfile`.
+4. Optionally pin `claude_code_model` and `claude_code_small_fast_model` in `terraform.tfvars`.
+5. After launch, verify or repair all AI VMs with one SSM command:
+
+```bash
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 \
+  --targets "Key=tag:Condition,Values=ai" \
+  --document-name AWS-RunShellScript \
+  --parameters 'commands=[
+    "CLAUDE_CODE_BEDROCK_REGION=eu-west-2 /usr/local/bin/genius-configure-claude-code",
+    "sudo -u participant -H code --list-extensions | grep -x anthropic.claude-code",
+    "sudo -u participant -H bash -lc \"grep -q CLAUDE_CODE_USE_BEDROCK ~/.claude/settings.json\""
+  ]'
+```
+
+Run a single interactive dry run before the real session: open one AI VM, confirm VS Code opens the project, open the Claude Code sidebar, send a harmless prompt such as `Explain the repository structure without editing files`, and confirm the response uses Bedrock without a browser login.
 
 ## End Session And Upload Data
 
 Always run this before stopping or destroying VMs.
+
+The end-session flow captures a final health snapshot, invokes the unified
+submission path, copies experiment-scoped terminal audit and runtime evidence,
+creates and verifies a portable full-history Git bundle, stops the background
+resource service, and uploads a recoverable archive. A checkpoint failure is a
+study result; a storage/Git-bundle/upload failure is an operational incident
+that must be resolved before destroying the VM.
 
 ```bash
 AWS_PROFILE=genius-dcv terraform output end_session_commands
@@ -242,18 +268,21 @@ This collects:
 - participant code and git activity
 - resource, energy, and carbon data
 - test and code quality metrics
-- Kiro metrics for AI participants
-- Kiro local chat/history/log files under `DATA_COLLECTION/kiro_history/`
+- Claude Code metrics for AI participants
+- Claude Code local transcript and VS Code extension artifacts under `DATA_COLLECTION/claude_code_history/`
 - screen recordings under `DATA_COLLECTION/screen_recordings/`
 - one uploaded `.tar.gz` archive in S3
 
-Kiro local files copied from the VM:
+Claude Code local files copied from the VM:
 
 ```text
-/home/participant/.config/Kiro/User/globalStorage/kiro.kiroagent
-/home/participant/.config/Kiro/logs
-/home/participant/.local/share/kiro-cli
+/home/participant/.claude/projects
+/home/participant/.claude/todos
+/home/participant/.config/Code/logs
 ```
+
+Do not archive `~/.claude/settings.json` or VS Code global storage, because
+those locations can contain authentication or provider configuration state.
 
 ## Download Data Locally
 
@@ -270,8 +299,8 @@ Check each participant archive contains:
 ```text
 DATA_COLLECTION/aggregated_*.json
 DATA_COLLECTION/resource_usage_*.jsonl
-DATA_COLLECTION/kiro_metrics_*.json
-DATA_COLLECTION/kiro_history/manifest.txt
+DATA_COLLECTION/claude_code_metrics_*.json
+DATA_COLLECTION/claude_code_history/manifest.txt
 DATA_COLLECTION/screen_recordings/*.mp4
 ```
 
@@ -360,7 +389,7 @@ systemctl stop apt-daily.service apt-daily-upgrade.service unattended-upgrades.s
 
 ### Recording is too small or cropped
 
-Cause: recording was started before the participant connected via DCV, so the display was still at its default low resolution (800×600).
+Cause: recording was started before the participant connected via DCV, or ffmpeg restarted while the display was still at the default low resolution (800×600).
 
 Fix: ask the participant to stop and restart recording once they have connected and can see the full desktop:
 
@@ -369,27 +398,18 @@ Fix: ask the participant to stop and restart recording once they have connected 
 /usr/local/bin/genius-screen-recorder start
 ```
 
+The recorder now refuses to start below 1280×720 and the watchdog waits for full resolution before auto-resuming.
+
 Verify the display size via SSM:
 
 ```bash
 DISPLAY=:1 XAUTHORITY=/run/user/1001/dcv/genius.xauth xdpyinfo | awk '/dimensions:/ {print $2}'
+/usr/local/bin/genius-screen-recorder status
 ```
 
 ### Screen recorder fails to start (ffmpeg errors)
 
-**`Unrecognized option 'use_shm'`**: The installed ffmpeg version does not support this flag. Remove it from the recorder script:
-
-```bash
-sudo sed -i '/-use_shm 0/d' /usr/local/bin/genius-screen-recorder
-```
-
-**`Authorization required` / `Cannot open display`**: The recorder is not passing `XAUTHORITY` to ffmpeg. Patch the script:
-
-```bash
-sudo sed -i 's|nohup ffmpeg|XAUTHORITY="$xauthority" DISPLAY="$display_value" nohup ffmpeg|' /usr/local/bin/genius-screen-recorder
-```
-
-Both fixes should be applied to the golden AMI so they do not recur.
+**`Authorization required` / `Cannot open display`**: DCV is not connected yet, or Xdcv restarted. Connect via DCV, wait for the full desktop, then run `/usr/local/bin/genius-screen-recorder start`. Current VMs pass `DISPLAY` and `XAUTHORITY` to ffmpeg automatically.
 
 ### Recording stops early
 
@@ -401,11 +421,20 @@ Fix: current recorder does not use `-draw_mouse`. Restart recording from the par
 /usr/local/bin/genius-screen-recorder start
 ```
 
-### Kiro chat history is missing after login on another VM
+### Claude Code panel asks for login on an AI VM
 
-Cause: Kiro chat history is local to the VM. It is not synced by the Kiro account.
+Cause: the VS Code extension did not read the Bedrock settings or the disable-login setting before opening.
 
-Fix: always run the end-session command before cleanup. It copies Kiro local history and logs into `DATA_COLLECTION/kiro_history/`.
+Fix:
+
+```bash
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 --instance-ids <instance-id> \
+  --document-name AWS-RunShellScript \
+  --parameters 'commands=["CLAUDE_CODE_BEDROCK_REGION=eu-west-2 /usr/local/bin/genius-configure-claude-code"]'
+```
+
+Then ask the participant to run **Developer: Reload Window** in VS Code.
 
 ### Terraform or AWS says no credentials
 
@@ -450,7 +479,7 @@ Prevention: always run this after provisioning each VM — see the post-boot fix
 
 ### Terraform destroys and recreates all VMs unexpectedly
 
-Cause: `user_data_replace_on_change = true`. Any change to `terraform.tfvars` that affects user_data (e.g. `auto_stop_hours`, `repo_ref`) forces full instance replacement, wiping all configuration including Kiro logins.
+Cause: `user_data_replace_on_change = true`. Any change to `terraform.tfvars` that affects user_data (e.g. `auto_stop_hours`, `repo_ref`, Claude Code model settings) forces full instance replacement.
 
 Prevention: set `auto_stop_hours` and `repo_ref` correctly **before** the first `terraform apply` and do not change them again. Recommended values: `auto_stop_hours = 12`, `repo_ref` = pinned main HEAD commit.
 
@@ -464,23 +493,20 @@ Fix (restart from organiser side without affecting participant):
 AWS_PROFILE=genius-dcv aws ssm send-command \
   --region eu-west-2 --instance-ids <instance-id> \
   --document-name AWS-RunShellScript \
-  --parameters 'commands=["sudo -u participant /usr/local/bin/genius-screen-recorder start 2>&1"]'
+  --parameters 'commands=["sudo -u participant /usr/local/bin/genius-screen-recorder resume 2>&1"]'
 ```
 
-Prevention: install the watchdog cron job on each VM after provisioning:
+Prevention: `genius-screen-recorder start` enables a systemd watchdog timer that checks every 15 seconds. It only auto-resumes when recording was intentionally started (watchdog flag file present) and waits until the DCV display is at least 1280×720 before restarting ffmpeg. This avoids the cropped 800×600 resume segments seen in earlier sessions.
+
+Check watchdog and segment status:
 
 ```bash
-# Run on each VM via SSM — checks every minute and auto-restarts if crashed
-B64=$(python3 -c "import base64; print(base64.b64encode(b'#!/bin/bash\nPID_FILE=/home/participant/genius-runtime/screen_recording.pid\nif [ -s \"\$PID_FILE\" ] && ! kill -0 \"\$(cat \$PID_FILE)\" 2>/dev/null; then\n  sudo -u participant /usr/local/bin/genius-screen-recorder start\nfi\n').decode())")
-aws ssm send-command --region eu-west-2 --instance-ids <instance-id> \
-  --document-name AWS-RunShellScript \
-  --parameters "{\"commands\":[
-    \"echo '$B64' | base64 -d > /usr/local/bin/genius-recorder-watchdog && chmod +x /usr/local/bin/genius-recorder-watchdog\",
-    \"(crontab -l 2>/dev/null | grep -v recorder-watchdog; echo '* * * * * /usr/local/bin/genius-recorder-watchdog') | crontab -\"
-  ]}"
+systemctl status genius-recorder-watchdog.timer
+/usr/local/bin/genius-screen-recorder status
+cat /home/participant/genius-runtime/screen_recording_segments.json
 ```
 
-Note: the watchdog only restarts if the PID file exists but the process is dead (crashed). If the participant intentionally stops recording, the PID file is removed and the watchdog will not restart it.
+On session end, `genius-screen-recorder stop` merges multiple segments into `GENIUS_<participant>_<session>_merged.mp4`.
 
 ### OOM crash on simultaneous VM boot
 

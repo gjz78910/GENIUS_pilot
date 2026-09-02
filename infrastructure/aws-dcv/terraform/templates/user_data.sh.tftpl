@@ -9,6 +9,9 @@ ARTIFACT_BUCKET="${artifact_bucket}"
 REPO_URL="${repo_url}"
 REPO_REF="${repo_ref}"
 MONITOR_INTERVAL="${monitor_interval_seconds}"
+CLAUDE_CODE_BEDROCK_REGION="${claude_code_bedrock_region}"
+CLAUDE_CODE_MODEL="${claude_code_model}"
+CLAUDE_CODE_SMALL_FAST_MODEL="${claude_code_small_fast_model}"
 AUTO_STOP_MINUTES="${auto_stop_minutes}"
 TRUSTED_DCV_CERT_ENABLED="${trusted_dcv_cert_enabled}"
 DYNAMIC_DNS_PROVIDER="${dynamic_dns_provider}"
@@ -56,6 +59,11 @@ fi
 if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v xdpyinfo >/dev/null 2>&1 || ! command -v xterm >/dev/null 2>&1; then
   apt-get update -qq
   DEBIAN_FRONTEND=noninteractive apt-get install -y ffmpeg x11-utils xterm
+fi
+
+if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
+  apt-get update -qq
+  DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs npm
 fi
 
 install -d -m 0755 /etc/polkit-1/rules.d
@@ -190,7 +198,153 @@ ARTIFACT_BUCKET=$ARTIFACT_BUCKET
 PROJECT_DIR=$PROJECT_DIR
 RUNTIME_DIR=$RUNTIME_DIR
 DCV_HOSTNAME=$DCV_HOSTNAME
+CLAUDE_CODE_BEDROCK_REGION=$CLAUDE_CODE_BEDROCK_REGION
+CLAUDE_CODE_MODEL=$CLAUDE_CODE_MODEL
+CLAUDE_CODE_SMALL_FAST_MODEL=$CLAUDE_CODE_SMALL_FAST_MODEL
 EOF
+
+cat >/usr/local/bin/genius-configure-claude-code <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+participant_home="/home/participant"
+project_dir="$${PROJECT_DIR:-$participant_home/GENIUS_pilot}"
+bedrock_region="$${CLAUDE_CODE_BEDROCK_REGION:-$${AWS_REGION:-eu-west-2}}"
+model="$${CLAUDE_CODE_MODEL:-}"
+small_model="$${CLAUDE_CODE_SMALL_FAST_MODEL:-}"
+
+install -d -o participant -g participant \
+  "$participant_home/.config/Code/User" \
+  "$participant_home/.config/Code/CachedExtensionVSIXs" \
+  "$participant_home/.config/Code/logs" \
+  "$participant_home/.claude"
+chown -R participant:participant "$participant_home/.config" "$participant_home/.claude"
+
+sudo -u participant -H code --install-extension anthropic.claude-code --force >/tmp/genius-claude-code-extension.log 2>&1 || {
+  cat /tmp/genius-claude-code-extension.log >&2 || true
+  exit 1
+}
+
+sudo -u participant -H bash -lc '
+  set -euo pipefail
+  if ! command -v claude >/dev/null 2>&1; then
+    curl -fsSL https://claude.ai/install.sh | bash
+  fi
+' || true
+
+python3 - "$participant_home/.claude/settings.json" "$bedrock_region" "$model" "$small_model" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+region, model, small_model = sys.argv[2:5]
+settings = {}
+if path.exists():
+    try:
+        settings = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        settings = {}
+settings["$schema"] = "https://json.schemastore.org/claude-code-settings.json"
+env = dict(settings.get("env", {}))
+env["CLAUDE_CODE_USE_BEDROCK"] = "1"
+env["AWS_REGION"] = region
+env["AWS_DEFAULT_REGION"] = region
+if model:
+    env["ANTHROPIC_MODEL"] = model
+if small_model:
+    env["ANTHROPIC_SMALL_FAST_MODEL"] = small_model
+settings["env"] = env
+path.write_text(json.dumps(settings, indent=2) + "\n")
+PY
+
+python3 - "$participant_home/.config/Code/User/settings.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+settings = {}
+if path.exists():
+    try:
+        settings = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        settings = {}
+settings["claudeCode.disableLoginPrompt"] = True
+settings["claudeCode.preferredLocation"] = "sidebar"
+settings["security.workspace.trust.enabled"] = False
+path.write_text(json.dumps(settings, indent=2) + "\n")
+PY
+
+chown -R participant:participant "$participant_home/.config/Code" "$participant_home/.claude"
+EOF
+chmod 0755 /usr/local/bin/genius-configure-claude-code
+
+cat >/usr/local/bin/genius-command-audit <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+. /etc/genius/session.env
+exit_status="$${1:?exit status required}"
+working_directory="$${2:?working directory required}"
+command_text="$${3:-}"
+[ -n "$command_text" ] || exit 0
+
+log_file="$RUNTIME_DIR/terminal_commands_$${PARTICIPANT_ID}_$${SESSION_ID}.tsv"
+mkdir -p "$RUNTIME_DIR"
+encoded_command="$(printf '%s' "$command_text" | base64 | tr -d '\n')"
+exec 9>>"$log_file"
+flock 9
+printf '%s\t%s\t%s\t%s\t%s\n' \
+  "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$exit_status" "$$" "$working_directory" "$encoded_command" >&9
+EOF
+chmod 0755 /usr/local/bin/genius-command-audit
+
+if ! grep -q '__genius_audit_previous_command' /home/participant/.bashrc; then
+cat >>/home/participant/.bashrc <<'EOF'
+if [[ $- == *i* ]] && command -v genius-command-audit >/dev/null; then
+  __genius_audit_previous_command() {
+    local exit_status=$?
+    local command_text
+    command_text="$(HISTTIMEFORMAT= history 1 | sed 's/^[[:space:]]*[0-9][0-9]*[[:space:]]*//')"
+    [ -n "$command_text" ] && genius-command-audit "$exit_status" "$PWD" "$command_text"
+  }
+  PROMPT_COMMAND="__genius_audit_previous_command$${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+fi
+EOF
+fi
+chown participant:participant /home/participant/.bashrc
+if ! grep -q 'HOME/.local/bin' /home/participant/.bashrc; then
+cat >>/home/participant/.bashrc <<'EOF'
+export PATH="$HOME/.local/bin:$HOME/.claude/local:$PATH"
+EOF
+fi
+
+if ! grep -q '__genius_audit_pending_command' /home/participant/.zshrc 2>/dev/null; then
+cat >>/home/participant/.zshrc <<'EOF'
+export PATH="$HOME/.local/bin:$HOME/.claude/local:$PATH"
+if [[ -o interactive ]] && command -v genius-command-audit >/dev/null; then
+  autoload -Uz add-zsh-hook
+  __genius_audit_preexec() {
+    __genius_audit_pending_command="$1"
+  }
+  __genius_audit_precmd() {
+    local exit_status=$?
+    if [[ -n "$${__genius_audit_pending_command:-}" ]]; then
+      genius-command-audit "$exit_status" "$PWD" "$__genius_audit_pending_command"
+      unset __genius_audit_pending_command
+    fi
+  }
+  add-zsh-hook preexec __genius_audit_preexec
+  add-zsh-hook precmd __genius_audit_precmd
+fi
+EOF
+fi
+chown participant:participant /home/participant/.zshrc
+
+if [ "$CONDITION" = "ai" ]; then
+  genius-configure-claude-code || true
+fi
 
 if [ ! -d "$PROJECT_DIR/.git" ]; then
   rm -rf "$PROJECT_DIR"
@@ -257,11 +411,11 @@ configure_group_dock() {
   local app_name app_exec app_icon app_comment app_file
 
   if [ "$CONDITION" = "ai" ]; then
-    app_name="Kiro"
-    app_exec="kiro /home/participant/GENIUS_pilot"
-    app_icon="kiro"
-    app_comment="Open Kiro for the GENIUS AI group"
-    app_file="genius-kiro.desktop"
+    app_name="VS Code + Claude Code"
+    app_exec="code /home/participant/GENIUS_pilot"
+    app_icon="code"
+    app_comment="Open VS Code with Claude Code for the GENIUS AI group"
+    app_file="genius-claude-code.desktop"
   else
     app_name="VS Code"
     app_exec="code /home/participant/GENIUS_pilot"
@@ -395,7 +549,7 @@ Project: $PROJECT_DIR
 Remote desktop hostname: $DCV_HOSTNAME
 
 Manual condition: use VS Code only.
-AI condition: use Kiro and the Kiro account assigned by the organizer.
+AI condition: use VS Code with Claude Code. Claude Code is configured for Amazon Bedrock through the VM IAM role; no per-participant browser login should be needed.
 EOF
 chown participant:participant /home/participant/SESSION_INFO.txt
 
@@ -411,86 +565,175 @@ PID_FILE="$RUNTIME_DIR/screen_recording.pid"
 CURRENT_FILE="$RUNTIME_DIR/screen_recording_current_path"
 LOG_FILE="$RUNTIME_DIR/screen_recording.log"
 METADATA_FILE="$RUNTIME_DIR/screen_recording_$${PARTICIPANT_ID}_$${SESSION_ID}.json"
+SEGMENTS_FILE="$RUNTIME_DIR/screen_recording_segments.json"
+WATCHDOG_FLAG="$RUNTIME_DIR/screen_recording_watchdog.enabled"
+MIN_RECORDING_WIDTH=1280
+MIN_RECORDING_HEIGHT=720
+
+validate_screen_size() {
+  local size="$1"
+  local width="$${size%%x*}"
+  local height="$${size#*x}"
+  [ "$width" -ge "$MIN_RECORDING_WIDTH" ] && [ "$height" -ge "$MIN_RECORDING_HEIGHT" ]
+}
+
+resolve_recording_context() {
+  local xdcv_pid="" xdcv_args="" candidate="" display_candidates=()
+
+  xdcv_pid="$(pgrep -u "$(id -u participant)" -f "Xdcv.*-sessionid genius" | head -n 1 || true)"
+  RECORDING_XAUTHORITY=""
+  if [ -n "$xdcv_pid" ] && [ -r "/proc/$xdcv_pid/cmdline" ]; then
+    xdcv_args="$(tr '\0' ' ' <"/proc/$xdcv_pid/cmdline")"
+    RECORDING_XAUTHORITY="$(printf '%s\n' "$xdcv_args" | awk '{for (i=1; i<=NF; i++) if ($i == "-auth") {print $(i+1); exit}}' || true)"
+    if [ -r "/proc/$xdcv_pid/environ" ]; then
+      candidate="$(tr '\0' '\n' <"/proc/$xdcv_pid/environ" | sed -n 's/^DISPLAY=//p' | head -n 1 || true)"
+      [ -n "$candidate" ] && display_candidates+=("$candidate")
+    fi
+    candidate="$(printf '%s\n' "$xdcv_args" | awk '{for (i=1; i<=NF; i++) if ($i == "-display") {print $(i+1); exit}}' || true)"
+    [ -n "$candidate" ] && display_candidates+=("$candidate")
+  fi
+  if [ -z "$RECORDING_XAUTHORITY" ]; then
+    RECORDING_XAUTHORITY="/run/user/$(id -u participant)/dcv/genius.xauth"
+  fi
+
+  if [ -n "$${DISPLAY:-}" ]; then
+    display_candidates+=("$${DISPLAY}")
+  fi
+  display_candidates+=(":1" ":2" ":3" ":4" ":5" ":0")
+
+  RECORDING_DISPLAY=""
+  RECORDING_SCREEN_SIZE=""
+  local seen=""
+  for candidate in "$${display_candidates[@]}"; do
+    [ -z "$candidate" ] && continue
+    case " $seen " in
+      *" $candidate "*) continue ;;
+    esac
+    seen="$seen $candidate"
+    candidate_size="$(DISPLAY="$candidate" XAUTHORITY="$RECORDING_XAUTHORITY" xdpyinfo 2>/dev/null | awk '/dimensions:/{print $2; exit}' || true)"
+    if [ -n "$candidate_size" ] && validate_screen_size "$candidate_size"; then
+      RECORDING_DISPLAY="$candidate"
+      RECORDING_SCREEN_SIZE="$candidate_size"
+      return 0
+    fi
+  done
+  return 1
+}
+
+wait_for_recordable_display() {
+  local max_attempts="$${1:-60}"
+  local attempt=0
+  while [ "$attempt" -lt "$max_attempts" ]; do
+    if resolve_recording_context; then
+      return 0
+    fi
+    attempt=$((attempt + 1))
+    sleep 2
+  done
+  return 1
+}
+
+append_segment_metadata() {
+  local output_file="$1"
+  local reason="$${2:-start}"
+  python3 - "$SEGMENTS_FILE" "$output_file" "$reason" "$RECORDING_DISPLAY" "$RECORDING_SCREEN_SIZE" <<'PY'
+import json
+import os
+import sys
+from datetime import datetime, timezone
+
+segments_path, output_file, reason, display, screen_size = sys.argv[1:6]
+segments = []
+if os.path.exists(segments_path):
+    with open(segments_path, "r", encoding="utf-8") as handle:
+        segments = json.load(handle)
+segments.append({
+    "output_file": output_file,
+    "started_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    "reason": reason,
+    "display": display,
+    "screen_size": screen_size,
+    "file_exists": os.path.exists(output_file),
+})
+with open(segments_path, "w", encoding="utf-8") as handle:
+    json.dump(segments, handle, indent=2)
+    handle.write("\n")
+PY
+}
 
 start_recording() {
+  local resume_mode="$${1:-0}"
   mkdir -p "$VIDEO_DIR" "$RUNTIME_DIR"
 
-  # Lock to prevent concurrent starts (race between watchdog and manual call)
   exec 9>"$RUNTIME_DIR/screen_recording.lock"
   flock -n 9 || exit 0
 
-  if [ -s "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
-    exit 0
-  fi
-
-  local xauthority="" xdcv_pid="" xdcv_args=""
-  xdcv_pid="$(pgrep -u "$(id -u participant)" -f "Xdcv.*-sessionid genius" | head -n 1 || true)"
-  if [ -n "$xdcv_pid" ] && [ -r "/proc/$xdcv_pid/cmdline" ]; then
-    xdcv_args="$(tr '\0' ' ' <"/proc/$xdcv_pid/cmdline")"
-    xauthority="$(printf '%s\n' "$xdcv_args" | awk '{for (i=1; i<=NF; i++) if ($i == "-auth") {print $(i+1); exit}}' || true)"
-  fi
-  if [ -z "$xauthority" ]; then
-    xauthority="/run/user/$(id -u participant)/dcv/genius.xauth"
-  fi
-
-  local display_value="" screen_size=""
-  for candidate in "$${DISPLAY:-}" :1 :2 :3 :4 :5 :0; do
-    if [ -z "$candidate" ]; then
-      continue
+  if [ -s "$PID_FILE" ]; then
+    local existing_pid
+    existing_pid="$(cat "$PID_FILE")"
+    if kill -0 "$existing_pid" 2>/dev/null; then
+      exit 0
     fi
-    screen_size="$(DISPLAY="$candidate" XAUTHORITY="$xauthority" xdpyinfo 2>/dev/null | awk '/dimensions:/{print $2; exit}' || true)"
-    if [ -n "$screen_size" ]; then
-      display_value="$candidate"
-      break
-    fi
-  done
+    rm -f "$PID_FILE"
+  fi
 
-  if [ -z "$display_value" ]; then
-    echo "Could not find an accessible DCV X display for recording." >&2
+  if [ "$resume_mode" = "1" ]; then
+    if ! wait_for_recordable_display 90; then
+      echo "Recorder resume skipped: DCV display not ready at full resolution yet." >>"$LOG_FILE"
+      exit 0
+    fi
+  elif ! wait_for_recordable_display 30; then
+    echo "Connect via DCV and open the full desktop before starting recording." >&2
+    echo "Need at least $${MIN_RECORDING_WIDTH}x$${MIN_RECORDING_HEIGHT}; got default/low-res display." >&2
     exit 1
-  fi
-
-  if [ -z "$screen_size" ]; then
-    screen_size="1920x1080"
   fi
 
   local output_file
   output_file="$VIDEO_DIR/GENIUS_$${PARTICIPANT_ID}_$${SESSION_ID}_$(date -u +%Y%m%dT%H%M%SZ).mp4"
 
-  nohup ffmpeg \
-    -y \
-    -hide_banner \
-    -loglevel info \
-    -f x11grab \
-    -thread_queue_size 1024 \
-    -framerate 15 \
-    -video_size "$screen_size" \
-    -i "$display_value" \
-    -r 15 \
-    -an \
-    -c:v libx264 \
-    -preset ultrafast \
-    -crf 23 \
-    -pix_fmt yuv420p \
-    "$output_file" >"$LOG_FILE" 2>&1 &
+  DISPLAY="$RECORDING_DISPLAY" XAUTHORITY="$RECORDING_XAUTHORITY" \
+    nohup ffmpeg \
+      -y \
+      -hide_banner \
+      -loglevel info \
+      -f x11grab \
+      -thread_queue_size 1024 \
+      -framerate 15 \
+      -video_size "$RECORDING_SCREEN_SIZE" \
+      -i "$RECORDING_DISPLAY" \
+      -r 15 \
+      -an \
+      -c:v libx264 \
+      -preset ultrafast \
+      -crf 23 \
+      -pix_fmt yuv420p \
+      "$output_file" >>"$LOG_FILE" 2>&1 &
 
+  local ffmpeg_pid=$!
   sleep 2
-  if ! kill -0 "$!" 2>/dev/null; then
+  if ! kill -0 "$ffmpeg_pid" 2>/dev/null; then
     echo "Screen recorder failed to start. See $LOG_FILE." >&2
     exit 1
   fi
 
-  echo "$!" >"$PID_FILE"
+  echo "$ffmpeg_pid" >"$PID_FILE"
   printf "%s\n" "$output_file" >"$CURRENT_FILE"
+  if [ "$resume_mode" = "1" ]; then
+    append_segment_metadata "$output_file" "watchdog_resume"
+  else
+    append_segment_metadata "$output_file" "start"
+  fi
+
   cat >"$METADATA_FILE" <<JSON
 {
   "participant_id": "$PARTICIPANT_ID",
   "session_id": "$SESSION_ID",
   "started_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "display": "$display_value",
-  "xauthority": "$xauthority",
-  "screen_size": "$screen_size",
-  "output_file": "$output_file"
+  "display": "$RECORDING_DISPLAY",
+  "xauthority": "$RECORDING_XAUTHORITY",
+  "screen_size": "$RECORDING_SCREEN_SIZE",
+  "output_file": "$output_file",
+  "segments_file": "$SEGMENTS_FILE"
 }
 JSON
 }
@@ -498,54 +741,33 @@ JSON
 test_recording() {
   mkdir -p "$VIDEO_DIR" "$RUNTIME_DIR"
 
-  local xauthority="" xdcv_pid="" xdcv_args=""
-  xdcv_pid="$(pgrep -u "$(id -u participant)" -f "Xdcv.*-sessionid genius" | head -n 1 || true)"
-  if [ -n "$xdcv_pid" ] && [ -r "/proc/$xdcv_pid/cmdline" ]; then
-    xdcv_args="$(tr '\0' ' ' <"/proc/$xdcv_pid/cmdline")"
-    xauthority="$(printf '%s\n' "$xdcv_args" | awk '{for (i=1; i<=NF; i++) if ($i == "-auth") {print $(i+1); exit}}' || true)"
-  fi
-  if [ -z "$xauthority" ]; then
-    xauthority="/run/user/$(id -u participant)/dcv/genius.xauth"
-  fi
-
-  local display_value="" screen_size=""
-  for candidate in "$${DISPLAY:-}" :1 :2 :3 :4 :5 :0; do
-    if [ -z "$candidate" ]; then
-      continue
-    fi
-    screen_size="$(DISPLAY="$candidate" XAUTHORITY="$xauthority" xdpyinfo 2>/dev/null | awk '/dimensions:/{print $2; exit}' || true)"
-    if [ -n "$screen_size" ]; then
-      display_value="$candidate"
-      break
-    fi
-  done
-
-  if [ -z "$display_value" ]; then
-    echo "Could not find an accessible DCV X display for recording test." >&2
+  if ! wait_for_recordable_display 30; then
+    echo "Could not find a full-resolution DCV display for recording test." >&2
     exit 1
   fi
 
   local test_file="$VIDEO_DIR/GENIUS_$${PARTICIPANT_ID}_$${SESSION_ID}_recording_test.mp4"
   rm -f "$test_file"
 
-  (sleep 2; DISPLAY="$display_value" XAUTHORITY="$xauthority" xterm -geometry 40x6+20+20 -T GENIUS_RECORDING_TEST -e 'for i in $(seq 1 8); do clear; echo "GENIUS recording motion test $i"; date -u; sleep 1; done' >/dev/null 2>&1 || true) &
+  (sleep 2; DISPLAY="$RECORDING_DISPLAY" XAUTHORITY="$RECORDING_XAUTHORITY" xterm -geometry 40x6+20+20 -T GENIUS_RECORDING_TEST -e 'for i in $(seq 1 8); do clear; echo "GENIUS recording motion test $i"; date -u; sleep 1; done' >/dev/null 2>&1 || true) &
 
-  ffmpeg \
-    -y \
-    -hide_banner \
-    -loglevel warning \
-    -f x11grab \
-    -framerate 15 \
-    -video_size "$screen_size" \
-    -i "$display_value" \
-    -t 10 \
-    -r 15 \
-    -an \
-    -c:v libx264 \
-    -preset ultrafast \
-    -crf 23 \
-    -pix_fmt yuv420p \
-    "$test_file" >"$RUNTIME_DIR/screen_recording_test.log" 2>&1
+  DISPLAY="$RECORDING_DISPLAY" XAUTHORITY="$RECORDING_XAUTHORITY" \
+    ffmpeg \
+      -y \
+      -hide_banner \
+      -loglevel warning \
+      -f x11grab \
+      -framerate 15 \
+      -video_size "$RECORDING_SCREEN_SIZE" \
+      -i "$RECORDING_DISPLAY" \
+      -t 10 \
+      -r 15 \
+      -an \
+      -c:v libx264 \
+      -preset ultrafast \
+      -crf 23 \
+      -pix_fmt yuv420p \
+      "$test_file" >"$RUNTIME_DIR/screen_recording_test.log" 2>&1
 
   python3 - "$test_file" "$RUNTIME_DIR/screen_recording_test.json" <<'PY'
 import json
@@ -646,29 +868,87 @@ PY
   rm -f "$PID_FILE"
 }
 
+concat_segments() {
+  python3 - "$SEGMENTS_FILE" "$VIDEO_DIR/GENIUS_$${PARTICIPANT_ID}_$${SESSION_ID}_merged.mp4" <<'PY'
+import json
+import os
+import subprocess
+import sys
+import tempfile
+
+segments_path, merged_path = sys.argv[1], sys.argv[2]
+if not os.path.exists(segments_path):
+    sys.exit(0)
+
+with open(segments_path, "r", encoding="utf-8") as handle:
+    segments = json.load(handle)
+
+paths = []
+for entry in segments:
+    path = entry.get("output_file")
+    if path and os.path.isfile(path) and os.path.getsize(path) > 0:
+        paths.append(path)
+
+if len(paths) <= 1:
+    if len(paths) == 1:
+        import shutil
+        shutil.copy2(paths[0], merged_path)
+    sys.exit(0)
+
+with tempfile.NamedTemporaryFile("w", delete=False, suffix=".txt") as handle:
+    list_path = handle.name
+    for path in paths:
+        handle.write(f"file '{path}'\n")
+
+subprocess.run(
+    [
+        "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+        "-f", "concat", "-safe", "0", "-i", list_path,
+        "-c", "copy", merged_path,
+    ],
+    check=False,
+)
+os.unlink(list_path)
+PY
+}
+
 case "$${1:-}" in
   start)
-    # Enable watchdog so recording auto-restarts if ffmpeg crashes
     sudo /usr/local/bin/genius-watchdog-enable
-    start_recording
+    start_recording 0
+    ;;
+  resume)
+    start_recording 1
     ;;
   stop)
-    # Disable watchdog so recording stays stopped
     sudo /usr/local/bin/genius-watchdog-disable
     stop_recording
+    concat_segments || true
     ;;
   status)
     if [ -s "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
       echo "running"
+      if [ -s "$CURRENT_FILE" ]; then
+        echo "file=$(cat "$CURRENT_FILE")"
+      fi
+      if resolve_recording_context; then
+        echo "display=$RECORDING_DISPLAY size=$RECORDING_SCREEN_SIZE"
+      fi
     else
       echo "stopped"
+    fi
+    if [ -f "$SEGMENTS_FILE" ]; then
+      echo "segments=$(python3 -c "import json; print(len(json.load(open('$SEGMENTS_FILE'))))")"
     fi
     ;;
   test)
     test_recording
     ;;
+  concat)
+    concat_segments
+    ;;
   *)
-    echo "Usage: $0 {start|stop|status|test}" >&2
+    echo "Usage: $0 {start|stop|status|test|concat|resume}" >&2
     exit 2
     ;;
 esac
@@ -677,28 +957,77 @@ chmod 0755 /usr/local/bin/genius-screen-recorder
 
 cat >/usr/local/bin/genius-recorder-watchdog <<'EOF'
 #!/bin/bash
-sudo -u participant /usr/local/bin/genius-screen-recorder start 2>/dev/null || true
+set -euo pipefail
+
+RUNTIME_DIR="/home/participant/genius-runtime"
+PID_FILE="$RUNTIME_DIR/screen_recording.pid"
+WATCHDOG_FLAG="$RUNTIME_DIR/screen_recording_watchdog.enabled"
+LOG_FILE="$RUNTIME_DIR/screen_recording.log"
+
+if [ ! -f "$WATCHDOG_FLAG" ]; then
+  exit 0
+fi
+
+if [ -s "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+  exit 0
+fi
+
+if [ -s "$PID_FILE" ]; then
+  echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) watchdog: stale recorder pid $(cat "$PID_FILE")" >>"$LOG_FILE"
+  rm -f "$PID_FILE"
+fi
+
+echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) watchdog: restarting screen recorder" >>"$LOG_FILE"
+sudo -u participant /usr/local/bin/genius-screen-recorder resume >>"$LOG_FILE" 2>&1 || true
 EOF
 chmod 0755 /usr/local/bin/genius-recorder-watchdog
 
-# Root helpers so participant can enable/disable the watchdog cron without full sudo
+cat >/etc/systemd/system/genius-recorder-watchdog.service <<'EOF'
+[Unit]
+Description=GENIUS screen recorder watchdog
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/genius-recorder-watchdog
+EOF
+
+cat >/etc/systemd/system/genius-recorder-watchdog.timer <<'EOF'
+[Unit]
+Description=Check GENIUS screen recorder every 15 seconds
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=15s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
+EOF
+
 cat >/usr/local/bin/genius-watchdog-enable <<'EOF'
 #!/bin/bash
-echo '* * * * * root /usr/local/bin/genius-recorder-watchdog' >/etc/cron.d/genius-recorder-watchdog
-chmod 0644 /etc/cron.d/genius-recorder-watchdog
+set -euo pipefail
+install -d -m 0755 -o participant -g participant /home/participant/genius-runtime
+install -m 0644 /dev/null /home/participant/genius-runtime/screen_recording_watchdog.enabled
+chown participant:participant /home/participant/genius-runtime/screen_recording_watchdog.enabled
+systemctl daemon-reload
+systemctl enable --now genius-recorder-watchdog.timer
 EOF
 chmod 0755 /usr/local/bin/genius-watchdog-enable
 
 cat >/usr/local/bin/genius-watchdog-disable <<'EOF'
 #!/bin/bash
-rm -f /etc/cron.d/genius-recorder-watchdog
+set -euo pipefail
+rm -f /home/participant/genius-runtime/screen_recording_watchdog.enabled
+systemctl disable --now genius-recorder-watchdog.timer 2>/dev/null || true
 EOF
 chmod 0755 /usr/local/bin/genius-watchdog-disable
 
 echo "participant ALL=(root) NOPASSWD: /usr/local/bin/genius-watchdog-enable, /usr/local/bin/genius-watchdog-disable" \
   >/etc/sudoers.d/genius-recorder
 chmod 0440 /etc/sudoers.d/genius-recorder
-# Watchdog cron is NOT installed at boot — enabled by genius-screen-recorder start, disabled by stop
+systemctl daemon-reload
+# Watchdog timer is enabled by genius-screen-recorder start, disabled by stop
 
 cat >/usr/local/bin/genius-dcv-init <<'EOF'
 #!/usr/bin/env bash
@@ -726,14 +1055,44 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
 
+cat >/usr/local/bin/genius-collection-health <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+. /etc/genius/session.env
+
+mode="$${1:-show}"
+mkdir -p "$RUNTIME_DIR"
+resource_state="$(systemctl is-active genius-resource-monitor.service 2>/dev/null || true)"
+watchdog_state="$(systemctl is-active genius-recorder-watchdog.timer 2>/dev/null || true)"
+recorder_state="stopped"
+recorder_pid=""
+if [ -s "$RUNTIME_DIR/screen_recording.pid" ]; then
+  recorder_pid="$(cat "$RUNTIME_DIR/screen_recording.pid")"
+  if kill -0 "$recorder_pid" 2>/dev/null; then
+    recorder_state="running"
+  fi
+fi
+timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+output="$RUNTIME_DIR/collection_health_$${PARTICIPANT_ID}_$${SESSION_ID}.jsonl"
+line="{\"timestamp\":\"$timestamp\",\"resource_monitor\":\"$resource_state\",\"recorder\":\"$recorder_state\",\"recorder_pid\":\"$recorder_pid\",\"recorder_watchdog\":\"$watchdog_state\"}"
+if [ "$mode" = "snapshot" ]; then
+  printf '%s\n' "$line" >>"$output"
+fi
+printf '%s\n' "$line"
+EOF
+chmod 0755 /usr/local/bin/genius-collection-health
+
 cat >/usr/local/bin/genius-ensure-dcv-session <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 
 . /etc/genius/session.env
 
+update-alternatives --set x-session-manager /usr/bin/xfce4-session >/dev/null 2>&1 || true
+printf "[Desktop]\nSession=xfce\n" >/home/participant/.dmrc
+chown participant:participant /home/participant/.dmrc
+
 dcv set-config --section display --key enable-client-resize "false"
-dcv set-config --section session-management --key virtual-session-default-layout "[{'w': 1920, 'h': 1080, 'x': 0, 'y': 0}]"
 
 systemctl enable --now dcvserver
 for attempt in $(seq 1 30); do

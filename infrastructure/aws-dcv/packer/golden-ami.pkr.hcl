@@ -39,11 +39,6 @@ variable "repo_ref" {
   default = "main"
 }
 
-variable "kiro_metadata_url" {
-  type    = string
-  default = "https://prod.download.desktop.kiro.dev/stable/metadata-linux-x64-deb-stable.json"
-}
-
 locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 }
@@ -87,7 +82,6 @@ build {
     environment_vars = [
       "GENIUS_REPO_URL=${var.repo_url}",
       "GENIUS_REPO_REF=${var.repo_ref}",
-      "KIRO_METADATA_URL=${var.kiro_metadata_url}",
     ]
     script = "scripts/install-golden-ami.sh"
   }

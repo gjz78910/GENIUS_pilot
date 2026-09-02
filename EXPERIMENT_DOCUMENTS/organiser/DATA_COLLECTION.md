@@ -8,8 +8,9 @@ Simple guide to collect all data needed for GoCodeGreen carbon footprint calcula
 
 Use only these two documents during the session:
 - **For participants (manual):** `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_MANUAL.html`
-- **For participants (AI):** `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.md`
-- **For organizers:** `EXPERIMENT_DOCUMENTS/DATA_COLLECTION.md` (this file)
+- **For participants (AI):** `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html`
+- **For organizers:** `EXPERIMENT_DOCUMENTS/organiser/DATA_COLLECTION.md` (this file)
+- **For AWS remote VMs:** `EXPERIMENT_DOCUMENTS/organiser/AWS_REMOTE_EXPERIMENT_RUNBOOK.md`
 
 ---
 
@@ -26,8 +27,13 @@ Use `<SESSION>` only if you run the same participant more than once.
 # Participant P001 (single run)
 python SCRIPTS/collect_system_info.py --participant-id P001
 python SCRIPTS/monitor_resources.py --participant-id P001 -i 60
-./SCRIPTS/store_participant_work.sh P001
+./SCRIPTS/submit_participant_work.sh P001 SESSION1
 ```
+
+The command automatically writes a verified full-history Git bundle under
+`DATA_COLLECTION/git_state/`. Keep this bundle with the session archive: it is
+the portable source for reconstructing exact commits and pre-prompt file states
+during replay analysis.
 For repeated runs of the same participant, add a session label like `S1`.
 
 Keep IDs consistent across all scripts.
@@ -108,18 +114,37 @@ If you plan to run code-quality checks, also install: `pylint`, `radon`, `pydocs
 
 ## ON EXPERIMENT DAY (During the session)
 
-**1. Start resource monitoring in a SEPARATE terminal** (so the participant's terminal stays free):
+**1. Verify the background collection services:**
 ```bash
-# Open a new terminal window/tab, then:
-conda activate genius_pilot
-python SCRIPTS/monitor_resources.py --participant-id <ID> -i 60
+sudo systemctl is-active genius-resource-monitor.service
+/usr/local/bin/genius-collection-health snapshot
 ```
-Leave this running until the participant finishes. (Requires `psutil`.)
+Expected: the resource monitor is `active`. It runs as a restartable system
+service and does not depend on an open terminal.
 
-> **Note:** Tell the participant to use a **separate terminal** for their work and not to close or interfere with the monitoring terminal.
+**2. Start screen recording (participant, after DCV desktop is visible):**
+```bash
+/usr/local/bin/genius-screen-recorder start
+/usr/local/bin/genius-screen-recorder status
+```
+Expected: `running`, plus a display size of at least `1280x720` (usually `1920x1080`).
 
-**2. Stop monitoring when participant finishes:**
-- Press Ctrl+C in the monitoring terminal
+Do not start recording before the participant has connected via DCV — early starts capture a small cropped window. If the DCV tab disconnects briefly, a watchdog restarts recording automatically once the full desktop is back.
+
+**3. Capture a final health snapshot when the participant finishes:**
+```bash
+/usr/local/bin/genius-collection-health snapshot
+```
+
+The unified submission/end-session flow stops the resource service after its
+final runtime data has been copied.
+
+**4. Stop screen recording when participant finishes:**
+```bash
+/usr/local/bin/genius-screen-recorder stop
+/usr/local/bin/genius-screen-recorder status
+```
+Expected: `stopped`. On AWS VMs, `stop` also merges multiple segments into one file if recording restarted during the session.
 
 ---
 
@@ -139,10 +164,13 @@ python SCRIPTS/extract_cicd_metrics.py --participant-id <ID>
 Note: This script is GitLab-focused. If there is no `.gitlab-ci.yml` or GitLab API token,
 the output will be limited to local repo signals.
 
-**3. Q Developer metrics (AI participants only):**
+**3. Claude Code metrics (AI participants only):**
 ```bash
-python SCRIPTS/collect_q_developer_metrics.py > DATA_COLLECTION/q_developer_metrics_<ID>.json
+python SCRIPTS/collect_claude_code_metrics.py --participant-id <ID>
 ```
+This also runs automatically on AWS remote VMs via the end-session script.
+Treat local usage fields as best-effort. Bedrock invocation logs or provider
+billing remain authoritative for token and cost accounting.
 
 **4. Checkpoint/task test result files (canonical, run after the session on final codebase):**
 ```bash
@@ -215,10 +243,11 @@ python SCRIPTS/generate_success_criteria_report.py \
 
 - **System info:** CPU, memory, GPU, OS specs (BEFORE)
 - **Resource usage:** CPU%, memory, network, disk I/O (ON - every 60 seconds)
+- **Screen recordings:** Full-desktop MP4 from DCV session (ON; participant starts/stops via `genius-screen-recorder`)
 - **Checkpoint/task test results:** per checkpoint/task pass/fail JSON outputs (AFTER, from final codebase)
 - **Git activity:** Commits, lines changed, branch activity (AFTER)
 - **CI/CD:** Pipeline runs, test times, pass/fail rates (AFTER; GitLab config/API only)
-- **Q Developer:** AI queries, suggestions accepted/rejected (AFTER; best-effort from VS Code logs)
+- **Claude Code:** AI conversations, turns, tool uses, local usage fields when present, and VS Code extension diagnostics (AFTER; best-effort from Claude Code transcripts and VS Code logs)
 - **Test metrics:** Execution time, pass/fail, memory usage (AFTER; performance tests optional)
 - **Code quality:** Quality score, complexity, documentation (AFTER; requires extra tools)
 - **Energy:** Estimated from CPU/memory/GPU usage (AFTER)
@@ -231,6 +260,8 @@ python SCRIPTS/generate_success_criteria_report.py \
 All data saved to `DATA_COLLECTION/`:
 - `system_info_<ID>.json` (BEFORE)
 - `resource_usage_<ID>.jsonl` (ON, single-run default)
+- `screen_recordings/*.mp4` (ON; AWS end-session copies from `~/Videos/` to `DATA_COLLECTION/screen_recordings/`)
+- `screen_recording_segments.json` (ON; log of recording restarts, if any)
 - `Task1_cp1_<ID>.json` (AFTER, single-run default)
 - `Task1_cp2_<ID>.json` (AFTER, single-run default)
 - `Task1_cp3_<ID>.json` (AFTER, single-run default)
@@ -238,7 +269,7 @@ All data saved to `DATA_COLLECTION/`:
 - `Task3_<ID>.json` (AFTER, single-run default)
 - `git_activity_<ID>.json` (AFTER)
 - `cicd_metrics_<ID>.json` (AFTER)
-- `q_developer_metrics_<ID>.json` (AFTER, single-run default)
+- `claude_code_metrics_<ID>.json` (AFTER, single-run default)
 - `test_metrics_<ID>.json` (AFTER, optional aggregate single-run default)
 - `code_quality_<ID>.json` (AFTER)
 - `energy_estimate_<ID>.json` (AFTER)
@@ -287,9 +318,12 @@ python SCRIPTS/verify_data_separation.py --participant-id <ID>
 ## Troubleshooting
 
 - **Monitoring stops:** Check `psutil` installed: `pip install psutil`
+- **Recording shows `stopped` or small size (800×600):** Participant must connect via DCV first, then run `genius-screen-recorder stop` and `start` again. See `AWS_REMOTE_EXPERIMENT_RUNBOOK.md`.
+- **Recording stopped mid-session:** Watchdog should auto-resume within ~15 seconds once DCV is back. Check `systemctl status genius-recorder-watchdog.timer` on the VM.
+- **Multiple MP4 parts:** Normal after a DCV reconnect. `genius-screen-recorder stop` merges them; end-session uploads all parts plus `_merged.mp4` if present.
 - **System info fails on macOS:** Run from the normal terminal (not a restricted shell) or try updating `psutil`
 - **Code quality fails:** Install tools: `pip install pylint radon pydocstyle`
-- **Q Developer metrics not found:** Check VS Code extension logs manually, or use screen recording
+- **Claude Code metrics not found:** Check `DATA_COLLECTION/claude_code_history/manifest.txt`, VS Code extension logs, and the screen recording
 - **Energy seems wrong:** Values are estimates - may need calibration for your hardware
 - **Missing data files:** Run `verify_data_separation.py` to check what's missing
 - **Can't find participant data:** Check `DATA_COLLECTION/` folder, verify participant ID is correct

@@ -73,6 +73,7 @@ def aggregate_experiment_data(
         "git_activity": f"git_activity_{participant_id}.json",
         "cicd_metrics": f"cicd_metrics_{participant_id}.json",
         "q_developer_metrics": f"q_developer_metrics_{participant_id}.json" if not session_id else f"q_developer_metrics_{participant_id}_{session_id}.json",
+        "claude_code_metrics": f"claude_code_metrics_{participant_id}.json" if not session_id else f"claude_code_metrics_{participant_id}_{session_id}.json",
         "kiro_metrics": f"kiro_metrics_{participant_id}.json" if not session_id else f"kiro_metrics_{participant_id}_{session_id}.json",
         "test_metrics": f"test_metrics_{participant_id}.json" if not session_id else f"test_metrics_{participant_id}_{session_id}.json",
         "code_quality": f"code_quality_{participant_id}.json",
@@ -166,6 +167,15 @@ def generate_summary(data):
             summary["ai_queries"] = q_dev["data"].get("queries", 0)
             summary["ai_suggestions_accepted"] = q_dev["data"].get("suggestions_accepted", 0)
             summary["ai_suggestions_rejected"] = q_dev["data"].get("suggestions_rejected", 0)
+
+    if "claude_code_metrics" in data:
+        claude = data["claude_code_metrics"]
+        if "data" in claude:
+            summary["claude_code_conversations"] = claude["data"].get("claude_conversations", 0)
+            summary["claude_code_user_turns"] = claude["data"].get("claude_user_turns", 0)
+            summary["claude_code_assistant_turns"] = claude["data"].get("claude_assistant_turns", 0)
+            summary["claude_code_tool_uses"] = claude["data"].get("claude_tool_uses", 0)
+            summary["claude_code_usage_fields"] = claude["data"].get("claude_usage_fields", {})
 
     if "kiro_metrics" in data:
         kiro = data["kiro_metrics"]

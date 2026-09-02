@@ -178,6 +178,20 @@ resource "aws_iam_policy" "workstation" {
           aws_s3_bucket.artifacts.arn,
           "${aws_s3_bucket.artifacts.arn}/*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "bedrock:InvokeModel",
+          "bedrock:InvokeModelWithResponseStream",
+          "bedrock:ListInferenceProfiles",
+          "bedrock:GetInferenceProfile"
+        ]
+        Resource = [
+          "arn:aws:bedrock:*:*:inference-profile/*",
+          "arn:aws:bedrock:*:*:application-inference-profile/*",
+          "arn:aws:bedrock:*:*:foundation-model/*"
+        ]
       }
     ]
   })
@@ -235,22 +249,25 @@ resource "aws_instance" "participant" {
   }
 
   user_data_base64 = base64gzip(templatefile("${path.module}/templates/user_data.sh.tftpl", {
-    participant_id           = each.value.participant_id
-    session_id               = each.value.session_id
-    condition                = each.value.condition
-    participant_password     = random_password.participant[each.key].result
-    artifact_bucket          = aws_s3_bucket.artifacts.bucket
-    repo_url                 = var.repo_url
-    repo_ref                 = var.repo_ref
-    monitor_interval_seconds = var.monitor_interval_seconds
-    auto_stop_minutes        = local.auto_stop_minutes
-    trusted_dcv_cert_enabled = var.enable_trusted_dcv_cert
-    dynamic_dns_provider     = var.dynamic_dns_provider
-    duckdns_token            = var.duckdns_token
-    dcv_hostname             = local.participant_hostnames[each.key]
-    duckdns_domain           = trimsuffix(local.participant_hostnames[each.key], ".${var.dcv_hostname_domain}")
-    expected_public_ip       = var.dynamic_dns_provider == "sslip" ? aws_eip.participant[each.key].public_ip : ""
-    letsencrypt_email        = var.letsencrypt_email
+    participant_id               = each.value.participant_id
+    session_id                   = each.value.session_id
+    condition                    = each.value.condition
+    participant_password         = random_password.participant[each.key].result
+    artifact_bucket              = aws_s3_bucket.artifacts.bucket
+    repo_url                     = var.repo_url
+    repo_ref                     = var.repo_ref
+    monitor_interval_seconds     = var.monitor_interval_seconds
+    claude_code_bedrock_region   = var.claude_code_bedrock_region
+    claude_code_model            = var.claude_code_model
+    claude_code_small_fast_model = var.claude_code_small_fast_model
+    auto_stop_minutes            = local.auto_stop_minutes
+    trusted_dcv_cert_enabled     = var.enable_trusted_dcv_cert
+    dynamic_dns_provider         = var.dynamic_dns_provider
+    duckdns_token                = var.duckdns_token
+    dcv_hostname                 = local.participant_hostnames[each.key]
+    duckdns_domain               = trimsuffix(local.participant_hostnames[each.key], ".${var.dcv_hostname_domain}")
+    expected_public_ip           = var.dynamic_dns_provider == "sslip" ? aws_eip.participant[each.key].public_ip : ""
+    letsencrypt_email            = var.letsencrypt_email
   }))
 
   tags = merge(local.common_tags, {

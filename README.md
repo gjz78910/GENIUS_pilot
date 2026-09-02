@@ -19,6 +19,8 @@ The instructions will guide you through everything: setup, the three tasks, and 
 
 ## For Experiment Organizers
 
+> **AI-condition note:** The KCL-01 pilot used Kiro. Future AI-condition VMs use VS Code with the Claude Code extension, configured for Amazon Bedrock through the VM IAM role so organisers do not need to log in to each VM manually.
+
 ### Setup
 
 1. Clone repo and create conda environment: `conda env create -f environment.yml`
@@ -44,6 +46,7 @@ The instructions will guide you through everything: setup, the three tasks, and 
 - `Pre_Experiment_Survey.html` — Pre-experiment survey
 - `Post_Experiment_Survey.html` — Post-experiment survey
 - `session_config.js` — Auto-generated participant session config
+- `PLENARY_ETHICS_AMENDMENT_DRAFT.md` — ethics record for deployed AI-attitude survey questions and proposed publication consent; do not collect plenary responses before approval
 
 ### Run an Experiment Session
 
@@ -63,6 +66,7 @@ git checkout -b <experiment-branch>   # e.g. KCL-S1
 #   - Set dcv_allowed_cidrs = ["0.0.0.0/0"]
 #   - Set repo_ref to current main HEAD commit hash
 #   - Set auto_stop_hours = 12 (do NOT change this after first apply)
+#   - Optionally set claude_code_model to an enabled Bedrock model or inference profile
 ```
 
 **Step 3 — Apply Terraform (provisions all VMs at once):**
@@ -104,17 +108,41 @@ AWS_PROFILE=genius-dcv aws ssm send-command \
   --parameters "commands=[\"cd /home/participant/GENIUS_pilot && sudo -u participant /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/generate_session_config.py --desktop-url '<URL>' --password '<PASSWORD>' 2>&1\"]"
 ```
 
-**Step 6 — For AI VMs, log in via DCV and configure Kiro** before handing credentials to participants.
+**Step 6 — For AI VMs, verify Claude Code before handing credentials to participants.**
 
-> ⚠️ **Never run `terraform apply` again after VMs are configured.** Any change to `terraform.tfvars` that touches user_data (e.g. `auto_stop_hours`, `repo_ref`) will destroy and recreate all VMs, wiping Kiro configuration.
+Claude Code is installed as a VS Code extension and configured for Amazon Bedrock during VM bootstrap. Use SSM to verify it across the fleet:
+
+```bash
+AWS_PROFILE=genius-dcv aws ssm send-command \
+  --region eu-west-2 \
+  --targets "Key=tag:Condition,Values=ai" \
+  --document-name AWS-RunShellScript \
+  --parameters 'commands=["sudo -u participant -H code --list-extensions | grep -x anthropic.claude-code","sudo -u participant -H bash -lc \"test -f ~/.claude/settings.json && grep -q CLAUDE_CODE_USE_BEDROCK ~/.claude/settings.json\""]'
+```
+
+> ⚠️ **Never run `terraform apply` again after VMs are configured.** Any change to `terraform.tfvars` that touches user_data (e.g. `auto_stop_hours`, `repo_ref`, Claude Code model settings) will destroy and recreate all VMs.
 
 For full details and troubleshooting see `EXPERIMENT_DOCUMENTS/organiser/AWS_REMOTE_EXPERIMENT_RUNBOOK.md`.
 
 ### Between Participants
 
-1. Store work: `./SCRIPTS/store_participant_work.sh <ID> <SESSION>`
+1. Submit and store work: `./SCRIPTS/submit_participant_work.sh <ID> <SESSION>`
 2. Reset environment: `./SCRIPTS/reset_environment.sh <ID> <SESSION>`
 3. Verify reset: `python -m src.demo`
+
+The submission command runs the authoritative checkpoint report, snapshots
+experiment-scoped runtime and terminal-audit evidence, stores the participant
+branch, creates and verifies a complete Git bundle, pushes the branch, and
+records each step in a local manifest. Checkpoint failures do not invalidate
+submission; storage, Git-state capture, or push failures do.
+
+On AWS VMs, resource monitoring runs as a restartable system service. Screen
+recording runs independently of terminal windows and is protected by a
+watchdog. Organisers can record their states with:
+
+```bash
+/usr/local/bin/genius-collection-health snapshot
+```
 
 ### Project Structure
 

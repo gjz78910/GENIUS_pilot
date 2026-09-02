@@ -8,8 +8,8 @@ PROJECT_DIR="/home/participant/GENIUS_pilot"
 RUNTIME_DIR="/home/participant/genius-runtime"
 ARCHIVE="/tmp/genius-$PARTICIPANT_ID-$SESSION_ID-$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
 
-systemctl stop genius-resource-monitor.service || true
 systemctl stop genius-monitor.service || true
+/usr/local/bin/genius-collection-health snapshot || true
 
 sudo -u participant -H bash -lc "
   /usr/local/bin/genius-screen-recorder stop || true
@@ -25,70 +25,67 @@ chown -R participant:participant "$PROJECT_DIR"
 sudo -u participant -H bash -lc "
   set -e
   cd '$PROJECT_DIR'
-  ./SCRIPTS/store_participant_work.sh '$PARTICIPANT_ID' '$SESSION_ID'
+  ./SCRIPTS/submit_participant_work.sh '$PARTICIPANT_ID' '$SESSION_ID' || true
 "
+
+systemctl stop genius-resource-monitor.service || true
 
 sudo -u participant -H bash -lc "
   set -e
   cd '$PROJECT_DIR'
   mkdir -p DATA_COLLECTION
   cp -a '$RUNTIME_DIR'/. DATA_COLLECTION/ 2>/dev/null || true
+  cp -a '$RUNTIME_DIR'/screen_recording_segments.json DATA_COLLECTION/ 2>/dev/null || true
   mkdir -p DATA_COLLECTION/screen_recordings
   if [ -f /home/participant/Videos/GENIUS_'$PARTICIPANT_ID'_'$SESSION_ID'.mp4 ]; then
     cp -a /home/participant/Videos/GENIUS_'$PARTICIPANT_ID'_'$SESSION_ID'.mp4 DATA_COLLECTION/screen_recordings/
   fi
-  for recording in /home/participant/Videos/GENIUS_'$PARTICIPANT_ID'_'$SESSION_ID'_*.mp4; do
+  for recording in /home/participant/Videos/GENIUS_'$PARTICIPANT_ID'_'$SESSION_ID'_merged.mp4 \
+    /home/participant/Videos/GENIUS_'$PARTICIPANT_ID'_'$SESSION_ID'_*.mp4; do
     if [ -f \"\$recording\" ]; then
       cp -a \"\$recording\" DATA_COLLECTION/screen_recordings/
     fi
   done
-  mkdir -p DATA_COLLECTION/kiro_history
-  for kiro_source in \
-    /home/participant/.config/Kiro/User/globalStorage/kiro.kiroagent \
-    /home/participant/.config/Kiro/logs \
-    /home/participant/.local/share/kiro-cli; do
-    if [ -e \"\$kiro_source\" ]; then
-      cp -a \"\$kiro_source\" DATA_COLLECTION/kiro_history/
+  mkdir -p DATA_COLLECTION/claude_code_history
+  for claude_source in \
+    /home/participant/.claude/projects \
+    /home/participant/.claude/todos \
+    /home/participant/.config/Code/logs; do
+    if [ -e \"\$claude_source\" ]; then
+      cp -a \"\$claude_source\" DATA_COLLECTION/claude_code_history/
     fi
   done
   {
     echo \"participant_id=$PARTICIPANT_ID\"
     echo \"session_id=$SESSION_ID\"
     echo \"collected_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
-    find DATA_COLLECTION/kiro_history -type f | sed 's#^DATA_COLLECTION/kiro_history/##' | sort
-  } > DATA_COLLECTION/kiro_history/manifest.txt
+    find DATA_COLLECTION/claude_code_history -type f | sed 's#^DATA_COLLECTION/claude_code_history/##' | sort
+  } > DATA_COLLECTION/claude_code_history/manifest.txt
 "
 
-sudo -u participant -H bash -lc "
-  cd '$PROJECT_DIR'
-  /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/run_experiment_test_checkpoints.py --participant-id '$PARTICIPANT_ID' --session-id '$SESSION_ID' || true
-"
-
-if [ -f "$PROJECT_DIR/SCRIPTS/collect_kiro_metrics.py" ]; then
+if [ -f "$PROJECT_DIR/SCRIPTS/collect_claude_code_metrics.py" ]; then
   sudo -u participant -H bash -lc "
     cd '$PROJECT_DIR'
-    /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/collect_kiro_metrics.py --participant-id '$PARTICIPANT_ID' --session-id '$SESSION_ID' || true
+    /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/collect_claude_code_metrics.py --participant-id '$PARTICIPANT_ID' --session-id '$SESSION_ID' || true
   "
 else
   CONDITION="$(cat /etc/genius/condition 2>/dev/null || true)"
   if [ "$CONDITION" = "ai" ]; then
-    echo "Missing Kiro metrics collector for AI participant: $PROJECT_DIR/SCRIPTS/collect_kiro_metrics.py" >&2
+    echo "Missing Claude Code metrics collector for AI participant: $PROJECT_DIR/SCRIPTS/collect_claude_code_metrics.py" >&2
     sudo -u participant -H bash -lc "
       cd '$PROJECT_DIR'
       mkdir -p DATA_COLLECTION
-      cat > DATA_COLLECTION/kiro_metrics_'$PARTICIPANT_ID'_'$SESSION_ID'.json <<JSON
+      cat > DATA_COLLECTION/claude_code_metrics_'$PARTICIPANT_ID'_'$SESSION_ID'.json <<JSON
 {
   \"collection_timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
   \"collection_method\": \"missing_collector\",
-  \"error\": \"SCRIPTS/collect_kiro_metrics.py was not present on the participant VM\",
+  \"error\": \"SCRIPTS/collect_claude_code_metrics.py was not present on the participant VM\",
   \"data\": {
     \"total_detected_events\": 0,
-    \"kiro_conversations\": 0,
-    \"kiro_requests\": 0,
-    \"kiro_responses\": 0,
-    \"kiro_credits_used\": 0,
-    \"kiro_estimated_input_tokens\": 0,
-    \"kiro_estimated_output_tokens\": 0
+    \"claude_conversations\": 0,
+    \"claude_user_turns\": 0,
+    \"claude_assistant_turns\": 0,
+    \"claude_tool_uses\": 0
   }
 }
 JSON
