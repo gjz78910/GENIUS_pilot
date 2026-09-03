@@ -203,6 +203,8 @@ export PATH="$HOME/.local/bin:$HOME/.claude/local:$PATH"
 cd ~/GENIUS_pilot 2>/dev/null || true
 EOF
 install -d -m 0755 /home/participant/.config /home/participant/.config/xfce4/xfconf/xfce-perchannel-xml
+install -d -o participant -g participant /home/participant/.config/google-chrome
+install -m 0644 -o participant -g participant /dev/null "/home/participant/.config/google-chrome/First Run"
 cat >/home/participant/.config/mimeapps.list <<'EOF'
 [Default Applications]
 x-scheme-handler/http=google-chrome.desktop
@@ -241,7 +243,9 @@ PROJECT_DIR="${PROJECT_DIR:-$HOME/GENIUS_pilot}"
 INSTRUCTIONS_FILE="$PROJECT_DIR/EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html"
 
 if [ -f "$INSTRUCTIONS_FILE" ]; then
-  google-chrome-stable --no-first-run --new-window "$INSTRUCTIONS_FILE" >/dev/null 2>&1 &
+  mkdir -p "$HOME/.config/google-chrome"
+  touch "$HOME/.config/google-chrome/First Run"
+  google-chrome-stable --no-first-run --disable-search-engine-choice-screen --new-window "file://$INSTRUCTIONS_FILE" >/dev/null 2>&1 &
 fi
 
 code --new-window "$PROJECT_DIR" &
