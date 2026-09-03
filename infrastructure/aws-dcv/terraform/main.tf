@@ -192,6 +192,13 @@ resource "aws_iam_policy" "workstation" {
           "arn:aws:bedrock:*:*:application-inference-profile/*",
           "arn:aws:bedrock:*:*:foundation-model/*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudtrail:LookupEvents"
+        ]
+        Resource = "*"
       }
     ]
   })

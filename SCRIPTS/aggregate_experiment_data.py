@@ -74,6 +74,7 @@ def aggregate_experiment_data(
         "cicd_metrics": f"cicd_metrics_{participant_id}.json",
         "q_developer_metrics": f"q_developer_metrics_{participant_id}.json" if not session_id else f"q_developer_metrics_{participant_id}_{session_id}.json",
         "claude_code_metrics": f"claude_code_metrics_{participant_id}.json" if not session_id else f"claude_code_metrics_{participant_id}_{session_id}.json",
+        "bedrock_token_usage": f"bedrock_token_usage_{participant_id}.json" if not session_id else f"bedrock_token_usage_{participant_id}_{session_id}.json",
         "kiro_metrics": f"kiro_metrics_{participant_id}.json" if not session_id else f"kiro_metrics_{participant_id}_{session_id}.json",
         "test_metrics": f"test_metrics_{participant_id}.json" if not session_id else f"test_metrics_{participant_id}_{session_id}.json",
         "code_quality": f"code_quality_{participant_id}.json",
@@ -176,6 +177,16 @@ def generate_summary(data):
             summary["claude_code_assistant_turns"] = claude["data"].get("claude_assistant_turns", 0)
             summary["claude_code_tool_uses"] = claude["data"].get("claude_tool_uses", 0)
             summary["claude_code_usage_fields"] = claude["data"].get("claude_usage_fields", {})
+
+    if "bedrock_token_usage" in data:
+        bedrock = data["bedrock_token_usage"]
+        if "summary" in bedrock:
+            usage = bedrock["summary"]
+            summary["bedrock_input_tokens"] = usage.get("input_tokens", 0)
+            summary["bedrock_output_tokens"] = usage.get("output_tokens", 0)
+            summary["bedrock_total_tokens"] = usage.get("total_tokens", 0)
+            summary["bedrock_token_event_count"] = usage.get("token_event_count", 0)
+            summary["bedrock_token_usage_by_model"] = usage.get("by_model", {})
 
     if "kiro_metrics" in data:
         kiro = data["kiro_metrics"]

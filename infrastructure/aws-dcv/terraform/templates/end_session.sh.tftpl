@@ -93,6 +93,18 @@ JSON
   fi
 fi
 
+if [ -f "$PROJECT_DIR/SCRIPTS/collect_bedrock_token_usage.py" ]; then
+  sudo -u participant -H bash -lc "
+    cd '$PROJECT_DIR'
+    /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/collect_bedrock_token_usage.py --participant-id '$PARTICIPANT_ID' --session-id '$SESSION_ID' --instance-id self --region '$AWS_REGION' || true
+  "
+else
+  CONDITION="$(cat /etc/genius/condition 2>/dev/null || true)"
+  if [ "$CONDITION" = "ai" ]; then
+    echo "Missing Bedrock token usage collector for AI participant: $PROJECT_DIR/SCRIPTS/collect_bedrock_token_usage.py" >&2
+  fi
+fi
+
 sudo -u participant -H bash -lc "
   cd '$PROJECT_DIR'
   /opt/conda/bin/conda run -n genius_pilot python SCRIPTS/git_activity_logger.py --participant-id '$PARTICIPANT_ID' || true
