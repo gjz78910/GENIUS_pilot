@@ -533,10 +533,17 @@ fi
 
 code --new-window "$PROJECT_DIR" &
 
+code_ready=0
+browser_ready=0
 for _ in $(seq 1 40); do
   if command -v wmctrl >/dev/null 2>&1; then
-    wmctrl -r "PARTICIPANT_INSTRUCTIONS_AI.html" -b add,maximized_vert,maximized_horz 2>/dev/null || true
+    if wmctrl -r "PARTICIPANT_INSTRUCTIONS_AI.html" -b add,maximized_vert,maximized_horz 2>/dev/null; then
+      browser_ready=1
+    fi
     if wmctrl -r "GENIUS_pilot" -b add,maximized_vert,maximized_horz 2>/dev/null; then
+      code_ready=1
+    fi
+    if [ "$code_ready" -eq 1 ] && [ "$browser_ready" -eq 1 ]; then
       exit 0
     fi
   fi
