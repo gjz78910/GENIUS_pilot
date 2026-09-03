@@ -56,9 +56,9 @@ if ! command -v kazam >/dev/null 2>&1; then
   DEBIAN_FRONTEND=noninteractive apt-get install -y kazam
 fi
 
-if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v xdpyinfo >/dev/null 2>&1 || ! command -v xterm >/dev/null 2>&1; then
+if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v xdpyinfo >/dev/null 2>&1 || ! command -v xterm >/dev/null 2>&1 || ! command -v wmctrl >/dev/null 2>&1; then
   apt-get update -qq
-  DEBIAN_FRONTEND=noninteractive apt-get install -y ffmpeg x11-utils xterm
+  DEBIAN_FRONTEND=noninteractive apt-get install -y ffmpeg x11-utils xterm wmctrl
 fi
 
 if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
@@ -524,6 +524,24 @@ EOF
 
 configure_group_dock
 
+cat >/usr/local/bin/open-genius-ide <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_DIR="$${PROJECT_DIR:-$HOME/GENIUS_pilot}"
+
+code --new-window "$PROJECT_DIR" &
+
+for _ in $(seq 1 40); do
+  if command -v wmctrl >/dev/null 2>&1 && wmctrl -r "GENIUS_pilot" -b add,maximized_vert,maximized_horz 2>/dev/null; then
+    exit 0
+  fi
+  sleep 0.5
+done
+wait
+EOF
+chmod 0755 /usr/local/bin/open-genius-ide
+
 cat >/home/participant/Desktop/open-genius.desktop <<EOF
 [Desktop Entry]
 Type=Application
@@ -964,11 +982,46 @@ PID_FILE="$RUNTIME_DIR/screen_recording.pid"
 WATCHDOG_FLAG="$RUNTIME_DIR/screen_recording_watchdog.enabled"
 LOG_FILE="$RUNTIME_DIR/screen_recording.log"
 
+. /etc/genius/session.env
+
+METADATA_FILE="$RUNTIME_DIR/screen_recording_$${PARTICIPANT_ID}_$${SESSION_ID}.json"
+
+install -d -m 0755 -o participant -g participant "$RUNTIME_DIR"
+touch "$LOG_FILE"
+chown participant:participant "$LOG_FILE"
+
+current_recorded_size() {
+  python3 - "$METADATA_FILE" <<'PY' 2>/dev/null || true
+import json
+import sys
+
+try:
+    with open(sys.argv[1], "r", encoding="utf-8") as handle:
+        print(json.load(handle).get("screen_size", ""))
+except OSError:
+    pass
+PY
+}
+
+current_display_size() {
+  sudo -u participant /usr/local/bin/genius-screen-recorder status 2>/dev/null \
+    | sed -n 's/.* size=\([0-9][0-9]*x[0-9][0-9]*\).*/\1/p' \
+    | head -n 1
+}
+
 if [ ! -f "$WATCHDOG_FLAG" ]; then
   exit 0
 fi
 
 if [ -s "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+  recorded_size="$(current_recorded_size)"
+  display_size="$(current_display_size)"
+  if [ -n "$recorded_size" ] && [ -n "$display_size" ] && [ "$recorded_size" != "$display_size" ]; then
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) watchdog: display resized from $recorded_size to $display_size; restarting recorder segment" >>"$LOG_FILE"
+    sudo -u participant /usr/local/bin/genius-screen-recorder stop >>"$LOG_FILE" 2>&1 || true
+    /usr/local/bin/genius-watchdog-enable >>"$LOG_FILE" 2>&1 || true
+    sudo -u participant /usr/local/bin/genius-screen-recorder resume >>"$LOG_FILE" 2>&1 || true
+  fi
   exit 0
 fi
 
@@ -1092,7 +1145,7 @@ update-alternatives --set x-session-manager /usr/bin/xfce4-session >/dev/null 2>
 printf "[Desktop]\nSession=xfce\n" >/home/participant/.dmrc
 chown participant:participant /home/participant/.dmrc
 
-dcv set-config --section display --key enable-client-resize "false"
+dcv set-config --section display --key enable-client-resize "true"
 
 systemctl enable --now dcvserver
 for attempt in $(seq 1 30); do
@@ -1115,6 +1168,8 @@ dcv create-session \
   --max-concurrent-clients 2 \
   --init /usr/local/bin/genius-dcv-init \
   genius
+
+dcv set-display-layout --session genius 1920x1080 || true
 EOF
 chmod 0755 /usr/local/bin/genius-ensure-dcv-session
 

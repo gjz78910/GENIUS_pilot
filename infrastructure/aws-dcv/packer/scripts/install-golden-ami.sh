@@ -35,6 +35,7 @@ apt-get install -y \
   unzip \
   wget \
   ffmpeg \
+  wmctrl \
   x11-utils \
   x11-xserver-utils \
   xfce4 \
@@ -243,10 +244,18 @@ if [ -f /etc/genius/condition ]; then
 fi
 
 if [ "$CONDITION" = "ai" ]; then
-  exec code "$PROJECT_DIR"
+  code --new-window "$PROJECT_DIR" &
+else
+  code --new-window "$PROJECT_DIR" &
 fi
 
-exec code "$PROJECT_DIR"
+for _ in $(seq 1 40); do
+  if command -v wmctrl >/dev/null 2>&1 && wmctrl -r "GENIUS_pilot" -b add,maximized_vert,maximized_horz 2>/dev/null; then
+    exit 0
+  fi
+  sleep 0.5
+done
+wait
 EOF
 chmod 0755 /usr/local/bin/open-genius-ide
 
