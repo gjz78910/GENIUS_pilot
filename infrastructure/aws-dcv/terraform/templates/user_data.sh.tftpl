@@ -525,6 +525,22 @@ set -euo pipefail
 PROJECT_DIR="$${PROJECT_DIR:-$HOME/GENIUS_pilot}"
 INSTRUCTIONS_FILE="$PROJECT_DIR/EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html"
 
+fit_window_to_display() {
+  local title="$1" screen width height usable_height
+  screen="$(xdpyinfo 2>/dev/null | awk '/dimensions:/ {print $2; exit}')"
+  if [ -z "$screen" ]; then
+    return 1
+  fi
+  width="$${screen%x*}"
+  height="$${screen#*x}"
+  usable_height="$height"
+  if [ "$usable_height" -gt 120 ]; then
+    usable_height=$((usable_height - 27))
+  fi
+  wmctrl -r "$title" -e "0,0,27,$width,$usable_height" 2>/dev/null
+  wmctrl -r "$title" -b add,maximized_vert,maximized_horz 2>/dev/null
+}
+
 if [ -f "$INSTRUCTIONS_FILE" ]; then
   mkdir -p "$HOME/.config/google-chrome"
   touch "$HOME/.config/google-chrome/First Run"
@@ -537,10 +553,10 @@ code_ready=0
 browser_ready=0
 for _ in $(seq 1 40); do
   if command -v wmctrl >/dev/null 2>&1; then
-    if wmctrl -r "PARTICIPANT_INSTRUCTIONS_AI.html" -b add,maximized_vert,maximized_horz 2>/dev/null; then
+    if fit_window_to_display "PARTICIPANT_INSTRUCTIONS_AI.html"; then
       browser_ready=1
     fi
-    if wmctrl -r "GENIUS_pilot" -b add,maximized_vert,maximized_horz 2>/dev/null; then
+    if fit_window_to_display "GENIUS_pilot"; then
       code_ready=1
     fi
     if [ "$code_ready" -eq 1 ] && [ "$browser_ready" -eq 1 ]; then
