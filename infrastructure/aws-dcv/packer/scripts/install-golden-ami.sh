@@ -270,7 +270,7 @@ code_ready=0
 browser_ready=0
 for _ in $(seq 1 40); do
   if command -v wmctrl >/dev/null 2>&1; then
-    if fit_window_to_display "PARTICIPANT_INSTRUCTIONS_AI.html"; then
+    if fit_window_to_display "GENIUS Pilot"; then
       browser_ready=1
     fi
     if fit_window_to_display "GENIUS_pilot"; then
