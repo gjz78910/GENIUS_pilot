@@ -6,12 +6,12 @@ dcv_allowed_cidrs = [
 
 participant_roster = [
   {
-    participant_id = "kcl-manual-01"
+    participant_id = "kcl-ai-01"
     session_id     = "S1"
-    condition      = "manual"
+    condition      = "ai"
   },
   {
-    participant_id = "kcl-ai-01"
+    participant_id = "kcl-ai-02"
     session_id     = "S1"
     condition      = "ai"
   }
@@ -40,6 +40,6 @@ duckdns_token = "set-this-in-your-local-terraform.tfvars"
 
 # Optional: use exact names you created in DuckDNS.
 dcv_hostname_overrides = {
-  kcl-manual-01 = "genius-p01.duckdns.org"
-  kcl-ai-01     = "genius-p02.duckdns.org"
+  kcl-ai-01 = "genius-p01.duckdns.org"
+  kcl-ai-02 = "genius-p02.duckdns.org"
 }

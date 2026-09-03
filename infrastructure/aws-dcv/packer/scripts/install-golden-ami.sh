@@ -238,16 +238,13 @@ cat >/usr/local/bin/open-genius-ide <<'EOF'
 set -euo pipefail
 
 PROJECT_DIR="${PROJECT_DIR:-$HOME/GENIUS_pilot}"
-CONDITION="manual"
-if [ -f /etc/genius/condition ]; then
-  CONDITION="$(cat /etc/genius/condition)"
+INSTRUCTIONS_FILE="$PROJECT_DIR/EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html"
+
+if [ -f "$INSTRUCTIONS_FILE" ]; then
+  xdg-open "$INSTRUCTIONS_FILE" >/dev/null 2>&1 &
 fi
 
-if [ "$CONDITION" = "ai" ]; then
-  code --new-window "$PROJECT_DIR" &
-else
-  code --new-window "$PROJECT_DIR" &
-fi
+code --new-window "$PROJECT_DIR" &
 
 for _ in $(seq 1 40); do
   if command -v wmctrl >/dev/null 2>&1 && wmctrl -r "GENIUS_pilot" -b add,maximized_vert,maximized_horz 2>/dev/null; then

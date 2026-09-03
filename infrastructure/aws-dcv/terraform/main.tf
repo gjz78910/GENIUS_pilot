@@ -320,7 +320,7 @@ resource "aws_ssm_document" "end_session" {
     parameters = {
       participantId = {
         type        = "String"
-        description = "Participant ID, e.g. kcl-manual-01 or kcl-ai-01"
+        description = "Participant ID, e.g. kcl-ai-01"
       }
       sessionId = {
         type        = "String"

@@ -410,19 +410,11 @@ EOF
 configure_group_dock() {
   local app_name app_exec app_icon app_comment app_file
 
-  if [ "$CONDITION" = "ai" ]; then
-    app_name="VS Code + Claude Code"
-    app_exec="code /home/participant/GENIUS_pilot"
-    app_icon="code"
-    app_comment="Open VS Code with Claude Code for the GENIUS AI group"
-    app_file="genius-claude-code.desktop"
-  else
-    app_name="VS Code"
-    app_exec="code /home/participant/GENIUS_pilot"
-    app_icon="code"
-    app_comment="Open VS Code for the GENIUS manual group"
-    app_file="genius-vscode.desktop"
-  fi
+  app_name="VS Code + Claude Code"
+  app_exec="/usr/local/bin/open-genius-ide"
+  app_icon="code"
+  app_comment="Open GENIUS instructions and VS Code with Claude Code"
+  app_file="genius-claude-code.desktop"
 
   mkdir -p /home/participant/.config/xfce4/panel/launcher-17 /home/participant/.config/xfce4/panel/launcher-18
   cat >/home/participant/.config/xfce4/panel/launcher-17/"$app_file" <<EOF
@@ -529,6 +521,11 @@ cat >/usr/local/bin/open-genius-ide <<'EOF'
 set -euo pipefail
 
 PROJECT_DIR="$${PROJECT_DIR:-$HOME/GENIUS_pilot}"
+INSTRUCTIONS_FILE="$PROJECT_DIR/EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html"
+
+if [ -f "$INSTRUCTIONS_FILE" ]; then
+  xdg-open "$INSTRUCTIONS_FILE" >/dev/null 2>&1 &
+fi
 
 code --new-window "$PROJECT_DIR" &
 
@@ -566,8 +563,7 @@ Condition: $CONDITION
 Project: $PROJECT_DIR
 Remote desktop hostname: $DCV_HOSTNAME
 
-Manual condition: use VS Code only.
-AI condition: use VS Code with Claude Code. Claude Code is configured for Amazon Bedrock through the VM IAM role; no per-participant browser login should be needed.
+Use VS Code with Claude Code. Claude Code is configured for Amazon Bedrock through the VM IAM role; no per-participant browser login should be needed.
 EOF
 chown participant:participant /home/participant/SESSION_INFO.txt
 

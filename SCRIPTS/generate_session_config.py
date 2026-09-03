@@ -12,7 +12,7 @@ Usage:
 
   # Override: useful for local testing
   python SCRIPTS/generate_session_config.py \
-      --participant-id manual-01 --session-id S1 --condition manual \
+      --participant-id ai-01 --session-id S1 --condition ai \
       --desktop-url https://1.2.3.4:8443/#genius --password secret123
 """
 
@@ -73,7 +73,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--participant-id")
     parser.add_argument("--session-id", default=None)
-    parser.add_argument("--condition", choices=["manual", "ai"])
+    parser.add_argument("--condition", choices=["ai"])
     parser.add_argument("--desktop-url", default=None)
     parser.add_argument("--username", default=None)
     parser.add_argument("--password", default=None)
@@ -99,9 +99,9 @@ def main() -> int:
         print("ERROR: participant ID not found in session.env and not provided via --participant-id", file=sys.stderr)
         return 1
 
-    if condition not in ("manual", "ai"):
-        print(f"WARNING: condition '{condition}' is not 'manual' or 'ai' — defaulting to 'manual'", file=sys.stderr)
-        condition = "manual"
+    if condition != "ai":
+        print(f"WARNING: condition '{condition}' is not 'ai' — defaulting to 'ai'", file=sys.stderr)
+        condition = "ai"
 
     config = build_config(participant_id, session_id, condition, desktop_url, username, password)
     write_js(config, Path(args.output))

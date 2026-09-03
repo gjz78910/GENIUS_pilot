@@ -2,7 +2,7 @@
 
 Use this guide to run the GENIUS experiment on AWS remote desktops.
 
-> **AI-condition note:** The KCL-01 pilot used Kiro. Future AI-condition VMs use VS Code with the Claude Code extension, configured for Amazon Bedrock through the VM IAM role so organisers do not need to log in to each VM manually.
+> **AI-only note:** The KCL-01 pilot used Kiro and previously included a pure human/manual condition. Future GENIUS sessions use only AI-assisted VMs with VS Code and the Claude Code extension, configured for Amazon Bedrock through the VM IAM role so organisers do not need to log in to each VM manually.
 
 ## Fixed Setup
 
@@ -12,7 +12,7 @@ Use this guide to run the GENIUS experiment on AWS remote desktops.
 - Artifact bucket: `s3://genius-dcv-artifacts-684638912478-82c72ce8/`
 - Desktop username: `participant`
 - Desktop URL format: `https://<participant-hostname>:8443/#genius`
-- Golden AMI: `ami-0e056aaceae76cdab`
+- Golden AMI: `ami-0cc9d8a4392798d01`
 
 Each participant gets one AWS Ubuntu desktop through Amazon DCV.
 
@@ -38,7 +38,7 @@ infrastructure/aws-dcv/terraform/terraform.tfvars
 Check these values:
 
 - `participant_roster`: one row per participant.
-- `condition`: `manual` uses VS Code. `ai` uses VS Code with the Claude Code extension.
+- `condition`: use `ai` for every participant.
 - `claude_code_bedrock_region`: Bedrock region used by Claude Code on AI VMs.
 - `claude_code_model`: optional model or inference profile pin for Claude Code.
 - `repo_ref`: commit or branch that VMs must clone.
@@ -54,19 +54,19 @@ Example roster:
 ```hcl
 participant_roster = [
   {
-    participant_id = "manual-01"
+    participant_id = "ai-01"
     session_id     = "S1"
-    condition      = "manual"
+    condition      = "ai"
   },
   {
-    participant_id = "ai-01"
+    participant_id = "ai-02"
     session_id     = "S1"
     condition      = "ai"
   }
 ]
 ```
 
-AI participants do not need individual Claude browser logins when the AWS account has Bedrock access and the VM instance role has Bedrock invoke permissions. The bootstrap writes `~/.claude/settings.json` for the participant user and sets `claudeCode.disableLoginPrompt` in VS Code user settings.
+Participants do not need individual Claude browser logins when the AWS account has Bedrock access and the VM instance role has Bedrock invoke permissions. The bootstrap writes `~/.claude/settings.json` for the participant user and sets `claudeCode.disableLoginPrompt` in VS Code user settings.
 
 ## Launch VMs
 
@@ -198,15 +198,14 @@ Participant steps:
 2. Confirm there is a valid HTTPS lock.
 3. Log in as `participant`.
 4. Follow the setup steps in the participant instructions (activate conda, confirm branch, **start screen recording**).
-5. Manual group: use VS Code only.
-6. AI group: use VS Code with Claude Code only.
-7. Complete the assigned task.
-8. Complete the post-experiment survey.
-9. Stop screen recording.
-10. Run the unified submission command and review the authoritative checkpoint
+5. Use VS Code with Claude Code only.
+6. Complete the assigned task.
+7. Complete the post-experiment survey.
+8. Stop screen recording.
+9. Run the unified submission command and review the authoritative checkpoint
     report. Claude Code statements that a task is complete are not completion evidence.
 
-For AI participants:
+For participants:
 
 - Claude Code should already be available in the VS Code sidebar.
 - Claude Code is configured for Amazon Bedrock through the VM IAM role.
@@ -216,7 +215,7 @@ For AI participants:
 
 ## Fast Claude Code Fleet Setup
 
-Use the AMI and bootstrap path, not manual desktop login.
+Use the AMI and bootstrap path, not per-VM desktop login.
 
 1. Build a fresh AMI from `infrastructure/aws-dcv/packer`. The build installs VS Code, the Claude Code extension, and a reusable `/usr/local/bin/genius-configure-claude-code` helper.
 2. Ensure the AWS account has access to the target Anthropic Claude model in Amazon Bedrock.

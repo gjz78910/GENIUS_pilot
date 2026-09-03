@@ -6,8 +6,7 @@ Build one Ubuntu 24.04 golden AMI, then launch one Amazon DCV desktop per partic
 
 - One EC2 instance per participant.
 - Browser access at `https://<public-dns>:8443`.
-- Manual participants use VS Code.
-- AI participants use VS Code with the Claude Code extension.
+- Participants use VS Code with the Claude Code extension.
 - Resource monitoring starts automatically.
 - End-session collection runs through AWS Systems Manager and uploads artifacts to S3.
 
@@ -17,7 +16,7 @@ Build one Ubuntu 24.04 golden AMI, then launch one Amazon DCV desktop per partic
 - Packer `>= 1.10`.
 - Terraform `>= 1.6`.
 - Participant and organizer public IP ranges for DCV allowlisting.
-- Amazon Bedrock access to the selected Anthropic Claude models for AI participants.
+- Amazon Bedrock access to the selected Anthropic Claude models.
 - EC2/Bedrock quotas sized for the planned parallel session count.
 - A public subnet if you set `subnet_id`; direct DCV needs an internet route.
 
@@ -62,7 +61,7 @@ Retrieve a password for a participant:
 
 ```bash
 aws ssm get-parameter \
-  --name "/genius-dcv/participants/kcl-manual-01/linux-password" \
+  --name "/genius-dcv/participants/kcl-ai-01/linux-password" \
   --with-decryption \
   --query "Parameter.Value" \
   --output text \
@@ -78,7 +77,7 @@ Terraform state also contains generated passwords, so store state in a private b
 aws ssm send-command \
   --document-name genius-dcv-end-session \
   --instance-ids <instance-id> \
-  --parameters participantId=kcl-manual-01,sessionId=S1 \
+  --parameters participantId=kcl-ai-01,sessionId=S1 \
   --region eu-west-2
 ```
 

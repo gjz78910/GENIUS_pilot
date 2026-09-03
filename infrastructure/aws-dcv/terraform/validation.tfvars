@@ -1,8 +1,8 @@
 participant_roster = [
   {
-    participant_id = "kcl-manual-01"
+    participant_id = "kcl-ai-01"
     session_id     = "S1"
-    condition      = "manual"
+    condition      = "ai"
   },
   {
     participant_id = "kcl-ai-01"

@@ -41,8 +41,8 @@ variable "participant_roster" {
   }
 
   validation {
-    condition     = alltrue([for participant in var.participant_roster : contains(["manual", "ai"], participant.condition)])
-    error_message = "condition must be either manual or ai."
+    condition     = alltrue([for participant in var.participant_roster : participant.condition == "ai"])
+    error_message = "condition must be ai; future GENIUS sessions are AI-assisted only."
   }
 }
 

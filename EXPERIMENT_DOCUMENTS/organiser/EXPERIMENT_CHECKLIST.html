@@ -463,8 +463,7 @@
     <div class="meta-field">
       🎮 SESSION:
       <div class="session-toggle">
-        <button class="session-btn" onclick="setSession(this,'manual')">MANUAL</button>
-        <button class="session-btn" onclick="setSession(this,'ai-assisted')">AI-ASSISTED</button>
+        <button class="session-btn active" onclick="setSession(this,'ai-assisted')">AI-ASSISTED</button>
       </div>
     </div>
   </div>
@@ -497,7 +496,7 @@
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
         <div class="task-text">
-          You should have been given a unique participant ID (e.g. <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">KCL001</code>, <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">BT001</code>)
+          You should have been given a unique participant ID (e.g. <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">ai-01</code>)
         </div>
       </div>
       <div class="task-item" onclick="toggleTask(this)">
@@ -534,8 +533,9 @@ cd GENIUS_pilot</code>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
         <div class="task-text">
-          Create and switch to your own branch (replace <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">&lt;ID&gt;</code> e.g. <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">KCL001</code>):
-          <code>git checkout -b participant/&lt;ID&gt;</code>
+          Confirm you are on your prepared participant branch:
+          <code>git branch --show-current</code>
+          <br><span class="note">On AWS VMs this should look like <code>participant-ai-01</code>. Do not create or switch branches unless the organiser asks you to.</span>
         </div>
       </div>
     </div>
@@ -587,17 +587,17 @@ conda activate genius_pilot</code>
     <div class="task-panel">
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
-        <div class="task-text">Open <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">EXPERIMENT_DOCUMENTS/Pre_Experiment_Survey.md</code> in VS Code</div>
+        <div class="task-text">Open <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">EXPERIMENT_DOCUMENTS/organiser/Pre_Experiment_Survey.html</code> in the browser</div>
       </div>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
         <div class="task-text">
-          Put an <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">x</code> into checkboxes to select, e.g. <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">[x]</code>
+          Fill the form and download the JSON survey file.
         </div>
       </div>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
-        <div class="task-text">Save the file — <strong style="color:var(--coin)">Ctrl+S</strong> / <strong style="color:var(--coin)">Cmd+S</strong></div>
+        <div class="task-text">Move the downloaded JSON file into <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">DATA_COLLECTION/</code>.</div>
       </div>
     </div>
   </div>
@@ -613,22 +613,31 @@ conda activate genius_pilot</code>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
         <div class="task-text">
-          Collect system info (replace <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">&lt;ID&gt;</code> e.g. <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">KCL001</code>):
+          Collect system info if it was not already collected at VM boot:
           <code>python SCRIPTS/collect_system_info.py --participant-id &lt;ID&gt;</code>
         </div>
       </div>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
         <div class="task-text">
-          Open a <strong style="color:var(--coin)">new terminal</strong> and start resource monitoring (replace <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">&lt;ID&gt;</code>, then <strong style="color:var(--coin)">leave it running</strong>):
-          <code>conda activate genius_pilot
-python SCRIPTS/monitor_resources.py --participant-id &lt;ID&gt; -i 60</code>
+          Verify the restartable background resource monitor and save a health snapshot:
+          <code>sudo systemctl is-active genius-resource-monitor.service
+/usr/local/bin/genius-collection-health snapshot</code>
         </div>
       </div>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
         <div class="task-text">
-          <strong style="color:#ff6060">🔴 START screen recording</strong> (record the full screen)
+          Confirm participant is connected via DCV and sees the <strong style="color:var(--coin)">full desktop</strong> (not a small/default window)
+        </div>
+      </div>
+      <div class="task-item" onclick="toggleTask(this)">
+        <div class="pixel-checkbox"></div>
+        <div class="task-text">
+          <strong style="color:#ff6060">🔴 START screen recording</strong> — participant runs in terminal:
+          <code>/usr/local/bin/genius-screen-recorder start
+/usr/local/bin/genius-screen-recorder status</code>
+          <br><span class="note">Expect <code>running</code> and display size ≥ <code>1280x720</code>. Do not start before DCV is connected.</span>
         </div>
       </div>
     </div>
@@ -645,7 +654,7 @@ python SCRIPTS/monitor_resources.py --participant-id &lt;ID&gt; -i 60</code>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
         <div class="task-text">
-          Open <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS.md</code> and follow the instructions
+          Open <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html</code> and follow the instructions
         </div>
       </div>
       <div class="task-item" onclick="toggleTask(this)">
@@ -668,22 +677,25 @@ python SCRIPTS/monitor_resources.py --participant-id &lt;ID&gt; -i 60</code>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
         <div class="task-text">
-          Fill the post-experiment survey: open <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">EXPERIMENT_DOCUMENTS/Post_Experiment_Survey.md</code>, put <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">x</code> in checkboxes, save
+          Fill the post-experiment survey: open <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">EXPERIMENT_DOCUMENTS/organiser/Post_Experiment_Survey.html</code>, complete the form, download the JSON file, and move it into <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">DATA_COLLECTION/</code>.
         </div>
       </div>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
         <div class="task-text">
-          Stage and push everything (replace <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">&lt;ID&gt;</code> e.g. <code style="display:inline;background:none;border:none;color:var(--coin);padding:0">KCL001</code>):
-          <code>git add .
-git commit -m "Final submission &lt;ID&gt;"
-git push -u origin participant/&lt;ID&gt;</code>
+          Run the unified submission command. It captures official checkpoint results, runtime evidence, code state, and push status:
+          <code>source /etc/genius/session.env
+cd ~/GENIUS_pilot
+./SCRIPTS/submit_participant_work.sh "$PARTICIPANT_ID" "$SESSION_ID"</code>
+          <br><span class="note">Review every PASS/PARTIAL/FAIL/NOT RUN result. An AI completion claim is not authoritative.</span>
         </div>
       </div>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
         <div class="task-text">
-          <strong style="color:#ff6060">⏹ STOP screen recording</strong>
+          <strong style="color:#ff6060">⏹ STOP screen recording</strong> — participant runs:
+          <code>/usr/local/bin/genius-screen-recorder stop</code>
+          <br><span class="note">On AWS VMs, end-session also collects videos to S3. For local runs, upload manually in Stage 7.</span>
         </div>
       </div>
     </div>
@@ -699,7 +711,7 @@ git push -u origin participant/&lt;ID&gt;</code>
     <div class="task-panel">
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>
-        <div class="task-text">Stop resource monitoring — press <strong style="color:var(--coin)">Ctrl+C</strong> in the monitor terminal</div>
+        <div class="task-text">Capture final collection health; the end-session command stops the background service after copying runtime evidence: <code>/usr/local/bin/genius-collection-health snapshot</code></div>
       </div>
       <div class="task-item" onclick="toggleTask(this)">
         <div class="pixel-checkbox"></div>

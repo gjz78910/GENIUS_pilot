@@ -6,11 +6,10 @@ Python system that assigns engineers to jobs and finds shortest travel routes.
 
 ## For Participants
 
-**Open your instructions file in a browser and follow the steps there.**
+**Open the AI-assisted instructions file in a browser and follow the steps there.**
 
-| Your group | File to open |
+| Session | File to open |
 |---|---|
-| Manual coding | `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_MANUAL.html` |
 | AI-assisted coding | `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html` |
 
 The instructions will guide you through everything: setup, the three tasks, and submitting your work. All steps are interactive — check each one off as you go.
@@ -19,7 +18,7 @@ The instructions will guide you through everything: setup, the three tasks, and 
 
 ## For Experiment Organizers
 
-> **AI-condition note:** The KCL-01 pilot used Kiro. Future AI-condition VMs use VS Code with the Claude Code extension, configured for Amazon Bedrock through the VM IAM role so organisers do not need to log in to each VM manually.
+> **AI-only note:** The KCL-01 pilot used Kiro and previously included a pure human/manual condition. Future GENIUS sessions use only AI-assisted VMs with VS Code and the Claude Code extension, configured for Amazon Bedrock through the VM IAM role so organisers do not need to log in to each VM manually.
 
 ### Setup
 
@@ -39,8 +38,7 @@ The instructions will guide you through everything: setup, the three tasks, and 
 - `AWS_REMOTE_EXPERIMENT_RUNBOOK.md` — AWS VM setup and management
 
 **Participant-facing** (in `EXPERIMENT_DOCUMENTS/`):
-- `PARTICIPANT_INSTRUCTIONS_MANUAL.html` — Instructions, manual group
-- `PARTICIPANT_INSTRUCTIONS_AI.html` — Instructions, AI group
+- `PARTICIPANT_INSTRUCTIONS_AI.html` — Instructions, AI-assisted group
 
 **Organiser only** — surveys and config (in `EXPERIMENT_DOCUMENTS/organiser/`):
 - `Pre_Experiment_Survey.html` — Pre-experiment survey
@@ -53,8 +51,7 @@ The instructions will guide you through everything: setup, the three tasks, and 
 **Step 1 — Prepare participant branches** (run once from `main` before provisioning):
 
 ```bash
-./SCRIPTS/prepare_vms.sh --type manual --count 4 --session S1
-./SCRIPTS/prepare_vms.sh --type ai     --count 4 --session S1
+./SCRIPTS/prepare_vms.sh --count 30 --session S1
 ```
 
 **Step 2 — Create experiment branch and configure Terraform:**

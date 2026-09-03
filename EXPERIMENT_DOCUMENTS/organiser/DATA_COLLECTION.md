@@ -6,9 +6,8 @@ Simple guide to collect all data needed for GoCodeGreen carbon footprint calcula
 
 ## Execution Documents
 
-Use only these two documents during the session:
-- **For participants (manual):** `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_MANUAL.html`
-- **For participants (AI):** `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html`
+Use these documents during the session:
+- **For participants:** `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html`
 - **For organizers:** `EXPERIMENT_DOCUMENTS/organiser/DATA_COLLECTION.md` (this file)
 - **For AWS remote VMs:** `EXPERIMENT_DOCUMENTS/organiser/AWS_REMOTE_EXPERIMENT_RUNBOOK.md`
 
@@ -51,11 +50,11 @@ git checkout main
 git pull
 rm -rf .git
 git init
-git checkout -b participant/<ID>
+git checkout -b participant-<ID>
 git add .
 git commit -m "Start point for <ID>"
 git remote add origin <YOUR_REPO_URL>
-git push -u origin participant/<ID>
+git push -u origin participant-<ID>
 ```
 This gives the participant:
 - latest code from `main`
@@ -91,7 +90,7 @@ AWS_PROFILE=genius-dcv aws ssm send-command \
 Output: `EXPERIMENT_DOCUMENTS/session_config.js` (read by both HTML pages at load time)
 
 **3. Have participant fill the survey (via HTML form):**
-- Participant opens `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_MANUAL.html`
+- Participant opens `EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html`
 - The pre-experiment survey link in Section 2 opens `Pre_Experiment_Survey.html`
 - Participant ID and session type are pre-filled and locked from `session_config.js`
 - On submit, the form downloads `survey_<ID>.json` to `~/Downloads/`
@@ -218,23 +217,23 @@ python SCRIPTS/aggregate_experiment_data.py <ID>
 **10. Fill GoCodeGreen template:**
 ```bash
 python SCRIPTS/fill_gocodegreen_template.py DATA_COLLECTION/aggregated_<ID>.json \
-  --session-type manual  # or "ai-assisted"
+  --session-type ai-assisted
 ```
 
-## Compare Manual vs AI (After both participants finish)
+## Compare AI-Assisted Sessions (After participants finish)
 
 **Compare baseline:**
 ```bash
 python SCRIPTS/compare_baseline.py \
-  DATA_COLLECTION/aggregated_<MANUAL_ID>.json \
-  DATA_COLLECTION/aggregated_<AI_ID>.json
+  DATA_COLLECTION/aggregated_<ID_1>.json \
+  DATA_COLLECTION/aggregated_<ID_2>.json
 ```
 
 **Generate comparison report:**
 ```bash
 python SCRIPTS/generate_success_criteria_report.py \
-  DATA_COLLECTION/aggregated_<MANUAL_ID>.json \
-  DATA_COLLECTION/aggregated_<AI_ID>.json
+  DATA_COLLECTION/aggregated_<ID_1>.json \
+  DATA_COLLECTION/aggregated_<ID_2>.json
 ```
 
 ---

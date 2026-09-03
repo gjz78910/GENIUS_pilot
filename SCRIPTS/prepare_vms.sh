@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
-# Prepare participant git branches for a GENIUS experiment session and print
-# the matching terraform.tfvars roster block.
+# Prepare AI-assisted participant git branches for a GENIUS experiment session
+# and print the matching terraform.tfvars roster block.
 #
 # Usage:
-#   ./SCRIPTS/prepare_vms.sh --type manual --count 4 --session S1
-#   ./SCRIPTS/prepare_vms.sh --type ai     --count 4 --session S1 [--start-id 1]
+#   ./SCRIPTS/prepare_vms.sh --count 30 --session S1 [--start-id 1]
 #
 # What it does:
-#   1. Creates git branches participant/<type>-01 … participant/<type>-N from
-#      the current main HEAD and pushes them to origin.
+#   1. Creates git branches participant-ai-01 … participant-ai-N from the
+#      current main HEAD and pushes them to origin.
 #   2. Prints the participant_roster HCL block to paste into terraform.tfvars.
 #
 # Run this from the root of the GENIUS_pilot repo on the main branch.
 
 set -euo pipefail
 
-TYPE=""
+TYPE="ai"
 COUNT=""
 SESSION="S1"
 START_ID=1
 
 usage() {
-  echo "Usage: $0 --type manual|ai --count N [--session S1] [--start-id 1]"
+  echo "Usage: $0 --count N [--session S1] [--start-id 1]"
+  echo "       $0 --type ai --count N [--session S1] [--start-id 1]   # backwards compatible"
   exit 1
 }
 
@@ -35,8 +35,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[[ -z "$TYPE" || -z "$COUNT" ]] && usage
-[[ "$TYPE" != "manual" && "$TYPE" != "ai" ]] && { echo "ERROR: --type must be manual or ai"; exit 1; }
+[[ -z "$COUNT" ]] && usage
+[[ "$TYPE" != "ai" ]] && { echo "ERROR: only the AI-assisted condition is supported for future sessions"; exit 1; }
 [[ ! "$COUNT" =~ ^[1-9][0-9]*$ ]] && { echo "ERROR: --count must be a positive integer"; exit 1; }
 
 # Must be on main and repo clean of unstaged changes to critical files
@@ -59,7 +59,7 @@ SKIPPED=()
 
 for i in $(seq "$START_ID" $((START_ID + COUNT - 1))); do
   ID=$(printf "%s-%02d" "$TYPE" "$i")
-  BRANCH="participant/$ID"
+  BRANCH="participant-$ID"
 
   if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
     echo "  SKIP  $BRANCH  (already exists on remote)"

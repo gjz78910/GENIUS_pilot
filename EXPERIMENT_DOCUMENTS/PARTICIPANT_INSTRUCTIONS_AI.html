@@ -788,8 +788,7 @@
         <div class="rule-box allowed">
           <h3><i data-lucide="check-circle"></i> You CAN use</h3>
           <ul>
-            <li><strong>Kiro</strong> on the remote desktop</li>
-            <li>ChatGPT, Claude, Gemini, Perplexity, or other AI chat tools</li>
+            <li><strong>VS Code with Claude Code</strong> on the remote desktop</li>
           </ul>
         </div>
       </div>
@@ -818,7 +817,7 @@
       </div>
 
       <div class="subsection-title">Set up the environment</div>
-      <div class="prose"><p>Open a terminal in Kiro and run:</p></div>
+      <div class="prose"><p>Open a terminal in VS Code and run:</p></div>
 
       <div class="code-block">
         <div class="code-label">
@@ -842,20 +841,42 @@ git branch --show-current</code></pre>
         </label>
       </div>
 
+      <div class="subsection-title">Start screen recording</div>
+      <div class="prose">
+        <p>After you can see the <strong>full remote desktop</strong> in your browser, open a terminal and run:</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-label">
+          <span>bash — start recording</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>/usr/local/bin/genius-screen-recorder start
+/usr/local/bin/genius-screen-recorder status</code></pre>
+      </div>
+
       <div class="callout info">
         <span class="callout-icon">🎥</span>
-        <span>Screen recording starts automatically in the background. You do not need to start or stop it.</span>
+        <span>Status should show <code>running</code> and a display size of at least <code>1280x720</code> (usually <code>1920x1080</code>). If recording fails or the size looks too small, tell the organiser before starting the task.</span>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <span>If your DCV connection drops briefly, recording should restart automatically once the desktop is back. You do not need to run <code>start</code> again unless the organiser asks.</span>
       </div>
 
       <div class="checklist" style="margin-top:10px;">
         <label class="check-item">
-          <input type="checkbox"> <label>Resource monitoring is running in its terminal. Do not close it.</label>
+          <input type="checkbox"> <label>Screen recording shows <code>running</code> with full display size.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Background collection health shows the resource monitor and recorder as <code>running</code>.</label>
         </label>
       </div>
 
       <div class="callout warn" style="margin-top:8px;">
         <span class="callout-icon">⚠️</span>
-        <span>If status does not show <code>running</code>, tell the organiser before starting the task.</span>
+        <span>Do not stop background monitoring or recording during the task. These run independently of terminal windows; closing a terminal does not stop them.</span>
       </div>
 
     </div>
@@ -1210,27 +1231,37 @@ reports/                generated CSV reports</pre></div>
 
       <div class="code-block">
         <div class="code-label">
+          <span>bash — stop recording</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code>/usr/local/bin/genius-screen-recorder stop
+/usr/local/bin/genius-screen-recorder status</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-label">
           <span>bash — save and submit work</span>
           <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
-        <pre><code>source /etc/genius/session.env
+<pre><code>source /etc/genius/session.env
 cd ~/GENIUS_pilot
-sudo systemctl stop genius-resource-monitor.service || true
-./SCRIPTS/store_participant_work.sh "$PARTICIPANT_ID" "$SESSION_ID"
-git push -u origin "participant-$PARTICIPANT_ID" --tags</code></pre>
+./SCRIPTS/submit_participant_work.sh "$PARTICIPANT_ID" "$SESSION_ID"</code></pre>
       </div>
 
       <div class="callout info" style="margin-top:4px;">
         <span class="callout-icon">ℹ️</span>
-        <span>If <code>sudo</code> asks for a password, use your remote desktop password. If the push fails or asks for GitHub credentials, tell the organiser and continue.</span>
+        <span>The submission command runs the official checkpoints and prints <code>PASS</code>, <code>PARTIAL</code>, <code>FAIL</code>, or <code>NOT RUN</code> for each one. A message from Claude Code saying a task is complete is <strong>not</strong> an official completion result. If storage or push fails, tell the organiser; local evidence is retained for recovery.</span>
       </div>
 
       <div class="checklist" style="margin-top:12px;">
         <label class="check-item">
-          <input type="checkbox"> <label>Screen recorder stopped.</label>
+          <input type="checkbox"> <label>Screen recorder stopped (<code>status</code> shows <code>stopped</code>).</label>
         </label>
         <label class="check-item">
-          <input type="checkbox"> <label>Resource monitoring stopped.</label>
+          <input type="checkbox"> <label>Background monitoring evidence was captured by the submission command.</label>
+        </label>
+        <label class="check-item">
+          <input type="checkbox"> <label>Reviewed the authoritative checkpoint report and told the organiser about every <code>PARTIAL</code>, <code>FAIL</code>, or <code>NOT RUN</code> result.</label>
         </label>
         <label class="check-item">
           <input type="checkbox"> <label>Work stored and pushed to the repository.</label>
