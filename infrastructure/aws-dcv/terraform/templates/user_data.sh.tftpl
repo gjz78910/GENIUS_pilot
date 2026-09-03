@@ -524,14 +524,17 @@ PROJECT_DIR="$${PROJECT_DIR:-$HOME/GENIUS_pilot}"
 INSTRUCTIONS_FILE="$PROJECT_DIR/EXPERIMENT_DOCUMENTS/PARTICIPANT_INSTRUCTIONS_AI.html"
 
 if [ -f "$INSTRUCTIONS_FILE" ]; then
-  xdg-open "$INSTRUCTIONS_FILE" >/dev/null 2>&1 &
+  google-chrome-stable --no-first-run --new-window "$INSTRUCTIONS_FILE" >/dev/null 2>&1 &
 fi
 
 code --new-window "$PROJECT_DIR" &
 
 for _ in $(seq 1 40); do
-  if command -v wmctrl >/dev/null 2>&1 && wmctrl -r "GENIUS_pilot" -b add,maximized_vert,maximized_horz 2>/dev/null; then
-    exit 0
+  if command -v wmctrl >/dev/null 2>&1; then
+    wmctrl -r "PARTICIPANT_INSTRUCTIONS_AI.html" -b add,maximized_vert,maximized_horz 2>/dev/null || true
+    if wmctrl -r "GENIUS_pilot" -b add,maximized_vert,maximized_horz 2>/dev/null; then
+      exit 0
+    fi
   fi
   sleep 0.5
 done
