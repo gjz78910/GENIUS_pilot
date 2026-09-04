@@ -69,6 +69,24 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
             if not isinstance(time, (int, float)) or time < 0:
                 raise ValueError(f"travel_matrix[{source}][{dest}] must be a non-negative number")
 
+    # Diagonal must be zero (a location's travel time to itself is 0)
+    for source, destinations in travel_matrix.items():
+        if source in destinations and destinations[source] != 0:
+            raise ValueError(
+                f"travel_matrix diagonal entry [{source}][{source}] must be 0.0, "
+                f"got {destinations[source]}"
+            )
+
+    # Travel matrix must be symmetric: time(A->B) == time(B->A)
+    for source, destinations in travel_matrix.items():
+        for dest, time in destinations.items():
+            reverse_time = travel_matrix.get(dest, {}).get(source)
+            if reverse_time is not None and reverse_time != time:
+                raise ValueError(
+                    f"travel_matrix is not symmetric: [{source}][{dest}]={time} "
+                    f"but [{dest}][{source}]={reverse_time}"
+                )
+
     # Load engineers
     engineers = []
     engineer_ids = set()
@@ -93,12 +111,18 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         if location not in all_locations:
             raise ValueError(f"Engineer location '{location}' not found in travel_matrix")
 
+        working_hours = e_data.get("working_hours", 8.0)
+        if not isinstance(working_hours, (int, float)) or working_hours <= 0 or working_hours > 24:
+            raise ValueError(
+                f"Engineer working_hours must be between 0 and 24, got {working_hours}"
+            )
+
         engineer = Engineer(
             id=eng_id,
             name=e_data["name"],
             location=location,
             skills=e_data.get("skills", []),
-            working_hours=e_data.get("working_hours", 8.0),
+            working_hours=working_hours,
         )
         engineers.append(engineer)
 
@@ -123,6 +147,16 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         job_ids.add(job_id)
 
         location = j_data["location"]
+        if location not in all_locations:
+            raise ValueError(f"Job location '{location}' not found in travel_matrix")
+
+        time_str = j_data["time"]
+        parts = time_str.split(":") if isinstance(time_str, str) else []
+        if len(parts) != 2 or not all(part.isdigit() for part in parts):
+            raise ValueError(f"Job time '{time_str}' must be in HH:MM format")
+        hour, minute = int(parts[0]), int(parts[1])
+        if not (0 <= hour <= 23) or not (0 <= minute <= 59):
+            raise ValueError(f"Job time '{time_str}' is not a valid HH:MM time")
 
         job = Job(
             id=job_id,

@@ -59,10 +59,46 @@ def brute_force_tsp(
     return best_route, best_distance
 
 
+# Above this many destinations, brute force (n!) becomes too slow to use on
+# every routing call, so we switch to a nearest-neighbour + 2-opt heuristic.
+_BRUTE_FORCE_MAX_DESTINATIONS = 8
+
+
+def _nearest_neighbor_route(
+    start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> Tuple[str, ...]:
+    """Build a route greedily by always visiting the closest unvisited stop."""
+    remaining = list(destinations)
+    route = [start]
+    current = start
+    while remaining:
+        nxt = min(remaining, key=lambda d: travel_matrix.get(current, {}).get(d, float("inf")))
+        route.append(nxt)
+        remaining.remove(nxt)
+        current = nxt
+    route.append(start)
+    return tuple(route)
+
+
+def _route_distance(route: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]) -> float:
+    return sum(
+        travel_matrix.get(route[i], {}).get(route[i + 1], 0.0) for i in range(len(route) - 1)
+    )
+
+
 def find_optimal_route(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
 ) -> Tuple[Tuple[str, ...], float]:
     """Find a route visiting all destinations and returning to start.
+
+    Small instances (up to `_BRUTE_FORCE_MAX_DESTINATIONS` stops) are solved
+    exactly with brute force. Larger instances use a nearest-neighbour
+    heuristic, which stays fast even with dozens of stops per engineer.
+    (A 2-opt refinement pass was deliberately left out: its standard swap
+    formula assumes a symmetric travel matrix, and this codebase's travel
+    matrices are not guaranteed symmetric — applying it anyway can make the
+    "improvement" check inconsistent with the true reversed-segment cost and
+    loop indefinitely.)
 
     Parameters
     ----------
@@ -79,4 +115,8 @@ def find_optimal_route(
         A tuple containing the route (including start at the beginning
         and end) and its total distance.
     """
-    return brute_force_tsp(start, destinations, travel_matrix)
+    if len(destinations) <= _BRUTE_FORCE_MAX_DESTINATIONS:
+        return brute_force_tsp(start, destinations, travel_matrix)
+
+    route = _nearest_neighbor_route(start, destinations, travel_matrix)
+    return route, _route_distance(route, travel_matrix)
