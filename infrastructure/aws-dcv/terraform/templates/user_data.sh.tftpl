@@ -548,7 +548,7 @@ if [ -f "$INSTRUCTIONS_FILE" ]; then
   google-chrome-stable --no-first-run --disable-search-engine-choice-screen --new-window "file://$INSTRUCTIONS_FILE" >/dev/null 2>&1 &
 fi
 
-code --new-window "$PROJECT_DIR" "$PROJECT_DIR/README.md" &
+code --new-window "$PROJECT_DIR" &
 
 code_ready=0
 browser_ready=0
