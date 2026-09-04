@@ -9,10 +9,10 @@ Use this guide to run the GENIUS experiment on AWS remote desktops.
 - AWS profile: `genius-dcv`
 - AWS region: `eu-west-2`
 - Terraform folder: `infrastructure/aws-dcv/terraform`
-- Artifact bucket: `s3://genius-dcv-artifacts-684638912478-82c72ce8/`
+- Artifact bucket: get the current name from `terraform output artifact_bucket` (a random suffix is generated on each fresh apply from an empty state, so this changes if the state is ever destroyed and recreated)
 - Desktop username: `participant`
 - Desktop URL format: `https://<participant-hostname>:8443/#genius`
-- Golden AMI: `ami-0cc9d8a4392798d01`
+- Golden AMI: `ami-0db792bd82efaad11` (rebuilt 2026-09-04; the previously recorded `ami-0cc9d8a4392798d01` no longer exists in the account — rebuild with `packer build infrastructure/aws-dcv/packer/golden-ami.pkr.hcl` and update this line whenever that happens again)
 
 Each participant gets one AWS Ubuntu desktop through Amazon DCV.
 

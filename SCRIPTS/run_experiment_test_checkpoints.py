@@ -123,9 +123,19 @@ def parse_unittest_stats(output: str) -> Dict[str, int | bool]:
 
 
 def parse_unittest_cases(output: str) -> List[Dict[str, str]]:
-    """Extract verbose unittest case statuses from stdout/stderr."""
+    """Extract verbose unittest case statuses from stdout/stderr.
+
+    unittest's verbose runner puts "test_name (qualified.name) ... ok" on one
+    line only when the test method has no docstring. When it has one, the
+    docstring's first line is printed instead, and " ... ok" is appended to
+    that line instead of the "test_name (...)" line. The optional group below
+    matches that docstring line so both forms are recognized.
+    """
     cases: List[Dict[str, str]] = []
-    pattern = re.compile(r"^(test_[^\s]+) \(([^)]+)\) \.\.\. (ok|FAIL|ERROR|skipped .*)$", re.MULTILINE)
+    pattern = re.compile(
+        r"^(test_[^\s]+) \(([^)]+)\)(?:\n[^\n]*)? \.\.\. (ok|FAIL|ERROR|skipped .*)$",
+        re.MULTILINE,
+    )
     for match in pattern.finditer(output):
         cases.append(
             {

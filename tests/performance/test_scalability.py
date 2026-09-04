@@ -159,6 +159,16 @@ class TestScalability(unittest.TestCase):
         5: 30.0,
     }
 
+    # Levels run in increasing order of size (test_1_easy .. test_5_extremely_hard,
+    # alphabetical order matches difficulty order). Once one level exceeds its
+    # time limit, every larger level is essentially guaranteed to fail too, so
+    # this records the first failure and lets later levels skip immediately
+    # instead of each burning through its own (larger) timeout in turn. Without
+    # this, a codebase that is too slow can take 3+5+10+15+30 = 63s to finish
+    # reporting failure; with it, the run stops at the first failing level's
+    # own limit.
+    _first_failed_level: int | None = None
+
     def _run_with_timeout(self, seconds: float, fn):
         """Run `fn` with a hard timeout in seconds."""
         if not hasattr(signal, "SIGALRM"):
@@ -182,15 +192,26 @@ class TestScalability(unittest.TestCase):
             signal.signal(signal.SIGALRM, old_handler)
 
     def _run_scalability_case(self, level: int, label: str, scheduler: Scheduler):
+        if TestScalability._first_failed_level is not None:
+            self.skipTest(
+                f"Skipped: Test {TestScalability._first_failed_level} already exceeded its "
+                "time limit, so this larger level is expected to fail too."
+            )
+
         limit = self.LEVEL_TIME_LIMITS[level]
         t0 = time.time()
-        assignments, routes, unassigned = self._run_with_timeout(
-            limit, scheduler.create_schedule
-        )
+        try:
+            assignments, routes, unassigned = self._run_with_timeout(
+                limit, scheduler.create_schedule
+            )
+        except AssertionError:
+            TestScalability._first_failed_level = level
+            raise
         elapsed = time.time() - t0
 
         _print_result(label, elapsed, assignments, unassigned)
         if elapsed >= limit:
+            TestScalability._first_failed_level = level
             self.fail(
                 f"Test {level} exceeded time limit: {elapsed:.2f}s "
                 f"(target < {limit:.0f}s)."
