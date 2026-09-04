@@ -481,6 +481,20 @@
     color: var(--text-muted);
   }
 
+  .check-item.locked {
+    background: #f3f4f6;
+    border-color: var(--border);
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .check-item.locked:hover { background: #f3f4f6; border-color: var(--border); }
+
+  .check-item.locked input[type="checkbox"],
+  .check-item.locked label {
+    cursor: not-allowed;
+  }
+
   /* ── CODE BLOCKS ── */
   .code-block {
     position: relative;
@@ -1315,13 +1329,33 @@ cd ~/GENIUS_pilot
   }
 
   // ── CHECKBOX INTERACTION ──
+  // Steps must be completed in order: a box can only be checked once every
+  // box before it in the page is checked. Unchecking a box re-locks (and
+  // unchecks) everything after it, so the sequence can't get out of sync.
+  function updateLocks() {
+    const boxes = Array.from(document.querySelectorAll('.check-item input[type="checkbox"]'));
+    let unlocked = true;
+    boxes.forEach(cb => {
+      const item = cb.closest('.check-item');
+      if (!unlocked && cb.checked) {
+        cb.checked = false;
+        item.classList.remove('checked');
+      }
+      cb.disabled = !unlocked;
+      item.classList.toggle('locked', !unlocked);
+      if (!cb.checked) unlocked = false;
+    });
+  }
+
   function initCheckboxes() {
     document.querySelectorAll('.check-item input[type="checkbox"]').forEach(cb => {
       cb.addEventListener('change', () => {
         cb.closest('.check-item').classList.toggle('checked', cb.checked);
+        updateLocks();
         updateProgress();
       });
     });
+    updateLocks();
   }
 
   // ── PROGRESS ──
