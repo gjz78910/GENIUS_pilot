@@ -495,6 +495,33 @@
     cursor: not-allowed;
   }
 
+  @keyframes lockedShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+  }
+
+  .check-item.locked.shake { animation: lockedShake 0.35s; }
+
+  .locked-hint {
+    position: absolute;
+    background: var(--text);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .locked-hint.show { opacity: 1; }
+
   /* ── CODE BLOCKS ── */
   .code-block {
     position: relative;
@@ -727,7 +754,7 @@
   <a class="nav-item" data-section-nav="0" href="#sec-0" onclick="navClick(event,0)">
     <div class="nav-num" id="nav-num-0">!</div>
     <div class="nav-text">
-      Tool Rules
+      Rules to Follow
       <div class="nav-mini-bar"><div class="nav-mini-fill" id="nav-fill-0"></div></div>
     </div>
     <span class="nav-progress" id="nav-prog-0"></span>
@@ -791,7 +818,7 @@
   <div class="section-card" id="sec-0">
     <div class="section-header open" onclick="toggleSection(this)">
       <div class="section-num" id="num-0">!</div>
-      <span class="section-title">Tool Rules</span>
+      <span class="section-title">Rules to Follow</span>
       <div class="section-meta">
         <span class="section-progress" id="prog-0"></span>
         <span class="section-chevron">▼</span>
@@ -805,6 +832,11 @@
             <li><strong>VS Code with Claude Code</strong> on the remote desktop</li>
           </ul>
         </div>
+      </div>
+
+      <div class="callout info" style="margin-top:12px;">
+        <span class="callout-icon">🔒</span>
+        <span><strong>Checkboxes must be completed in order.</strong> Each box on this page only becomes clickable once every box above it is checked. If a checkbox looks grayed out and won't click, it means a step above it still needs to be checked first — scroll up and complete it.</span>
       </div>
     </div>
   </div>
@@ -1347,7 +1379,37 @@ cd ~/GENIUS_pilot
     });
   }
 
+  function showLockedHint(item) {
+    item.classList.remove('shake');
+    void item.offsetWidth; // restart the animation if already mid-shake
+    item.classList.add('shake');
+
+    let hint = item.querySelector('.locked-hint');
+    if (!hint) {
+      hint = document.createElement('div');
+      hint.className = 'locked-hint';
+      hint.textContent = 'Complete the step above first';
+      item.style.position = 'relative';
+      item.appendChild(hint);
+    }
+    hint.style.left = '12px';
+    hint.style.top = '-28px';
+    hint.classList.add('show');
+    clearTimeout(item._hintTimer);
+    item._hintTimer = setTimeout(() => hint.classList.remove('show'), 1600);
+  }
+
   function initCheckboxes() {
+    document.querySelectorAll('.check-item').forEach(item => {
+      // The checkbox itself ignores clicks while disabled, so listen on the
+      // wrapping label to catch "why won't this check" attempts and explain.
+      item.addEventListener('click', (e) => {
+        if (item.classList.contains('locked')) {
+          e.preventDefault();
+          showLockedHint(item);
+        }
+      });
+    });
     document.querySelectorAll('.check-item input[type="checkbox"]').forEach(cb => {
       cb.addEventListener('change', () => {
         cb.closest('.check-item').classList.toggle('checked', cb.checked);
