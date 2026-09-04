@@ -42,6 +42,15 @@ if [ -d "$runtime_dir" ]; then
     cp -a "$runtime_dir"/. DATA_COLLECTION/runtime/ 2>/dev/null || true
 fi
 
+# On AWS remote VMs, collect_system_info.py runs automatically at boot into
+# the runtime dir as a generic "system_info.json" rather than the
+# DATA_COLLECTION/system_info_<ID>.json name verify_data_separation.py and
+# the rest of the pipeline expect, so it needs copying into place here.
+system_info_dest="DATA_COLLECTION/system_info_${PARTICIPANT_ID}.json"
+if [ ! -f "$system_info_dest" ] && [ -f "$runtime_dir/system_info.json" ]; then
+    cp "$runtime_dir/system_info.json" "$system_info_dest" 2>/dev/null || true
+fi
+
 ./SCRIPTS/store_participant_work.sh "$PARTICIPANT_ID" "$SESSION_ID"
 store_status=$?
 

@@ -273,6 +273,7 @@ if path.exists():
 settings["claudeCode.disableLoginPrompt"] = True
 settings["claudeCode.preferredLocation"] = "sidebar"
 settings["security.workspace.trust.enabled"] = False
+settings["workbench.startupEditor"] = "none"
 path.write_text(json.dumps(settings, indent=2) + "\n")
 PY
 
