@@ -1074,14 +1074,15 @@ reports/                generated CSV reports</pre></div>
           <pre><code>python -m unittest tests.performance.test_scalability tests.test_routing tests.test_matching tests.test_benchmarks -v</code></pre>
         </div>
         <ul>
-          <li>Target: pass at least <strong>3 of 5</strong> scalability tests</li>
+          <li>Target: <strong>all 5</strong> scalability tests must pass (Test 1 EASY &lt;3s, Test 2 MODERATE &lt;5s, Test 3 HARD &lt;10s, Test 4 VERY HARD &lt;15s, Test 5 EXTREMELY HARD &lt;30s)</li>
           <li>This also confirms routing, matching, and benchmarks still pass</li>
+          <li>Passing only some of the five scalability tests is not a Checkpoint C pass</li>
         </ul>
       </div>
 
       <div class="checklist">
         <label class="check-item">
-          <input type="checkbox"> <label>Checkpoint C: at least 3 scalability tests passed ✓</label>
+          <input type="checkbox"> <label>Checkpoint C: all 5 scalability tests passed ✓</label>
         </label>
       </div>
 

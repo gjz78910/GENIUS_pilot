@@ -68,7 +68,7 @@ RUN_SPECS: Dict[str, TestRunSpec] = {
     "task1_cp3": TestRunSpec(
         key="task1_cp3",
         filename_prefix="Task1_cp3",
-        pass_rule="task1_cp3_scalability_3_of_5",
+        pass_rule="task1_cp3_scalability_all_required",
         command=[
             "python",
             "-m",
@@ -153,7 +153,7 @@ def apply_pass_rule(
             },
         }
 
-    if spec.pass_rule != "task1_cp3_scalability_3_of_5":
+    if spec.pass_rule != "task1_cp3_scalability_all_required":
         success = return_code == 0
         return {
             "success": success,
@@ -169,18 +169,23 @@ def apply_pass_rule(
         case for case in cases if not case["qualified_name"].startswith("tests.performance.test_scalability.")
     ]
     scalability_passed = sum(1 for case in scalability_cases if case["status"] == "ok")
+    scalability_total_expected = 5
     non_scalability_failed = [
         case for case in non_scalability_cases if case["status"] not in {"ok"} and not case["status"].startswith("skipped")
     ]
-    success = scalability_passed >= 3 and not non_scalability_failed
+    success = (
+        scalability_passed == scalability_total_expected
+        and len(scalability_cases) == scalability_total_expected
+        and not non_scalability_failed
+    )
     completion_status = "PASS" if success else ("PARTIAL" if scalability_passed > 0 else "FAIL")
     return {
         "success": success,
         "completion_status": completion_status,
         "pass_criteria": {
             "rule": spec.pass_rule,
-            "scalability_required": 3,
-            "scalability_total_expected": 5,
+            "scalability_required": scalability_total_expected,
+            "scalability_total_expected": scalability_total_expected,
             "scalability_total_seen": len(scalability_cases),
             "scalability_passed": scalability_passed,
             "non_scalability_failed": non_scalability_failed,
