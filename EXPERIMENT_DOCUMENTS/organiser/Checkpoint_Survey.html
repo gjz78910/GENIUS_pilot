@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GENIUS Pilot — Post-Experiment Survey</title>
+<title>GENIUS Pilot — Checkpoint Check-in</title>
 <script src="session_config.js" onerror="window.GENIUS_SESSION=null;"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
@@ -19,9 +19,6 @@
     --green: #16a34a;
     --green-light: #f0fdf4;
     --green-border: #bbf7d0;
-    --amber: #d97706;
-    --amber-light: #fffbeb;
-    --amber-border: #fde68a;
     --radius: 8px;
     --shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
@@ -53,36 +50,22 @@
 
   .top-bar-title { font-weight: 700; font-size: 15px; }
 
-  .autosave-status {
-    font-size: 12px;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .autosave-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: #adb5bd;
-    transition: background 0.3s;
-  }
-
+  .autosave-status { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .autosave-dot { width: 8px; height: 8px; border-radius: 50%; background: #adb5bd; transition: background 0.3s; }
   .autosave-dot.saved { background: var(--green); }
 
   .page-header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     padding: 28px 24px 20px;
-    max-width: 720px;
+    max-width: 640px;
     margin: 0 auto;
   }
-
   .page-header h1 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
   .page-header p { color: var(--text-muted); font-size: 13px; }
 
   .content {
-    max-width: 720px;
+    max-width: 640px;
     margin: 0 auto;
     padding: 24px;
     display: flex;
@@ -97,7 +80,6 @@
     box-shadow: var(--shadow);
     overflow: hidden;
   }
-
   .card-header {
     padding: 14px 20px;
     background: #f9fafb;
@@ -108,32 +90,22 @@
     align-items: center;
     gap: 8px;
   }
-
   .card-header .icon { display: flex; align-items: center; }
-
   .card-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 
   .field { display: flex; flex-direction: column; gap: 6px; }
   .field label { font-size: 13px; font-weight: 600; }
-  .field textarea {
+  .field textarea, .field input[type="text"] {
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 9px 12px;
     font-size: 14px;
     font-family: inherit;
     color: var(--text);
-    resize: vertical;
-    min-height: 90px;
-    transition: border-color 0.15s, box-shadow 0.15s;
   }
-  .field textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
-  }
+  .field textarea { resize: vertical; min-height: 70px; }
 
   .radio-group { display: flex; flex-direction: column; gap: 6px; }
-
   .radio-option {
     display: flex;
     align-items: center;
@@ -145,7 +117,6 @@
     font-size: 14px;
     transition: background 0.12s, border-color 0.12s;
   }
-
   .radio-option:hover { background: #f9fafb; border-color: #adb5bd; }
   .radio-option.selected { background: var(--accent-light); border-color: var(--accent-border); }
   .radio-option input { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
@@ -173,19 +144,10 @@
     border: 1px solid var(--border);
   }
 
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 560px) { .two-col { grid-template-columns: 1fr; } }
 
-  i[data-lucide] {
-    width: 15px; height: 15px;
-    stroke-width: 2;
-    vertical-align: middle;
-    flex-shrink: 0;
-  }
+  i[data-lucide] { width: 15px; height: 15px; stroke-width: 2; vertical-align: middle; flex-shrink: 0; }
 
   .success-banner {
     display: none;
@@ -238,8 +200,22 @@
   }
   .btn-secondary:hover { background: #f1f3f5; }
 
+  .confidence-row { display: flex; align-items: center; gap: 12px; }
+  .confidence-row input[type="range"] { flex: 1; accent-color: var(--accent); }
+  .confidence-value {
+    min-width: 52px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+    background: var(--accent-light);
+    border: 1px solid var(--accent-border);
+    border-radius: 6px;
+    padding: 4px 0;
+  }
+
   .likert-question { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
-  .likert-question:last-of-type { border-bottom: 0; }
+  .likert-question:last-of-type { border-bottom: 0; padding-bottom: 0; }
   .likert-scale { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
   .likert-scale .radio-option {
     flex-direction: column;
@@ -260,7 +236,7 @@
 <body>
 
 <div class="top-bar">
-  <span class="top-bar-title">GENIUS Pilot — Post-Experiment Survey</span>
+  <span class="top-bar-title">GENIUS Pilot — Checkpoint Check-in</span>
   <div class="autosave-status">
     <div class="autosave-dot" id="saveDot"></div>
     <span id="saveLabel">Unsaved</span>
@@ -268,15 +244,15 @@
 </div>
 
 <div class="page-header">
-  <h1>Post-Experiment Survey</h1>
-  <p>Please complete this survey after finishing the tasks. Your answers are saved automatically as you type.</p>
+  <h1>Quick Checkpoint Check-in</h1>
+  <p>Fill this in <strong>right after each checkpoint</strong>, before you move on — it only takes a moment. Your answers are saved automatically as you type.</p>
 </div>
 
 <div class="content">
 
   <!-- PARTICIPANT DETAILS -->
   <div class="card">
-    <div class="card-header"><span class="icon"><i data-lucide="badge"></i></span> Participant Details</div>
+    <div class="card-header"><span class="icon"><i data-lucide="badge"></i></span> Which checkpoint is this?</div>
     <div class="card-body">
       <div class="two-col">
         <div class="field">
@@ -286,98 +262,67 @@
           </div>
         </div>
         <div class="field">
-          <label>Date</label>
-          <input type="text" id="surveyDate" name="date" readonly style="border:1px solid var(--border);border-radius:6px;padding:9px 12px;font-size:14px;font-family:inherit;background:#f1f3f5;color:var(--text-muted);">
+          <label>Time</label>
+          <input type="text" id="surveyTime" name="timestamp" readonly style="border:1px solid var(--border);border-radius:6px;padding:9px 12px;font-size:14px;font-family:inherit;background:#f1f3f5;color:var(--text-muted);">
         </div>
       </div>
       <div class="field">
-        <label>Session type</label>
-        <div class="radio-group" id="sessionTypeGroup">
-          <label class="radio-option"><input type="radio" name="session_type" value="ai-assisted" checked> AI-Assisted Coding</label>
+        <label>Checkpoint just completed</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="checkpoint" value="task1_cp1"> Task 1 — Checkpoint A (Routing)</label>
+          <label class="radio-option"><input type="radio" name="checkpoint" value="task1_cp2"> Task 1 — Checkpoint B (Matching)</label>
+          <label class="radio-option"><input type="radio" name="checkpoint" value="task1_cp3"> Task 1 — Checkpoint C (Scalability)</label>
+          <label class="radio-option"><input type="radio" name="checkpoint" value="task2"> Task 2 (Reporting)</label>
+          <label class="radio-option"><input type="radio" name="checkpoint" value="task3"> Task 3 (Data Integration)</label>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- AI TOOLING -->
+  <!-- CONFIDENCE -->
   <div class="card">
-    <div class="card-header"><span class="icon"><i data-lucide="cpu"></i></span> AI Tooling Usage</div>
+    <div class="card-header"><span class="icon"><i data-lucide="target"></i></span> Confidence</div>
     <div class="card-body">
-
       <div class="field">
-        <label>Is AI used regularly (40%+) in your day-to-day work?</label>
-        <div class="radio-group">
-          <label class="radio-option"><input type="radio" name="ai_regular_use" value="yes"> Yes</label>
-          <label class="radio-option"><input type="radio" name="ai_regular_use" value="no"> No</label>
+        <label>Before running the official checkpoint test, how confident were you that you had passed?</label>
+        <div class="confidence-row">
+          <input type="range" id="confidenceSlider" name="confidence_percent" min="0" max="100" step="5" value="50">
+          <div class="confidence-value" id="confidenceValue">50%</div>
         </div>
+        <p class="hint">0% = not confident at all, 100% = completely confident.</p>
       </div>
-
-      <div class="field">
-        <label>Was AI used during this experiment?</label>
-        <div class="radio-group">
-          <label class="radio-option"><input type="radio" name="ai_used_experiment" value="yes"> Yes</label>
-          <label class="radio-option"><input type="radio" name="ai_used_experiment" value="no"> No</label>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>If AI was used, was it used extensively (40%+) during the experiment?</label>
-        <div class="radio-group">
-          <label class="radio-option"><input type="radio" name="ai_used_extensively" value="yes"> Yes</label>
-          <label class="radio-option"><input type="radio" name="ai_used_extensively" value="no"> No</label>
-          <label class="radio-option"><input type="radio" name="ai_used_extensively" value="na"> N/A — AI was not used</label>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="aiUnexpectedActions">Did the AI do anything you didn't ask it to do? If so, what happened?</label>
-        <textarea id="aiUnexpectedActions" name="ai_unexpected_actions" placeholder="Optional — e.g. it changed a file you didn't mention, ran a command on its own, etc. Leave blank if nothing like this happened."></textarea>
-      </div>
-
     </div>
   </div>
 
-  <!-- AI ATTITUDES -->
+  <!-- EVIDENCE -->
   <div class="card">
-    <div class="card-header"><span class="icon"><i data-lucide="brain-circuit"></i></span> AI-Assisted Software Development</div>
+    <div class="card-header"><span class="icon"><i data-lucide="search-check"></i></span> What did you check?</div>
     <div class="card-body">
-      <p class="hint">For each statement, select the answer that best reflects your view after the experiment.</p>
+      <div class="field">
+        <label>Before accepting Claude Code's work for this checkpoint, what did you actually do? (pick the closest one)</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="verification_method" value="ran_myself"> I ran the tests/checks myself and read the output</label>
+          <label class="radio-option"><input type="radio" name="verification_method" value="read_code"> I read through the code changes it made</label>
+          <label class="radio-option"><input type="radio" name="verification_method" value="asked_ai"> I asked Claude Code to explain or double-check it</label>
+          <label class="radio-option"><input type="radio" name="verification_method" value="trusted"> I trusted it without checking</label>
+          <label class="radio-option"><input type="radio" name="verification_method" value="other"> Other</label>
+        </div>
+      </div>
+    </div>
+  </div>
 
-      <div class="field likert-question"><label>I trust an AI coding assistant to explain unfamiliar source code accurately.</label><div class="radio-group likert-scale">
-        <label class="radio-option"><input type="radio" name="ai_attitude_explain" value="1"> Strongly disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_explain" value="2"> Disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_explain" value="3"> Neither</label><label class="radio-option"><input type="radio" name="ai_attitude_explain" value="4"> Agree</label><label class="radio-option"><input type="radio" name="ai_attitude_explain" value="5"> Strongly agree</label>
-      </div></div>
-      <div class="field likert-question"><label>I trust an AI coding assistant to propose suitable algorithms for a software task.</label><div class="radio-group likert-scale">
-        <label class="radio-option"><input type="radio" name="ai_attitude_algorithms" value="1"> Strongly disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_algorithms" value="2"> Disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_algorithms" value="3"> Neither</label><label class="radio-option"><input type="radio" name="ai_attitude_algorithms" value="4"> Agree</label><label class="radio-option"><input type="radio" name="ai_attitude_algorithms" value="5"> Strongly agree</label>
-      </div></div>
+  <!-- TRUST (short) -->
+  <div class="card">
+    <div class="card-header"><span class="icon"><i data-lucide="brain-circuit"></i></span> Right now</div>
+    <div class="card-body">
+      <p class="hint">Same two questions from the pre-experiment survey — answer based on how you feel right now, after this checkpoint.</p>
+
       <div class="field likert-question"><label>I trust an AI coding assistant to modify source code with limited supervision.</label><div class="radio-group likert-scale">
-        <label class="radio-option"><input type="radio" name="ai_attitude_modify" value="1"> Strongly disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_modify" value="2"> Disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_modify" value="3"> Neither</label><label class="radio-option"><input type="radio" name="ai_attitude_modify" value="4"> Agree</label><label class="radio-option"><input type="radio" name="ai_attitude_modify" value="5"> Strongly agree</label>
-      </div></div>
-      <div class="field likert-question"><label>I trust an AI coding assistant to run development commands and tests safely.</label><div class="radio-group likert-scale">
-        <label class="radio-option"><input type="radio" name="ai_attitude_commands" value="1"> Strongly disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_commands" value="2"> Disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_commands" value="3"> Neither</label><label class="radio-option"><input type="radio" name="ai_attitude_commands" value="4"> Agree</label><label class="radio-option"><input type="radio" name="ai_attitude_commands" value="5"> Strongly agree</label>
-      </div></div>
-      <div class="field likert-question"><label>I verify AI-generated code before treating a task as complete.</label><div class="radio-group likert-scale">
-        <label class="radio-option"><input type="radio" name="ai_attitude_verify" value="1"> Strongly disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_verify" value="2"> Disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_verify" value="3"> Neither</label><label class="radio-option"><input type="radio" name="ai_attitude_verify" value="4"> Agree</label><label class="radio-option"><input type="radio" name="ai_attitude_verify" value="5"> Strongly agree</label>
-      </div></div>
-      <div class="field likert-question"><label>I prefer to retain direct control over implementation decisions when using AI.</label><div class="radio-group likert-scale">
-        <label class="radio-option"><input type="radio" name="ai_attitude_control" value="1"> Strongly disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_control" value="2"> Disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_control" value="3"> Neither</label><label class="radio-option"><input type="radio" name="ai_attitude_control" value="4"> Agree</label><label class="radio-option"><input type="radio" name="ai_attitude_control" value="5"> Strongly agree</label>
+        <label class="radio-option"><input type="radio" name="ai_attitude_modify_now" value="1"> Strongly disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_modify_now" value="2"> Disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_modify_now" value="3"> Neither</label><label class="radio-option"><input type="radio" name="ai_attitude_modify_now" value="4"> Agree</label><label class="radio-option"><input type="radio" name="ai_attitude_modify_now" value="5"> Strongly agree</label>
       </div></div>
       <div class="field likert-question"><label>I feel confident identifying when an AI coding assistant is mistaken.</label><div class="radio-group likert-scale">
-        <label class="radio-option"><input type="radio" name="ai_attitude_detect_errors" value="1"> Strongly disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_detect_errors" value="2"> Disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_detect_errors" value="3"> Neither</label><label class="radio-option"><input type="radio" name="ai_attitude_detect_errors" value="4"> Agree</label><label class="radio-option"><input type="radio" name="ai_attitude_detect_errors" value="5"> Strongly agree</label>
+        <label class="radio-option"><input type="radio" name="ai_attitude_detect_errors_now" value="1"> Strongly disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_detect_errors_now" value="2"> Disagree</label><label class="radio-option"><input type="radio" name="ai_attitude_detect_errors_now" value="3"> Neither</label><label class="radio-option"><input type="radio" name="ai_attitude_detect_errors_now" value="4"> Agree</label><label class="radio-option"><input type="radio" name="ai_attitude_detect_errors_now" value="5"> Strongly agree</label>
       </div></div>
-
-      <div class="field"><label for="aiAttitudeReasons">Please explain the main reasons for your ratings, including the kinds of software-engineering work for which you would or would not rely on an AI coding assistant.</label><textarea id="aiAttitudeReasons" name="ai_attitude_reasons" placeholder="Optional"></textarea></div>
-      <div class="field"><label for="aiAttitudeChange">Did this session change any of your ratings? If so, what happened during the session that changed them?</label><textarea id="aiAttitudeChange" name="ai_attitude_change" placeholder="Optional"></textarea></div>
-    </div>
-  </div>
-
-  <!-- NOTES -->
-  <div class="card">
-    <div class="card-header"><span class="icon"><i data-lucide="file-text"></i></span> Additional Notes</div>
-    <div class="card-body">
-      <div class="field">
-        <label>Any other information about your experience?</label>
-        <textarea name="notes" id="notes" placeholder="Optional"></textarea>
-      </div>
     </div>
   </div>
 
@@ -385,15 +330,15 @@
   <div class="card">
     <div class="card-body" style="gap:12px;">
       <div id="successBanner" class="success-banner">
-        <strong>Survey saved successfully!</strong>
-        A file named <code id="savedFilename">survey_post_ai-01.json</code> has been downloaded.<br><br>
+        <strong>Check-in saved!</strong>
+        A file named <code id="savedFilename">checkpoint_survey_ai-01_task1_cp1.json</code> has been downloaded.<br><br>
         Move it to the <code>DATA_COLLECTION/</code> folder:<br><br>
-        <code id="mvCommand">mv ~/Downloads/survey_post_ai-01.json ~/GENIUS_pilot/DATA_COLLECTION/</code>
+        <code id="mvCommand">mv ~/Downloads/checkpoint_survey_ai-01_task1_cp1.json ~/GENIUS_pilot/DATA_COLLECTION/</code>
         <br><br>
-        You can now tell the organiser you are finished.
+        You can close this tab and continue with the next step.
       </div>
       <div id="submitArea">
-        <button class="btn-submit" onclick="submitSurvey()">Save &amp; Download Survey</button>
+        <button class="btn-submit" onclick="submitSurvey()">Save &amp; Download Check-in</button>
       </div>
       <button class="btn-secondary" onclick="clearSaved()">Clear saved draft</button>
     </div>
@@ -402,9 +347,9 @@
 </div>
 
 <script>
-  const STORAGE_KEY = 'genius_postsurvey_draft';
+  const STORAGE_KEY = 'genius_checkpointsurvey_draft';
 
-  document.getElementById('surveyDate').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('surveyTime').value = new Date().toISOString();
 
   // ── Apply session config ──
   function applySessionConfig() {
@@ -419,20 +364,18 @@
     badge.className = 'locked-badge';
     badge.textContent = 'Set by organiser';
     document.getElementById('pidWrap').appendChild(badge);
-
-    const conditionMap = { ai: 'ai-assisted' };
-    const radioValue = conditionMap[s.condition] || s.condition;
-    document.querySelectorAll('[name="session_type"]').forEach(r => {
-      r.checked = (r.value === radioValue);
-      r.disabled = true;
-    });
   }
 
   applySessionConfig();
 
+  // ── Confidence slider live value ──
+  const slider = document.getElementById('confidenceSlider');
+  const sliderValue = document.getElementById('confidenceValue');
+  slider.addEventListener('input', () => { sliderValue.textContent = slider.value + '%'; });
+
   // ── Autosave ──
   function getFormData() {
-    const data = { date: document.getElementById('surveyDate').value };
+    const data = { timestamp: document.getElementById('surveyTime').value };
     document.querySelectorAll('input, textarea').forEach(el => {
       if (!el.name) return;
       if (el.type === 'radio') {
@@ -479,6 +422,7 @@
       document.querySelectorAll('.radio-option').forEach(opt => {
         opt.classList.toggle('selected', opt.querySelector('input[type=radio]')?.checked ?? false);
       });
+      sliderValue.textContent = slider.value + '%';
       document.getElementById('saveDot').classList.add('saved');
       document.getElementById('saveLabel').textContent = 'Draft restored';
     } catch (e) {}
@@ -490,14 +434,16 @@
   function submitSurvey() {
     const data = getFormData();
     const pid = (data.participant_id || 'unknown').trim();
-    const filename = `survey_post_${pid}.json`;
+    const checkpoint = (data.checkpoint || 'unspecified').trim();
+    const filename = `checkpoint_survey_${pid}_${checkpoint}.json`;
 
     const output = {
       _metadata: {
-        form: 'post_experiment_survey',
-        instrument_version: '2026-08-ai-attitudes-v1',
+        form: 'checkpoint_survey',
+        instrument_version: '2026-09-05-checkpoint-checkin-v1',
         generated_at: new Date().toISOString(),
         participant_id: pid,
+        checkpoint: checkpoint,
       },
       ...data
     };
@@ -515,6 +461,10 @@
       `mv ~/Downloads/${filename} ~/GENIUS_pilot/DATA_COLLECTION/`;
     document.getElementById('successBanner').classList.add('visible');
     document.getElementById('submitArea').style.display = 'none';
+
+    // Clear the draft and reset the checkpoint choice so the same page is
+    // ready to be reused cleanly for the next checkpoint.
+    localStorage.removeItem(STORAGE_KEY);
   }
 
   function clearSaved() {
