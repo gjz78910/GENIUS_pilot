@@ -130,12 +130,6 @@ Expected: `running`, plus a display size of at least `1280x720` (usually `1920x1
 
 Do not start recording before the participant has connected via DCV — early starts capture a small cropped window. If the DCV tab disconnects briefly, a watchdog restarts recording automatically once the full desktop is back.
 
-**2b. Checkpoint check-ins (participant, right after each checkpoint):**
-- The instructions link to `Checkpoint_Survey.html` after Checkpoint A, B, C, Task 2, and Task 3
-- Participant selects which checkpoint it's for, rates confidence, notes what they checked, and answers 2 short trust items
-- On submit: downloads `checkpoint_survey_<ID>_<checkpoint>.json` to `~/Downloads/`, moved the same way as the pre/post survey
-- This is what makes the confidence-vs-actual-outcome and trust-over-time comparisons possible — without it we only have one trust reading per participant for the whole session
-
 **3. Capture a final health snapshot when the participant finishes:**
 ```bash
 /usr/local/bin/genius-collection-health snapshot
@@ -267,7 +261,6 @@ All data saved to `DATA_COLLECTION/`:
 - `resource_usage_<ID>.jsonl` (ON, single-run default)
 - `screen_recordings/*.mp4` (ON; AWS end-session copies from `~/Videos/` to `DATA_COLLECTION/screen_recordings/`)
 - `screen_recording_segments.json` (ON; log of recording restarts, if any)
-- `checkpoint_survey_<ID>_<checkpoint>.json` (ON, one per checkpoint: `task1_cp1`, `task1_cp2`, `task1_cp3`, `task2`, `task3`)
 - `Task1_cp1_<ID>.json` (AFTER, single-run default)
 - `Task1_cp2_<ID>.json` (AFTER, single-run default)
 - `Task1_cp3_<ID>.json` (AFTER, single-run default)
