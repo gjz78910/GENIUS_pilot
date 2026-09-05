@@ -322,11 +322,19 @@
     border-radius: var(--radius);
     box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
     overflow: hidden;
-    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, opacity 0.2s;
   }
 
   .section-card:hover {
     box-shadow: 0 4px 16px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .section-card.section-locked {
+    opacity: 0.5;
+  }
+
+  .section-card.section-locked:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   }
 
   .section-header {
@@ -1429,6 +1437,7 @@ cd ~/GENIUS_pilot
     document.getElementById('progressLabel').textContent = count + ' / ' + total;
 
     const sections = [0,1,2,3,4,5,6,7];
+    let prevSectionDone = true; // section 0 is always available
     sections.forEach(i => {
       const body = i === 0
         ? document.querySelector('.section-card#sec-0 .section-body')
@@ -1440,6 +1449,11 @@ cd ~/GENIUS_pilot
       const done = sDone.length;
       const pct = total ? (done / total) * 100 : 0;
       const isDone = total > 0 && done === total;
+
+      // Fade the whole section card until the previous section is complete.
+      const card = body.closest('.section-card');
+      if (card) card.classList.toggle('section-locked', !prevSectionDone);
+      prevSectionDone = isDone;
 
       // Section header num
       const numEl = document.getElementById(`num-${i}`);
