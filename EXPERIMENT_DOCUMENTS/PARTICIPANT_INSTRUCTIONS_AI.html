@@ -861,6 +861,46 @@
         <span>Make sure you are using the <strong>Claude Code</strong> agent. VS Code's sidebar opens to a different, built-in chat panel by default — <strong>that is not Claude Code.</strong> If you don't see Claude Code, click <strong>Claude Code</strong> in the bottom status bar (bottom-right of the VS Code window) to switch to it.</span>
       </div>
 
+      <svg viewBox="0 0 640 300" style="width:100%;max-width:560px;display:block;margin:14px auto;" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison: default chat panel is wrong, Claude Code panel is correct">
+        <!-- Left panel: wrong -->
+        <g>
+          <text x="150" y="20" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="15" font-weight="700" fill="var(--red)">✗ This is NOT Claude Code</text>
+          <rect x="20" y="32" width="260" height="220" rx="8" fill="#1e1e2e" stroke="var(--red)" stroke-width="2.5"/>
+          <rect x="20" y="32" width="260" height="28" rx="8" fill="#2a2a3c"/>
+          <rect x="20" y="52" width="260" height="8" fill="#2a2a3c"/>
+          <text x="34" y="50" font-family="-apple-system,sans-serif" font-size="11" fill="#cdd6f4">Chat</text>
+          <text x="150" y="140" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="12" fill="#9399b2">Build with Agent</text>
+          <text x="150" y="158" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="9" fill="#6c7086">AI responses may be inaccurate</text>
+          <rect x="34" y="220" width="212" height="20" rx="4" fill="#313244"/>
+          <text x="42" y="234" font-family="-apple-system,sans-serif" font-size="9" fill="#6c7086">Describe what to build</text>
+        </g>
+
+        <!-- Right panel: correct -->
+        <g>
+          <text x="490" y="20" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="15" font-weight="700" fill="var(--green)">✓ This is correct</text>
+          <rect x="360" y="32" width="260" height="220" rx="8" fill="#1e1e2e" stroke="var(--green)" stroke-width="2.5"/>
+          <rect x="360" y="32" width="130" height="28" rx="8" fill="#2a2a3c"/>
+          <rect x="490" y="32" width="130" height="28" fill="#3d5a3d"/>
+          <text x="374" y="50" font-family="-apple-system,sans-serif" font-size="11" fill="#9399b2">Chat</text>
+          <text x="504" y="50" font-family="-apple-system,sans-serif" font-size="11" font-weight="700" fill="#a6e3a1">✳ Claude Code</text>
+          <text x="490" y="130" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="20">✳</text>
+          <text x="490" y="155" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="11" fill="#cdd6f4">What to do first?</text>
+          <rect x="374" y="220" width="212" height="20" rx="4" fill="#313244"/>
+          <text x="382" y="234" font-family="-apple-system,sans-serif" font-size="9" fill="#6c7086">Ask Claude to edit...</text>
+        </g>
+
+        <!-- Arrow to status bar button -->
+        <path d="M 150 262 Q 150 285 240 290" fill="none" stroke="var(--red)" stroke-width="2.5" marker-end="url(#arrowhead)"/>
+        <defs>
+          <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="var(--red)"/>
+          </marker>
+        </defs>
+        <rect x="235" y="278" width="120" height="20" rx="4" fill="#2a2a3c" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="295" y="292" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="10" fill="#cdd6f4">✳ Claude Code</text>
+        <text x="410" y="292" font-family="-apple-system,sans-serif" font-size="11" font-weight="700" fill="var(--red)">← click here</text>
+      </svg>
+
       <div style="margin-top:10px;margin-bottom:14px;width:fit-content;">
         <label class="check-item" style="width:fit-content;">
           <input type="checkbox"> <label>I am using the Claude Code panel (not the default chat panel) ✓</label>
