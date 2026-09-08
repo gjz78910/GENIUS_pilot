@@ -387,6 +387,18 @@ sudo -u participant -H bash -lc "
 JSON
 "
 
+# Regenerate session_config.js from the just-written session.env so the
+# participant HTML pages show the real participant ID, not whatever
+# example value happens to be committed in the repo checkout.
+sudo -u participant -H bash -lc "
+  set -euo pipefail
+  cd '$PROJECT_DIR'
+  /opt/conda/bin/conda run --no-capture-output -n genius_pilot python \
+    SCRIPTS/generate_session_config.py \
+    --desktop-url 'https://$DCV_HOSTNAME:8443/#genius' \
+    --password '$PARTICIPANT_PASSWORD'
+"
+
 mkdir -p /home/participant/Desktop /home/participant/.config/autostart /home/participant/dcv-storage
 mkdir -p /home/participant/.config/xfce4/xfconf/xfce-perchannel-xml
 install -d -o participant -g participant /home/participant/.config/google-chrome
