@@ -55,7 +55,7 @@ class Scheduler:
                 # No jobs assigned; skip route calculation
                 continue
             job_locations: List[str] = [job.location for job in assigned_jobs]
-            route, distance = find_optimal_route(engineer.location, job_locations, self.travel_matrix)
+            route, distance = find_optimal_route(engineer.location, job_locations, self.travel_matrix, optimize=True)
             routes[engineer.id] = (route, distance)
 
         return assignments, routes, unassigned

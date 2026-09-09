@@ -41,7 +41,15 @@ def assign_jobs(
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
-    for job in jobs:
+    sorted_jobs = sorted(
+        enumerate(jobs),
+        key=lambda idx_job: (
+            sum(1 for e in engineers if all(s in e.skills for s in idx_job[1].required_skills)),
+            idx_job[0],
+        ),
+    )
+
+    for _, job in sorted_jobs:
         # Filter engineers who possess all required skills
         skilled_candidates: List[Engineer] = [
             engineer
@@ -57,7 +65,7 @@ def assign_jobs(
         def distance_fn(engineer: Engineer) -> float:
             return travel_matrix.get(engineer.location, {}).get(job.location, float("inf"))
 
-        skilled_candidates.sort(key=distance_fn)
+        skilled_candidates.sort(key=lambda e: (distance_fn(e), len(assignments[e.id])))
         
         # Try to assign to the closest engineer with available capacity
         assigned = False

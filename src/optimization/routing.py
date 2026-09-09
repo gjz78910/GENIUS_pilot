@@ -59,8 +59,74 @@ def brute_force_tsp(
     return best_route, best_distance
 
 
-def find_optimal_route(
+_BRUTE_FORCE_THRESHOLD = 4
+
+
+def _nearest_neighbor_tsp(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> Tuple[Tuple[str, ...], float]:
+    route = [start]
+    remaining = list(range(len(destinations)))
+    current = start
+    total_distance = 0.0
+
+    while remaining:
+        nearest_idx = min(remaining, key=lambda idx: travel_matrix[current][destinations[idx]])
+        nearest = destinations[nearest_idx]
+        total_distance += travel_matrix[current][nearest]
+        route.append(nearest)
+        remaining.remove(nearest_idx)
+        current = nearest
+
+    total_distance += travel_matrix[current][start]
+    route.append(start)
+    return tuple(route), total_distance
+
+
+def _two_opt_improve(
+    route: Tuple[str, ...], travel_matrix: Dict[str, Dict[str, float]]
+) -> Tuple[Tuple[str, ...], float]:
+    route_list = list(route)
+    best_distance = sum(
+        travel_matrix[route_list[k]][route_list[k + 1]]
+        for k in range(len(route_list) - 1)
+    )
+    improved = True
+
+    while improved:
+        improved = False
+        for i in range(1, len(route_list) - 2):
+            for j in range(i + 1, len(route_list) - 1):
+                old_segment = sum(
+                    travel_matrix[route_list[k]][route_list[k + 1]]
+                    for k in range(i - 1, j + 1)
+                )
+                reversed_seg = route_list[i : j + 1][::-1]
+                new_segment = travel_matrix[route_list[i - 1]][reversed_seg[0]]
+                for k in range(len(reversed_seg) - 1):
+                    new_segment += travel_matrix[reversed_seg[k]][reversed_seg[k + 1]]
+                new_segment += travel_matrix[reversed_seg[-1]][route_list[j + 1]]
+                if new_segment < old_segment - 1e-10:
+                    route_list[i : j + 1] = reversed_seg
+                    best_distance += new_segment - old_segment
+                    improved = True
+                    break
+            if improved:
+                break
+
+    total_distance = sum(
+        travel_matrix[route_list[k]][route_list[k + 1]]
+        for k in range(len(route_list) - 1)
+    )
+    return tuple(route_list), total_distance
+
+
+def find_optimal_route(
+    start: str,
+    destinations: Sequence[str],
+    travel_matrix: Dict[str, Dict[str, float]],
+    *,
+    optimize: bool = False,
 ) -> Tuple[Tuple[str, ...], float]:
     """Find a route visiting all destinations and returning to start.
 
@@ -72,6 +138,9 @@ def find_optimal_route(
         A sequence of destination locations that must be visited exactly once.
     travel_matrix : Dict[str, Dict[str, float]]
         A dictionary representing the travel distance between locations.
+    optimize : bool
+        When True, apply 2-opt local search to improve route quality.
+        Use for final routes; skip during repeated capacity estimation.
 
     Returns
     -------
@@ -79,4 +148,11 @@ def find_optimal_route(
         A tuple containing the route (including start at the beginning
         and end) and its total distance.
     """
-    return brute_force_tsp(start, destinations, travel_matrix)
+    if not destinations:
+        return (start, start), 0.0
+    if len(destinations) <= _BRUTE_FORCE_THRESHOLD:
+        return brute_force_tsp(start, destinations, travel_matrix)
+    route, distance = _nearest_neighbor_tsp(start, destinations, travel_matrix)
+    if optimize:
+        return _two_opt_improve(route, travel_matrix)
+    return route, distance
