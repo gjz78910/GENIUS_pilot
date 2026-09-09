@@ -19,6 +19,7 @@ import argparse
 import json
 import re
 import subprocess
+import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime
@@ -39,7 +40,7 @@ RUN_SPECS: Dict[str, TestRunSpec] = {
         key="task1_cp1",
         filename_prefix="Task1_cp1",
         command=[
-            "python",
+            sys.executable,
             "-m",
             "unittest",
             "tests.test_routing",
@@ -55,7 +56,7 @@ RUN_SPECS: Dict[str, TestRunSpec] = {
         key="task1_cp2",
         filename_prefix="Task1_cp2",
         command=[
-            "python",
+            sys.executable,
             "-m",
             "unittest",
             "tests.test_matching",
@@ -70,7 +71,7 @@ RUN_SPECS: Dict[str, TestRunSpec] = {
         filename_prefix="Task1_cp3",
         pass_rule="task1_cp3_scalability_all_required",
         command=[
-            "python",
+            sys.executable,
             "-m",
             "unittest",
             "tests.performance.test_scalability",
@@ -83,12 +84,12 @@ RUN_SPECS: Dict[str, TestRunSpec] = {
     "task2": TestRunSpec(
         key="task2",
         filename_prefix="Task2",
-        command=["python", "-m", "unittest", "tests.test_report_correctness", "-v"],
+        command=[sys.executable, "-m", "unittest", "tests.test_report_correctness", "-v"],
     ),
     "task3": TestRunSpec(
         key="task3",
         filename_prefix="Task3",
-        command=["python", "-m", "unittest", "tests.test_data_loader", "-v"],
+        command=[sys.executable, "-m", "unittest", "tests.test_data_loader", "-v"],
     ),
 }
 
