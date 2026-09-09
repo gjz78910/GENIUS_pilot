@@ -67,7 +67,12 @@ def _two_opt_improve(
     """2-opt local search: repeatedly reverse segments until no improvement — O(n²) per pass."""
     nodes = list(route)
     improved = True
-    while improved:
+    # Guard against infinite cycling (can occur when duplicate locations are present,
+    # causing floating-point comparisons to flip between equivalent-cost arrangements).
+    max_passes = len(nodes) * len(nodes)
+    passes = 0
+    while improved and passes < max_passes:
+        passes += 1
         improved = False
         for i in range(1, len(nodes) - 2):
             for j in range(i + 1, len(nodes) - 1):

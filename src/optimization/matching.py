@@ -11,6 +11,7 @@ from typing import Dict, List
 
 from src.models.engineer import Engineer
 from src.models.job import Job
+from src.optimization.routing import find_optimal_route
 
 
 def _sequential_travel(
@@ -79,11 +80,8 @@ def assign_jobs(
             current_jobs = assignments[engineer.id]
             total_job_time = sum(j.length for j in current_jobs)
 
-            # Use a sequential travel estimate instead of running full TSP on every
-            # candidate — this is O(n) vs O(n!) and avoids expensive routing calls
-            # during the assignment loop.
             job_locations = [j.location for j in current_jobs] + [job.location]
-            estimated_travel_time = _sequential_travel(
+            _, estimated_travel_time = find_optimal_route(
                 engineer.location, job_locations, travel_matrix
             )
 
