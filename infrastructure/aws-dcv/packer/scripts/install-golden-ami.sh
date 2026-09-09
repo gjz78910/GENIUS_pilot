@@ -168,6 +168,7 @@ env["AWS_REGION"] = region
 env["AWS_DEFAULT_REGION"] = region
 if model:
     env["ANTHROPIC_MODEL"] = model
+    settings["model"] = model
 if small_model:
     env["ANTHROPIC_SMALL_FAST_MODEL"] = small_model
 settings["env"] = env

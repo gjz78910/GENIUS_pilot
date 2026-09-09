@@ -19,9 +19,21 @@ DUCKDNS_TOKEN="${duckdns_token}"
 DUCKDNS_DOMAIN="${duckdns_domain}"
 DCV_HOSTNAME="${dcv_hostname}"
 EXPECTED_PUBLIC_IP="${expected_public_ip}"
+SELF_DISCOVER_HOSTNAME="${self_discover_hostname}"
+DCV_HOSTNAME_PREFIX="${dcv_hostname_prefix}"
 LETSENCRYPT_EMAIL="${letsencrypt_email}"
 PROJECT_DIR="/home/participant/GENIUS_pilot"
 RUNTIME_DIR="/home/participant/genius-runtime"
+
+# Without a dedicated Elastic IP, DCV_HOSTNAME can't be known by Terraform
+# ahead of time (see main.tf) -- discover it here, early, so it's correct
+# by the time /etc/genius/session.env is written below. The actual cert
+# issuance still happens later in configure_trusted_dcv_certificate().
+if [ "$SELF_DISCOVER_HOSTNAME" = "true" ] && [ -z "$DCV_HOSTNAME" ]; then
+  EARLY_METADATA_TOKEN="$(curl -fsS -X PUT http://169.254.169.254/latest/api/token -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")"
+  EARLY_PUBLIC_IP="$(curl -fsS -H "X-aws-ec2-metadata-token: $EARLY_METADATA_TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)"
+  DCV_HOSTNAME="$DCV_HOSTNAME_PREFIX-$(printf '%s' "$EARLY_PUBLIC_IP" | tr '.' '-').sslip.io"
+fi
 
 echo "participant:$PARTICIPANT_PASSWORD" | chpasswd
 usermod -aG audio,video participant
@@ -92,8 +104,12 @@ configure_trusted_dcv_certificate() {
     exit 1
   fi
 
-  if [ -z "$DCV_HOSTNAME" ] || [ -z "$LETSENCRYPT_EMAIL" ]; then
-    echo "Trusted DCV certificate setup requires hostname and Let's Encrypt email." >&2
+  if [ "$SELF_DISCOVER_HOSTNAME" != "true" ] && [ -z "$DCV_HOSTNAME" ]; then
+    echo "Trusted DCV certificate setup requires a hostname (or self-discovery)." >&2
+    exit 1
+  fi
+  if [ -z "$LETSENCRYPT_EMAIL" ]; then
+    echo "Trusted DCV certificate setup requires a Let's Encrypt email." >&2
     exit 1
   fi
 
@@ -102,8 +118,8 @@ configure_trusted_dcv_certificate() {
     exit 1
   fi
 
-  if [ "$DYNAMIC_DNS_PROVIDER" = "sslip" ] && [ -z "$EXPECTED_PUBLIC_IP" ]; then
-    echo "sslip setup requires expected Elastic IP." >&2
+  if [ "$DYNAMIC_DNS_PROVIDER" = "sslip" ] && [ "$SELF_DISCOVER_HOSTNAME" != "true" ] && [ -z "$EXPECTED_PUBLIC_IP" ]; then
+    echo "sslip setup requires expected Elastic IP (or self-discovery)." >&2
     exit 1
   fi
 
@@ -114,17 +130,26 @@ configure_trusted_dcv_certificate() {
 
   METADATA_TOKEN="$(curl -fsS -X PUT http://169.254.169.254/latest/api/token -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")"
 
-  for attempt in $(seq 1 60); do
+  if [ "$SELF_DISCOVER_HOSTNAME" = "true" ]; then
+    # No dedicated Elastic IP: there is nothing to wait for, the instance's
+    # own auto-assigned public IP (available immediately via IMDS) is the
+    # only address it will ever have for this boot. Build the hostname from
+    # it directly instead of comparing against a Terraform-known IP.
     PUBLIC_IP="$(curl -fsS -H "X-aws-ec2-metadata-token: $METADATA_TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)"
-    if [ "$DYNAMIC_DNS_PROVIDER" != "sslip" ] || [ "$PUBLIC_IP" = "$EXPECTED_PUBLIC_IP" ]; then
-      break
-    fi
-    sleep 10
-  done
+    DCV_HOSTNAME="$DCV_HOSTNAME_PREFIX-$(printf '%s' "$PUBLIC_IP" | tr '.' '-').sslip.io"
+  else
+    for attempt in $(seq 1 60); do
+      PUBLIC_IP="$(curl -fsS -H "X-aws-ec2-metadata-token: $METADATA_TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)"
+      if [ "$DYNAMIC_DNS_PROVIDER" != "sslip" ] || [ "$PUBLIC_IP" = "$EXPECTED_PUBLIC_IP" ]; then
+        break
+      fi
+      sleep 10
+    done
 
-  if [ "$DYNAMIC_DNS_PROVIDER" = "sslip" ] && [ "$PUBLIC_IP" != "$EXPECTED_PUBLIC_IP" ]; then
-    echo "Instance public IP is '$PUBLIC_IP', expected Elastic IP '$EXPECTED_PUBLIC_IP'." >&2
-    exit 1
+    if [ "$DYNAMIC_DNS_PROVIDER" = "sslip" ] && [ "$PUBLIC_IP" != "$EXPECTED_PUBLIC_IP" ]; then
+      echo "Instance public IP is '$PUBLIC_IP', expected Elastic IP '$EXPECTED_PUBLIC_IP'." >&2
+      exit 1
+    fi
   fi
 
   if [ "$DYNAMIC_DNS_PROVIDER" = "duckdns" ]; then
@@ -252,6 +277,11 @@ env["AWS_REGION"] = region
 env["AWS_DEFAULT_REGION"] = region
 if model:
     env["ANTHROPIC_MODEL"] = model
+    # env.ANTHROPIC_MODEL sets the CLI's default, but the VS Code extension's
+    # own model picker reads the top-level "model" field independently and
+    # otherwise defaults to Opus regardless of the env var -- both must be
+    # set for the UI to actually default to the pinned model.
+    settings["model"] = model
 if small_model:
     env["ANTHROPIC_SMALL_FAST_MODEL"] = small_model
 settings["env"] = env
