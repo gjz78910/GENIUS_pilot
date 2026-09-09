@@ -50,9 +50,10 @@ def _calculate_job_timings(
 
         # Process jobs at this location
         if current_loc in location_to_jobs:
+            first_at_stop = True  # Travel cost charged only to the first job at each stop
             for job in location_to_jobs[current_loc]:
                 if job.id in processed_jobs:
-                    continue  # Skip if already processed
+                    continue
                 processed_jobs.add(job.id)
 
                 job_start_minutes = current_time_minutes
@@ -67,10 +68,10 @@ def _calculate_job_timings(
                     "job_start_time_minutes": job_start_minutes,
                     "job_end_time_minutes": job_end_minutes,
                     "job_duration_minutes": job_duration_minutes,
-                    "travel_time_minutes": 0.0,
+                    "travel_time_minutes": travel_minutes if first_at_stop else 0.0,
                 })
 
-                # Update current time after job completion
+                first_at_stop = False
                 current_time_minutes = job_end_minutes
 
     return job_records
@@ -142,29 +143,37 @@ def generate_report(
                     "travel_time_minutes": 0.0,
                 })
 
+        # Sort by appointment time for readability
+        job_records.sort(key=lambda r: r["job_time"])
+
         # Write CSV file
+        fieldnames = [
+            "engineer_id",
+            "engineer_name",
+            "job_id",
+            "job_location",
+            "job_time",
+            "required_skills",
+            "job_start_time_minutes",
+            "job_end_time_minutes",
+            "job_duration_minutes",
+            "travel_time_minutes",
+            "total_time_minutes",
+        ]
         file_path = os.path.join(output_dir, f"engineer_{engineer_id}_schedule.csv")
         with open(file_path, "w", newline="") as f:
-            writer = csv.DictWriter(
-                f,
-                fieldnames=[
-                    "engineer_id",
-                    "engineer_name",
-                    "job_id",
-                    "job_location",
-                    "job_time",
-                    "required_skills",
-                    "job_start_time_minutes",
-                    "job_end_time_minutes",
-                    "job_duration_minutes",
-                    "travel_time_minutes",
-                    "total_time_minutes",
-                ],
-            )
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
 
+            total_duration = 0.0
+            total_travel = 0.0
+            total_time_sum = 0.0
+
             for record in job_records:
-                total_time = 0.0
+                total_time = record["job_duration_minutes"] + record["travel_time_minutes"]
+                total_duration += record["job_duration_minutes"]
+                total_travel += record["travel_time_minutes"]
+                total_time_sum += total_time
                 writer.writerow({
                     "engineer_id": engineer_id,
                     "engineer_name": engineer.name,
@@ -178,3 +187,18 @@ def generate_report(
                     "travel_time_minutes": round(record["travel_time_minutes"], 2),
                     "total_time_minutes": round(total_time, 2),
                 })
+
+            # Summary row
+            writer.writerow({
+                "engineer_id": engineer_id,
+                "engineer_name": engineer.name,
+                "job_id": "TOTAL",
+                "job_location": "",
+                "job_time": "",
+                "required_skills": "",
+                "job_start_time_minutes": "",
+                "job_end_time_minutes": "",
+                "job_duration_minutes": round(total_duration, 2),
+                "travel_time_minutes": round(total_travel, 2),
+                "total_time_minutes": round(total_time_sum, 2),
+            })

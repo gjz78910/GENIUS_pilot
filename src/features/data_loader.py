@@ -68,6 +68,20 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         for dest, time in destinations.items():
             if not isinstance(time, (int, float)) or time < 0:
                 raise ValueError(f"travel_matrix[{source}][{dest}] must be a non-negative number")
+            if source == dest and time != 0.0:
+                raise ValueError(
+                    f"travel_matrix diagonal must be 0.0: [{source}][{dest}] = {time}"
+                )
+
+    # Validate symmetry
+    for source, destinations in travel_matrix.items():
+        for dest, time in destinations.items():
+            reverse = travel_matrix.get(dest, {}).get(source)
+            if reverse is not None and abs(time - reverse) > 1e-9:
+                raise ValueError(
+                    f"travel_matrix is not symmetric: [{source}][{dest}]={time} "
+                    f"!= [{dest}][{source}]={reverse}"
+                )
 
     # Load engineers
     engineers = []
@@ -93,12 +107,18 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         if location not in all_locations:
             raise ValueError(f"Engineer location '{location}' not found in travel_matrix")
 
+        working_hours = e_data.get("working_hours", 8.0)
+        if not isinstance(working_hours, (int, float)) or working_hours <= 0 or working_hours > 24:
+            raise ValueError(
+                f"Engineer {eng_id}: working_hours must be between 0 and 24, got {working_hours}"
+            )
+
         engineer = Engineer(
             id=eng_id,
             name=e_data["name"],
             location=location,
             skills=e_data.get("skills", []),
-            working_hours=e_data.get("working_hours", 8.0),
+            working_hours=working_hours,
         )
         engineers.append(engineer)
 
@@ -123,6 +143,19 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         job_ids.add(job_id)
 
         location = j_data["location"]
+        if location not in all_locations:
+            raise ValueError(f"Job {job_id}: location '{location}' not found in travel_matrix")
+
+        time_str = j_data["time"]
+        try:
+            parts = time_str.split(":")
+            if len(parts) != 2:
+                raise ValueError
+            h, m = int(parts[0]), int(parts[1])
+            if not (0 <= h <= 23 and 0 <= m <= 59):
+                raise ValueError
+        except (ValueError, AttributeError):
+            raise ValueError(f"Job {job_id}: invalid time format '{time_str}', expected HH:MM")
 
         job = Job(
             id=job_id,
