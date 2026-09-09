@@ -396,6 +396,39 @@ sudo -u participant -H bash -lc "
   git config user.name 'Participant $PARTICIPANT_ID'
   git config user.email '$PARTICIPANT_ID@example.invalid'
   mkdir -p DATA_COLLECTION
+  mkdir -p .vscode
+  python3 - <<'PY'
+import json
+import os
+
+# .vscode/ is gitignored (workspace-local editor state shouldn't be part of
+# a participant's tracked submission), so it never arrives via the repo
+# checkout -- write it here instead. Opens an integrated terminal
+# automatically when VS Code loads this folder, so participants don't have
+# to find the terminal shortcut themselves as their very first step.
+with open(os.path.join('.vscode', 'tasks.json'), 'w') as f:
+    json.dump({
+        'version': '2.0.0',
+        'tasks': [{
+            'label': 'Open Terminal',
+            'type': 'shell',
+            'command': 'echo Terminal ready.',
+            'runOptions': {'runOn': 'folderOpen'},
+            'presentation': {'reveal': 'always', 'panel': 'new', 'focus': True},
+            'problemMatcher': [],
+        }],
+    }, f, indent=2)
+
+settings_path = os.path.join('.vscode', 'settings.json')
+settings = {}
+if os.path.exists(settings_path):
+    try:
+        settings = json.load(open(settings_path))
+    except json.JSONDecodeError:
+        settings = {}
+settings['task.allowAutomaticTasks'] = 'on'
+json.dump(settings, open(settings_path, 'w'), indent=2)
+PY
   find DATA_COLLECTION -mindepth 1 -maxdepth 1 -exec rm -rf {} +
   find '$RUNTIME_DIR' -mindepth 1 -maxdepth 1 -exec rm -rf {} +
   git add -Af DATA_COLLECTION 2>/dev/null || true
