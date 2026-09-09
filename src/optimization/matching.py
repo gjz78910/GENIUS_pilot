@@ -11,7 +11,7 @@ from typing import Dict, List
 
 from src.models.engineer import Engineer
 from src.models.job import Job
-from src.optimization.routing import find_optimal_route
+from src.optimization.routing import estimate_route_time
 
 
 def assign_jobs(
@@ -76,10 +76,10 @@ def assign_jobs(
             current_jobs = assignments[engineer.id]
             total_job_time = sum(j.length for j in current_jobs)
             
-            # Estimate travel time if this job is added
-            test_jobs = current_jobs + [job]
-            job_locations = [j.location for j in test_jobs]
-            _, estimated_travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
+            # Estimate travel time if this job is added (fast O(n²) heuristic;
+            # exactness is not required for a feasibility capacity check)
+            job_locations = [j.location for j in current_jobs] + [job.location]
+            estimated_travel_time = estimate_route_time(engineer.location, job_locations, travel_matrix)
             
             # Check whether total work fits within working hours
             if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:
