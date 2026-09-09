@@ -41,6 +41,14 @@ def assign_jobs(
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
+    def count_qualified(job: Job) -> int:
+        return sum(
+            1 for e in engineers
+            if all(s in e.skills for s in job.required_skills)
+        )
+
+    jobs = sorted(jobs, key=count_qualified)
+
     for job in jobs:
         # Filter engineers who possess all required skills
         skilled_candidates: List[Engineer] = [
