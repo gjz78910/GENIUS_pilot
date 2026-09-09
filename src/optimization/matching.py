@@ -11,7 +11,7 @@ from typing import Dict, List
 
 from src.models.engineer import Engineer
 from src.models.job import Job
-from src.optimization.routing import find_optimal_route
+from src.optimization.routing import estimate_route_time
 
 
 def assign_jobs(
@@ -41,7 +41,14 @@ def assign_jobs(
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
-    for job in jobs:
+    # Process jobs with fewest capable engineers first to avoid blocking exclusive-skill jobs
+    def scarcity_key(job: Job) -> int:
+        return sum(
+            1 for e in engineers
+            if all(s in e.skills for s in job.required_skills)
+        )
+
+    for job in sorted(jobs, key=scarcity_key):
         # Filter engineers who possess all required skills
         skilled_candidates: List[Engineer] = [
             engineer
@@ -68,7 +75,7 @@ def assign_jobs(
             # Estimate travel time if this job is added
             test_jobs = current_jobs + [job]
             job_locations = [j.location for j in test_jobs]
-            _, estimated_travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
+            estimated_travel_time = estimate_route_time(engineer.location, job_locations, travel_matrix)
             
             # Check whether total work fits within working hours
             if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:
