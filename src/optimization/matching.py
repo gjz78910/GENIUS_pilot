@@ -41,7 +41,18 @@ def assign_jobs(
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
-    for job in jobs:
+    # Sort jobs by number of qualified engineers ascending so the most
+    # constrained jobs (fewest candidates, e.g. exclusive skills) are
+    # assigned first, preventing greedy from wasting that engineer's capacity.
+    def _candidate_count(job: Job) -> int:
+        return sum(
+            1 for e in engineers
+            if all(s in e.skills for s in job.required_skills)
+        )
+
+    sorted_jobs = sorted(jobs, key=_candidate_count)
+
+    for job in sorted_jobs:
         # Filter engineers who possess all required skills
         skilled_candidates: List[Engineer] = [
             engineer
