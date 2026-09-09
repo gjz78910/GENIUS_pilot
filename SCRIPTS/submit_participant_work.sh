@@ -77,15 +77,25 @@ if [ "$store_status" -eq 0 ] && [ -d .git ]; then
 fi
 
 branch="participant-$PARTICIPANT_ID"
+tag="$(git tag --points-at HEAD | tail -n 1)"
 push_status=125
 if [ "$store_status" -eq 0 ]; then
-    git push -u origin "$branch" --tags
+    # Push only the branch and this run's own tag, not --tags: the
+    # long-lived "initial" tag (created once at session start, never
+    # updated) already exists on the remote from the first push, so a
+    # blanket --tags push is rejected on every subsequent submission even
+    # though the branch and the new per-run tag pushed successfully --
+    # that false rejection was making every resubmission report failure.
+    if [ -n "$tag" ]; then
+        git push -u origin "$branch" "refs/tags/$tag"
+    else
+        git push -u origin "$branch"
+    fi
     push_status=$?
 fi
 
 finished_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 commit="$(git rev-parse HEAD 2>/dev/null || true)"
-tag="$(git tag --points-at HEAD | tail -n 1)"
 cat > "$MANIFEST" <<EOF
 {
   "participant_id": "$PARTICIPANT_ID",
