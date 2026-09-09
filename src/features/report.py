@@ -67,7 +67,7 @@ def _calculate_job_timings(
                     "job_start_time_minutes": job_start_minutes,
                     "job_end_time_minutes": job_end_minutes,
                     "job_duration_minutes": job_duration_minutes,
-                    "travel_time_minutes": 0.0,
+                    "travel_time_minutes": travel_minutes,
                 })
 
                 # Update current time after job completion
