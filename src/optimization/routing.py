@@ -59,6 +59,89 @@ def brute_force_tsp(
     return best_route, best_distance
 
 
+def held_karp_tsp(
+    start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> Tuple[Tuple[str, ...], float]:
+    """Solve a travelling-salesperson problem using the Held-Karp algorithm.
+
+    Uses bitmask dynamic programming to find the optimal route in
+    O(n^2 * 2^n) time, significantly faster than brute force O(n!).
+
+    Parameters
+    ----------
+    start : str
+        The starting (and ending) location for the route.
+    destinations : Sequence[str]
+        A sequence of destination locations that must be visited exactly once.
+    travel_matrix : Dict[str, Dict[str, float]]
+        A dictionary representing the travel distance between locations.
+
+    Returns
+    -------
+    Tuple[Tuple[str, ...], float]
+        A tuple containing the best route (including the start location at
+        the beginning and end) and the total distance of that route.
+    """
+    if not destinations:
+        return (start, start), 0.0
+
+    n = len(destinations)
+    nodes = list(destinations)
+
+    # dp[visited_mask][i] = minimum distance to reach nodes[i] having visited
+    # exactly the set of nodes indicated by visited_mask, starting from start.
+    full_mask = (1 << n) - 1
+    dp: Dict[Tuple[int, int], float] = {}
+    parent: Dict[Tuple[int, int], int] = {}
+
+    # Base case: go directly from start to each destination
+    for i in range(n):
+        mask = 1 << i
+        dp[(mask, i)] = travel_matrix[start][nodes[i]]
+
+    # Fill DP table: for each subset of visited nodes, try extending the route
+    for mask in range(1, full_mask + 1):
+        for last in range(n):
+            if not (mask & (1 << last)):
+                continue
+            if (mask, last) not in dp:
+                continue
+            for nxt in range(n):
+                if mask & (1 << nxt):
+                    continue
+                new_mask = mask | (1 << nxt)
+                new_dist = dp[(mask, last)] + travel_matrix[nodes[last]][nodes[nxt]]
+                if new_dist < dp.get((new_mask, nxt), float("inf")):
+                    dp[(new_mask, nxt)] = new_dist
+                    parent[(new_mask, nxt)] = last
+
+    # Find the best final node (including return to start)
+    best_distance = float("inf")
+    best_last = -1
+    for i in range(n):
+        total = dp.get((full_mask, i), float("inf")) + travel_matrix[nodes[i]][start]
+        if total < best_distance:
+            best_distance = total
+            best_last = i
+
+    # Reconstruct the route by following parent pointers
+    route_indices: list[int] = []
+    mask = full_mask
+    current = best_last
+    while mask:
+        route_indices.append(current)
+        prev = parent.get((mask, current))
+        if prev is None:
+            break
+        mask ^= (1 << current)
+        current = prev
+
+    route_indices.reverse()
+    best_route = (start,) + tuple(nodes[i] for i in route_indices) + (start,)
+
+    return best_route, best_distance
+
+
 def find_optimal_route(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
 ) -> Tuple[Tuple[str, ...], float]:
@@ -79,4 +162,4 @@ def find_optimal_route(
         A tuple containing the route (including start at the beginning
         and end) and its total distance.
     """
-    return brute_force_tsp(start, destinations, travel_matrix)
+    return held_karp_tsp(start, destinations, travel_matrix)
