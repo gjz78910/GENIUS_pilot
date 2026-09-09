@@ -64,8 +64,8 @@ def _nearest_neighbor_2opt(
 ) -> Tuple[Tuple[str, ...], float]:
     """Nearest-neighbour construction followed by 2-opt improvement.
 
-    O(n²) construction + O(n² × passes) improvement. Used for large n where
-    Held-Karp becomes too expensive.
+    Uses full cost recomputation (not the delta shortcut) so that it is
+    correct for asymmetric travel matrices where d(A,B) != d(B,A).
     """
     dests: List[str] = list(destinations)
     n = len(dests)
@@ -83,32 +83,31 @@ def _nearest_neighbor_2opt(
     def d(a: str, b: str) -> float:
         return travel_matrix.get(a, {}).get(b, float("inf"))
 
-    def get_locs() -> List[str]:
-        return [start] + [dests[order[k]] for k in range(n)] + [start]
+    def locs_from(ord_: List[int]) -> List[str]:
+        return [start] + [dests[ord_[k]] for k in range(n)] + [start]
 
     def tour_cost(locs: List[str]) -> float:
-        return sum(d(locs[k], locs[k + 1]) for k in range(len(locs) - 1))
+        return sum(d(locs[k], locs[k + 1]) for k in range(n + 1))
 
-    # --- 2-opt improvement ---
+    current_cost = tour_cost(locs_from(order))
+
+    # --- 2-opt improvement: full cost comparison, correct for asymmetric TSP ---
     improved = True
     while improved:
         improved = False
-        locs = get_locs()
-        for i in range(1, n):
-            for j in range(i + 1, n + 1):
-                delta = (
-                    d(locs[i - 1], locs[j]) + d(locs[i], locs[j + 1])
-                    - d(locs[i - 1], locs[i]) - d(locs[j], locs[j + 1])
-                )
-                if delta < -1e-9:
-                    order[i - 1:j] = order[i - 1:j][::-1]
+        for i in range(n - 1):
+            for j in range(i + 2, n + 1):
+                new_order = order[:i] + order[i:j][::-1] + order[j:]
+                new_cost = tour_cost(locs_from(new_order))
+                if new_cost < current_cost - 1e-9:
+                    order = new_order
+                    current_cost = new_cost
                     improved = True
                     break
             if improved:
                 break
 
-    locs = get_locs()
-    return tuple(locs), tour_cost(locs)
+    return tuple(locs_from(order)), current_cost
 
 
 def find_optimal_route(
