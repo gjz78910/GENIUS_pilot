@@ -142,6 +142,8 @@ def generate_report(
                     "travel_time_minutes": 0.0,
                 })
 
+        job_records.sort(key=lambda r: r["job_time"])
+
         # Write CSV file
         file_path = os.path.join(output_dir, f"engineer_{engineer_id}_schedule.csv")
         with open(file_path, "w", newline="") as f:
