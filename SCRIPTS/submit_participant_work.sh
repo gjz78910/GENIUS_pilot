@@ -51,6 +51,12 @@ if [ ! -f "$system_info_dest" ] && [ -f "$runtime_dir/system_info.json" ]; then
     cp "$runtime_dir/system_info.json" "$system_info_dest" 2>/dev/null || true
 fi
 
+# Claude Code writes its own tool-call transcript (every AI-run command) to
+# ~/.claude/projects/, outside this repo checkout, so it needs an explicit
+# copy here or it never reaches DATA_COLLECTION and is lost with the VM.
+mkdir -p DATA_COLLECTION/claude_transcripts
+cp -a "$HOME"/.claude/projects/*/*.jsonl DATA_COLLECTION/claude_transcripts/ 2>/dev/null || true
+
 ./SCRIPTS/store_participant_work.sh "$PARTICIPANT_ID" "$SESSION_ID"
 store_status=$?
 
