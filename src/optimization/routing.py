@@ -143,10 +143,58 @@ def held_karp_tsp(
     return (start,) + tuple(path) + (start,), opt
 
 
+def nearest_neighbor_tsp(
+    start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> Tuple[Tuple[str, ...], float]:
+    """Solve TSP using a greedy nearest-neighbor heuristic.
+
+    O(n²) time — not optimal, but fast enough for large instances.
+
+    Parameters
+    ----------
+    start : str
+        The starting (and ending) location for the route.
+    destinations : Sequence[str]
+        A sequence of destination locations that must be visited exactly once.
+    travel_matrix : Dict[str, Dict[str, float]]
+        A dictionary representing the travel distance between locations.
+
+    Returns
+    -------
+    Tuple[Tuple[str, ...], float]
+        A tuple containing the route and its total travel distance.
+    """
+    if not destinations:
+        return (start, start), 0.0
+
+    unvisited = list(destinations)
+    route = [start]
+    total = 0.0
+    current = start
+
+    while unvisited:
+        nearest = min(unvisited, key=lambda loc: travel_matrix[current].get(loc, float("inf")))
+        total += travel_matrix[current][nearest]
+        route.append(nearest)
+        unvisited.remove(nearest)
+        current = nearest
+
+    total += travel_matrix[current][start]
+    route.append(start)
+    return tuple(route), total
+
+
+# Threshold below which exact Held-Karp is used; nearest-neighbor above it.
+_EXACT_ROUTING_THRESHOLD = 6
+
+
 def find_optimal_route(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
 ) -> Tuple[Tuple[str, ...], float]:
     """Find a route visiting all destinations and returning to start.
+
+    Uses exact Held-Karp for small instances and a nearest-neighbor heuristic
+    for larger ones to keep runtime tractable at scale.
 
     Parameters
     ----------
@@ -163,4 +211,6 @@ def find_optimal_route(
         A tuple containing the route (including start at the beginning
         and end) and its total distance.
     """
-    return held_karp_tsp(start, destinations, travel_matrix)
+    if len(destinations) <= _EXACT_ROUTING_THRESHOLD:
+        return held_karp_tsp(start, destinations, travel_matrix)
+    return nearest_neighbor_tsp(start, destinations, travel_matrix)
