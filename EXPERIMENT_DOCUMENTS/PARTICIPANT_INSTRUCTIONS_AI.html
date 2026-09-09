@@ -1404,7 +1404,48 @@ cd ~/GENIUS_pilot
     item._hintTimer = setTimeout(() => hint.classList.remove('show'), 1600);
   }
 
+  // ── CHECKLIST PERSISTENCE ──
+  // Checkbox state previously lived only in the DOM: any reload (accidental
+  // refresh, DCV reconnect, Chrome restart) silently wiped every checked
+  // box back to unchecked, with no warning. Persist to localStorage, keyed
+  // by each checkbox's position in document order (stable across reloads
+  // since the page content doesn't change during a session).
+  const CHECKLIST_STORAGE_KEY = 'genius_checklist_state_v1';
+
+  function saveChecklistState() {
+    const boxes = Array.from(document.querySelectorAll('.check-item input[type="checkbox"]'));
+    const state = boxes.map(cb => cb.checked);
+    try {
+      localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      // localStorage unavailable (private mode, quota, etc.) -- degrade to
+      // in-memory-only behavior rather than breaking the page.
+    }
+  }
+
+  function restoreChecklistState() {
+    let saved = null;
+    try {
+      saved = JSON.parse(localStorage.getItem(CHECKLIST_STORAGE_KEY) || 'null');
+    } catch (e) {
+      saved = null;
+    }
+    if (!Array.isArray(saved)) return;
+    const boxes = Array.from(document.querySelectorAll('.check-item input[type="checkbox"]'));
+    boxes.forEach((cb, i) => {
+      if (saved[i]) {
+        cb.checked = true;
+        cb.closest('.check-item').classList.add('checked');
+      }
+    });
+  }
+
   function initCheckboxes() {
+    // Restore BEFORE wiring locks/progress so both compute against the
+    // real, previously-saved state on first render -- not against a
+    // briefly-all-unchecked page that then jumps once restore runs.
+    restoreChecklistState();
+
     document.querySelectorAll('.check-item').forEach(item => {
       // The checkbox itself ignores clicks while disabled, so listen on the
       // wrapping label to catch "why won't this check" attempts and explain.
@@ -1420,6 +1461,7 @@ cd ~/GENIUS_pilot
         cb.closest('.check-item').classList.toggle('checked', cb.checked);
         updateLocks();
         updateProgress();
+        saveChecklistState();
       });
     });
     updateLocks();
