@@ -37,11 +37,20 @@ def assign_jobs(
         - A mapping from engineer ID to the list of jobs assigned to that engineer
         - A list of unassigned jobs
     """
-    # Initialise assignment mapping with empty lists for each engineer
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
-    for job in jobs:
+    def candidate_count(job: Job) -> int:
+        return sum(
+            1 for e in engineers
+            if all(s in e.skills for s in job.required_skills)
+        )
+
+    # Most constrained jobs first — prevents generalists being consumed by
+    # jobs that other engineers could have handled.
+    sorted_jobs = sorted(jobs, key=candidate_count)
+
+    for job in sorted_jobs:
         # Filter engineers who possess all required skills
         skilled_candidates: List[Engineer] = [
             engineer
@@ -53,30 +62,36 @@ def assign_jobs(
             unassigned.append(job)
             continue
 
-        # Sort by distance to find closest available engineer with capacity
-        def distance_fn(engineer: Engineer) -> float:
-            return travel_matrix.get(engineer.location, {}).get(job.location, float("inf"))
+        best_engineer: Engineer | None = None
+        best_score: tuple[float, float] = (float("inf"), float("inf"))
 
-        skilled_candidates.sort(key=distance_fn)
-        
-        # Try to assign to the closest engineer with available capacity
-        assigned = False
         for engineer in skilled_candidates:
             current_jobs = assignments[engineer.id]
             total_job_time = sum(j.length for j in current_jobs)
-            
-            # Estimate travel time if this job is added
-            test_jobs = current_jobs + [job]
-            job_locations = [j.location for j in test_jobs]
-            _, estimated_travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
-            
-            # Check whether total work fits within working hours
-            if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:
-                assignments[engineer.id].append(job)
-                assigned = True
-                break
-        
-        if not assigned:
+
+            # Pre-filter: skip routing if job time alone already exceeds capacity.
+            if total_job_time + job.length > engineer.working_hours:
+                continue
+
+            job_locations = [j.location for j in current_jobs + [job]]
+            _, travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
+
+            total_time = total_job_time + job.length + travel_time
+            if total_time > engineer.working_hours:
+                continue
+
+            # Primary: minimise travel (proximity). Secondary: minimise remaining
+            # capacity (tightest fit) so high-capacity engineers stay free for
+            # larger future jobs.
+            remaining = engineer.working_hours - total_time
+            score = (travel_time, remaining)
+            if score < best_score:
+                best_score = score
+                best_engineer = engineer
+
+        if best_engineer is not None:
+            assignments[best_engineer.id].append(job)
+        else:
             unassigned.append(job)
 
     return assignments, unassigned
