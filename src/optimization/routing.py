@@ -3,7 +3,7 @@
 The main entry point is `find_optimal_route`, which returns a route that:
 - starts at `start`
 - visits each destination once
-- returns to `start`
+- optionally returns to `start` (controlled by `return_to_start`)
 """
 
 from __future__ import annotations
@@ -11,72 +11,133 @@ from __future__ import annotations
 from itertools import permutations
 from typing import Sequence, Tuple, Dict
 
+_BRUTE_FORCE_THRESHOLD = 8
+
 
 def brute_force_tsp(
-    start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+    start: str,
+    destinations: Sequence[str],
+    travel_matrix: Dict[str, Dict[str, float]],
+    return_to_start: bool = True,
 ) -> Tuple[Tuple[str, ...], float]:
-    """Solve a travelling‑salesperson problem using brute force.
+    """Solve TSP using brute force. Only suitable for small inputs (≤8 destinations).
 
     Parameters
     ----------
     start : str
-        The starting (and ending) location for the route.
+        The starting location for the route.
     destinations : Sequence[str]
-        A sequence of destination locations that must be visited exactly once.
+        Destination locations that must be visited exactly once.
     travel_matrix : Dict[str, Dict[str, float]]
-        A dictionary representing the travel distance between locations.
+        Travel distance/time between locations.
+    return_to_start : bool
+        Whether to include the return leg back to start.
 
     Returns
     -------
     Tuple[Tuple[str, ...], float]
-        A tuple containing the best route (including the start location at
-        the beginning and end) and the total distance of that route.
+        Best route and its total distance.
     """
-    # If there are no destinations, return a trivial route with zero cost
     if not destinations:
-        return (start, start), 0.0
+        return ((start, start) if return_to_start else (start,)), 0.0
 
     best_distance: float = float("inf")
     best_route: Tuple[str, ...] | None = None
 
-    # Iterate over all possible permutations of the destinations
     for perm in permutations(destinations):
         distance: float = 0.0
         current = start
-        # travel from the start to the first destination
         for loc in perm:
-            # accumulate distance from current location to next
-            distance += travel_matrix[current][loc]
+            distance += travel_matrix.get(current, {}).get(loc, float("inf"))
             current = loc
-        # finally return to the start
-        distance += travel_matrix[current][start]
+        if return_to_start:
+            distance += travel_matrix.get(current, {}).get(start, float("inf"))
         if distance < best_distance:
             best_distance = distance
-            # Build the full route including the start and end
-            best_route = (start,) + perm + (start,)
+            route = (start,) + perm
+            best_route = route + (start,) if return_to_start else route
 
-    assert best_route is not None  # for type checker
+    assert best_route is not None
     return best_route, best_distance
 
 
-def find_optimal_route(
-    start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+def nearest_neighbor_tsp(
+    start: str,
+    destinations: Sequence[str],
+    travel_matrix: Dict[str, Dict[str, float]],
+    return_to_start: bool = True,
 ) -> Tuple[Tuple[str, ...], float]:
-    """Find a route visiting all destinations and returning to start.
+    """Solve TSP using a greedy nearest-neighbor heuristic. O(n²) — scales to large inputs.
 
     Parameters
     ----------
     start : str
-        The starting (and ending) location for the route.
+        The starting location for the route.
     destinations : Sequence[str]
-        A sequence of destination locations that must be visited exactly once.
+        Destination locations that must be visited exactly once.
     travel_matrix : Dict[str, Dict[str, float]]
-        A dictionary representing the travel distance between locations.
+        Travel distance/time between locations.
+    return_to_start : bool
+        Whether to include the return leg back to start.
 
     Returns
     -------
     Tuple[Tuple[str, ...], float]
-        A tuple containing the route (including start at the beginning
-        and end) and its total distance.
+        Heuristic route and its total distance.
     """
-    return brute_force_tsp(start, destinations, travel_matrix)
+    if not destinations:
+        return ((start, start) if return_to_start else (start,)), 0.0
+
+    unvisited = list(destinations)
+    route = [start]
+    total: float = 0.0
+    current = start
+
+    while unvisited:
+        next_loc = min(
+            unvisited,
+            key=lambda loc: travel_matrix.get(current, {}).get(loc, float("inf")),
+        )
+        total += travel_matrix.get(current, {}).get(next_loc, float("inf"))
+        current = next_loc
+        route.append(current)
+        unvisited.remove(current)
+
+    if return_to_start:
+        total += travel_matrix.get(current, {}).get(start, float("inf"))
+        route.append(start)
+
+    return tuple(route), total
+
+
+def find_optimal_route(
+    start: str,
+    destinations: Sequence[str],
+    travel_matrix: Dict[str, Dict[str, float]],
+    return_to_start: bool = True,
+) -> Tuple[Tuple[str, ...], float]:
+    """Find a route visiting all destinations, optionally returning to start.
+
+    Uses brute-force for small inputs (≤8 destinations) and nearest-neighbor
+    heuristic for larger ones.
+
+    Parameters
+    ----------
+    start : str
+        The starting location for the route.
+    destinations : Sequence[str]
+        Destination locations that must be visited exactly once.
+    travel_matrix : Dict[str, Dict[str, float]]
+        Travel distance/time between locations.
+    return_to_start : bool
+        Whether to include the return leg back to start. Set to False when
+        estimating one-way working-day travel cost.
+
+    Returns
+    -------
+    Tuple[Tuple[str, ...], float]
+        Route and its total distance.
+    """
+    if len(destinations) <= _BRUTE_FORCE_THRESHOLD:
+        return brute_force_tsp(start, destinations, travel_matrix, return_to_start)
+    return nearest_neighbor_tsp(start, destinations, travel_matrix, return_to_start)

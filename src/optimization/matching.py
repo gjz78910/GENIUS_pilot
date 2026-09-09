@@ -11,7 +11,7 @@ from typing import Dict, List
 
 from src.models.engineer import Engineer
 from src.models.job import Job
-from src.optimization.routing import find_optimal_route
+from src.optimization.routing import nearest_neighbor_tsp
 
 
 def assign_jobs(
@@ -37,45 +37,56 @@ def assign_jobs(
         - A mapping from engineer ID to the list of jobs assigned to that engineer
         - A list of unassigned jobs
     """
-    # Initialise assignment mapping with empty lists for each engineer
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
-    for job in jobs:
-        # Filter engineers who possess all required skills
+    # Process most-constrained jobs first (fewest capable engineers) to avoid
+    # rare-skill jobs being left unassigned because all capable engineers filled up.
+    def skill_match_count(job: Job) -> int:
+        return sum(
+            1 for e in engineers
+            if all(s in e.skills for s in job.required_skills)
+        )
+
+    sorted_jobs = sorted(jobs, key=skill_match_count)
+
+    for job in sorted_jobs:
         skilled_candidates: List[Engineer] = [
             engineer
             for engineer in engineers
             if all(req_skill in engineer.skills for req_skill in job.required_skills)
         ]
         if not skilled_candidates:
-            # No engineer has the required skills; mark as unassigned
             unassigned.append(job)
             continue
 
-        # Sort by distance to find closest available engineer with capacity
+        # Sort by direct distance to the job location as a first-pass proximity filter
         def distance_fn(engineer: Engineer) -> float:
             return travel_matrix.get(engineer.location, {}).get(job.location, float("inf"))
 
         skilled_candidates.sort(key=distance_fn)
-        
-        # Try to assign to the closest engineer with available capacity
+
         assigned = False
         for engineer in skilled_candidates:
             current_jobs = assignments[engineer.id]
             total_job_time = sum(j.length for j in current_jobs)
-            
-            # Estimate travel time if this job is added
-            test_jobs = current_jobs + [job]
-            job_locations = [j.location for j in test_jobs]
-            _, estimated_travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
-            
-            # Check whether total work fits within working hours
+
+            # Cheap pre-check: if job time alone won't fit, skip the expensive TSP call
+            if total_job_time + job.length > engineer.working_hours:
+                continue
+
+            # One-way travel estimate: the working day ends at the last job,
+            # not back at the engineer's base, so return_to_start=False.
+            test_locations = [j.location for j in current_jobs] + [job.location]
+            _, estimated_travel_time = nearest_neighbor_tsp(
+                engineer.location, test_locations, travel_matrix, return_to_start=False
+            )
+
             if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:
                 assignments[engineer.id].append(job)
                 assigned = True
                 break
-        
+
         if not assigned:
             unassigned.append(job)
 
