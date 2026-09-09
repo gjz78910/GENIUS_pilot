@@ -41,7 +41,15 @@ def assign_jobs(
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
-    for job in jobs:
+    # Process jobs with fewer qualified engineers first so exclusive-skill jobs
+    # are not blocked by engineers who could have handled a shared-skill job instead.
+    def _num_skilled(job: Job) -> int:
+        return sum(
+            1 for e in engineers
+            if all(s in e.skills for s in job.required_skills)
+        )
+
+    for job in sorted(jobs, key=_num_skilled):
         # Filter engineers who possess all required skills
         skilled_candidates: List[Engineer] = [
             engineer
@@ -53,30 +61,28 @@ def assign_jobs(
             unassigned.append(job)
             continue
 
-        # Sort by distance to find closest available engineer with capacity
-        def distance_fn(engineer: Engineer) -> float:
-            return travel_matrix.get(engineer.location, {}).get(job.location, float("inf"))
+        # Score every qualified candidate and pick the best fit with available capacity.
+        # Score = estimated_travel_time_with_job + current_job_load (both in hours).
+        # This balances travel efficiency against workload distribution: an engineer
+        # who is already heavily loaded is penalised even if they are geographically close.
+        best_engineer: Engineer | None = None
+        best_score: float = float("inf")
 
-        skilled_candidates.sort(key=distance_fn)
-        
-        # Try to assign to the closest engineer with available capacity
-        assigned = False
         for engineer in skilled_candidates:
             current_jobs = assignments[engineer.id]
-            total_job_time = sum(j.length for j in current_jobs)
-            
-            # Estimate travel time if this job is added
-            test_jobs = current_jobs + [job]
-            job_locations = [j.location for j in test_jobs]
+            current_load = sum(j.length for j in current_jobs)
+            job_locations = [j.location for j in current_jobs] + [job.location]
             _, estimated_travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
-            
-            # Check whether total work fits within working hours
-            if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:
-                assignments[engineer.id].append(job)
-                assigned = True
-                break
-        
-        if not assigned:
+
+            if current_load + job.length + estimated_travel_time <= engineer.working_hours:
+                score = estimated_travel_time + current_load
+                if score < best_score:
+                    best_score = score
+                    best_engineer = engineer
+
+        if best_engineer is not None:
+            assignments[best_engineer.id].append(job)
+        else:
             unassigned.append(job)
 
     return assignments, unassigned

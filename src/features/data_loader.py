@@ -9,6 +9,7 @@ Expected top-level keys:
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
 from src.models.engineer import Engineer
@@ -69,6 +70,20 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
             if not isinstance(time, (int, float)) or time < 0:
                 raise ValueError(f"travel_matrix[{source}][{dest}] must be a non-negative number")
 
+    # Diagonal must be zero (travel from a location to itself)
+    for loc in travel_matrix:
+        if loc in travel_matrix[loc] and travel_matrix[loc][loc] != 0.0:
+            raise ValueError(f"travel_matrix diagonal must be 0.0, got {travel_matrix[loc][loc]} for '{loc}'")
+
+    # Matrix must be symmetric
+    for source, destinations in travel_matrix.items():
+        for dest, time in destinations.items():
+            reverse = travel_matrix.get(dest, {}).get(source)
+            if reverse is not None and abs(time - reverse) > 1e-9:
+                raise ValueError(
+                    f"travel_matrix is not symmetric: [{source}][{dest}]={time} != [{dest}][{source}]={reverse}"
+                )
+
     # Load engineers
     engineers = []
     engineer_ids = set()
@@ -93,12 +108,18 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         if location not in all_locations:
             raise ValueError(f"Engineer location '{location}' not found in travel_matrix")
 
+        working_hours = e_data.get("working_hours", 8.0)
+        if not isinstance(working_hours, (int, float)) or working_hours <= 0 or working_hours > 24:
+            raise ValueError(
+                f"Engineer '{e_data['name']}' working_hours must be > 0 and <= 24, got {working_hours}"
+            )
+
         engineer = Engineer(
             id=eng_id,
             name=e_data["name"],
             location=location,
             skills=e_data.get("skills", []),
-            working_hours=e_data.get("working_hours", 8.0),
+            working_hours=working_hours,
         )
         engineers.append(engineer)
 
@@ -123,6 +144,14 @@ def load_data(file_path: str) -> Tuple[List[Engineer], List[Job], Dict[str, Dict
         job_ids.add(job_id)
 
         location = j_data["location"]
+        if location not in all_locations:
+            raise ValueError(f"Job {job_id} location '{location}' not found in travel_matrix")
+
+        time_str = j_data["time"]
+        try:
+            datetime.strptime(time_str, "%H:%M")
+        except (ValueError, TypeError):
+            raise ValueError(f"Job {job_id} has invalid time format '{time_str}'; expected HH:MM (00-23)")
 
         job = Job(
             id=job_id,
