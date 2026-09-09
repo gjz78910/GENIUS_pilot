@@ -11,7 +11,33 @@ from typing import Dict, List
 
 from src.models.engineer import Engineer
 from src.models.job import Job
-from src.optimization.routing import find_optimal_route
+
+
+def _nn_travel_estimate(
+    start: str, locations: List[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> float:
+    """Nearest-neighbour travel estimate — O(n²), used for capacity checks."""
+    if not locations:
+        return 0.0
+    n = len(locations)
+    visited = [False] * n
+    current = start
+    total = 0.0
+    for _ in range(n):
+        row = travel_matrix.get(current, {})
+        best_d = float("inf")
+        best_i = 0
+        for i in range(n):
+            if not visited[i]:
+                d = row.get(locations[i], float("inf"))
+                if d < best_d:
+                    best_d = d
+                    best_i = i
+        total += best_d
+        visited[best_i] = True
+        current = locations[best_i]
+    total += travel_matrix.get(current, {}).get(start, 0.0)
+    return total
 
 
 def assign_jobs(
@@ -37,45 +63,55 @@ def assign_jobs(
         - A mapping from engineer ID to the list of jobs assigned to that engineer
         - A list of unassigned jobs
     """
-    # Initialise assignment mapping with empty lists for each engineer
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
-    for job in jobs:
-        # Filter engineers who possess all required skills
+    # Cached accumulated job time — avoids O(n) sum recomputation per candidate.
+    job_time: Dict[int, float] = {e.id: 0.0 for e in engineers}
+
+    # Frozensets for O(1) skill membership tests instead of O(n) list scan.
+    eng_skills: Dict[int, frozenset] = {e.id: frozenset(e.skills) for e in engineers}
+
+    def qualified(e: Engineer, req) -> bool:
+        return all(s in eng_skills[e.id] for s in req)
+
+    # Process exclusive-skill jobs first so scarce engineers aren't filled with
+    # shared-skill work before the only job they can do gets a chance.
+    jobs_sorted = sorted(
+        jobs,
+        key=lambda j: sum(1 for e in engineers if qualified(e, j.required_skills)),
+    )
+
+    for job in jobs_sorted:
+        req = job.required_skills
         skilled_candidates: List[Engineer] = [
-            engineer
-            for engineer in engineers
-            if all(req_skill in engineer.skills for req_skill in job.required_skills)
+            e for e in engineers if qualified(e, req)
         ]
         if not skilled_candidates:
-            # No engineer has the required skills; mark as unassigned
             unassigned.append(job)
             continue
 
-        # Sort by distance to find closest available engineer with capacity
-        def distance_fn(engineer: Engineer) -> float:
-            return travel_matrix.get(engineer.location, {}).get(job.location, float("inf"))
+        skilled_candidates.sort(
+            key=lambda e: travel_matrix.get(e.location, {}).get(job.location, float("inf"))
+        )
 
-        skilled_candidates.sort(key=distance_fn)
-        
-        # Try to assign to the closest engineer with available capacity
         assigned = False
         for engineer in skilled_candidates:
-            current_jobs = assignments[engineer.id]
-            total_job_time = sum(j.length for j in current_jobs)
-            
-            # Estimate travel time if this job is added
-            test_jobs = current_jobs + [job]
-            job_locations = [j.location for j in test_jobs]
-            _, estimated_travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
-            
-            # Check whether total work fits within working hours
-            if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:
-                assignments[engineer.id].append(job)
+            eid = engineer.id
+            # Skip expensive travel estimate when job time alone won't fit.
+            if job_time[eid] + job.length > engineer.working_hours:
+                continue
+
+            current_locs = [j.location for j in assignments[eid]] + [job.location]
+            estimated_travel = _nn_travel_estimate(
+                engineer.location, current_locs, travel_matrix
+            )
+            if job_time[eid] + job.length + estimated_travel <= engineer.working_hours:
+                assignments[eid].append(job)
+                job_time[eid] += job.length
                 assigned = True
                 break
-        
+
         if not assigned:
             unassigned.append(job)
 

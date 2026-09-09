@@ -9,7 +9,7 @@ The main entry point is `find_optimal_route`, which returns a route that:
 from __future__ import annotations
 
 from itertools import permutations
-from typing import Sequence, Tuple, Dict
+from typing import List, Sequence, Tuple, Dict
 
 
 def brute_force_tsp(
@@ -59,6 +59,58 @@ def brute_force_tsp(
     return best_route, best_distance
 
 
+def _nearest_neighbor_2opt(
+    start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> Tuple[Tuple[str, ...], float]:
+    """Nearest-neighbour construction followed by 2-opt improvement.
+
+    O(n²) construction + O(n² × passes) improvement. Used for large n where
+    Held-Karp becomes too expensive.
+    """
+    dests: List[str] = list(destinations)
+    n = len(dests)
+
+    # --- nearest-neighbour greedy construction ---
+    unvisited: set[int] = set(range(n))
+    cur = start
+    order: List[int] = []
+    while unvisited:
+        best = min(unvisited, key=lambda i: travel_matrix.get(cur, {}).get(dests[i], float("inf")))
+        order.append(best)
+        unvisited.discard(best)
+        cur = dests[best]
+
+    def d(a: str, b: str) -> float:
+        return travel_matrix.get(a, {}).get(b, float("inf"))
+
+    def get_locs() -> List[str]:
+        return [start] + [dests[order[k]] for k in range(n)] + [start]
+
+    def tour_cost(locs: List[str]) -> float:
+        return sum(d(locs[k], locs[k + 1]) for k in range(len(locs) - 1))
+
+    # --- 2-opt improvement ---
+    improved = True
+    while improved:
+        improved = False
+        locs = get_locs()
+        for i in range(1, n):
+            for j in range(i + 1, n + 1):
+                delta = (
+                    d(locs[i - 1], locs[j]) + d(locs[i], locs[j + 1])
+                    - d(locs[i - 1], locs[i]) - d(locs[j], locs[j + 1])
+                )
+                if delta < -1e-9:
+                    order[i - 1:j] = order[i - 1:j][::-1]
+                    improved = True
+                    break
+            if improved:
+                break
+
+    locs = get_locs()
+    return tuple(locs), tour_cost(locs)
+
+
 def find_optimal_route(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
 ) -> Tuple[Tuple[str, ...], float]:
@@ -79,4 +131,16 @@ def find_optimal_route(
         A tuple containing the route (including start at the beginning
         and end) and its total distance.
     """
-    return brute_force_tsp(start, destinations, travel_matrix)
+    if not destinations:
+        return (start, start), 0.0
+
+    dests = list(destinations)
+    n = len(dests)
+
+    if n <= 6:
+        return brute_force_tsp(start, destinations, travel_matrix)
+
+    # For n > 6, Held-Karp grows as O(n² × 2^n) which becomes prohibitive when
+    # routing hundreds of engineers each with 10-20 jobs. nn+2opt is O(n²) per
+    # pass and finds near-optimal routes in microseconds.
+    return _nearest_neighbor_2opt(start, destinations, travel_matrix)
