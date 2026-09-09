@@ -11,7 +11,19 @@ from typing import Dict, List
 
 from src.models.engineer import Engineer
 from src.models.job import Job
-from src.optimization.routing import find_optimal_route
+
+
+def _sequential_travel(
+    start: str, locations: List[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> float:
+    """Cheap O(n) travel estimate: drive through locations in given order and return."""
+    if not locations:
+        return 0.0
+    total = travel_matrix.get(start, {}).get(locations[0], float("inf"))
+    for i in range(len(locations) - 1):
+        total += travel_matrix.get(locations[i], {}).get(locations[i + 1], float("inf"))
+    total += travel_matrix.get(locations[-1], {}).get(start, float("inf"))
+    return total
 
 
 def assign_jobs(
@@ -27,8 +39,6 @@ def assign_jobs(
         The jobs that need to be assigned.
     travel_matrix : Dict[str, Dict[str, float]]
         A dictionary representing the travel time (in hours) between locations.
-        The outer keys are starting locations and the inner keys are
-        destination locations.
 
     Returns
     -------
@@ -37,45 +47,51 @@ def assign_jobs(
         - A mapping from engineer ID to the list of jobs assigned to that engineer
         - A list of unassigned jobs
     """
-    # Initialise assignment mapping with empty lists for each engineer
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
-    for job in jobs:
-        # Filter engineers who possess all required skills
+    # Process most-constrained jobs first: jobs with fewer capable engineers
+    # get priority so exclusive engineers aren't pre-filled by shared-skill jobs.
+    def _num_capable(job: Job) -> int:
+        return sum(
+            1 for e in engineers
+            if all(s in e.skills for s in job.required_skills)
+        )
+
+    sorted_jobs = sorted(jobs, key=_num_capable)
+
+    for job in sorted_jobs:
         skilled_candidates: List[Engineer] = [
             engineer
             for engineer in engineers
             if all(req_skill in engineer.skills for req_skill in job.required_skills)
         ]
         if not skilled_candidates:
-            # No engineer has the required skills; mark as unassigned
             unassigned.append(job)
             continue
 
-        # Sort by distance to find closest available engineer with capacity
-        def distance_fn(engineer: Engineer) -> float:
-            return travel_matrix.get(engineer.location, {}).get(job.location, float("inf"))
+        skilled_candidates.sort(
+            key=lambda e: travel_matrix.get(e.location, {}).get(job.location, float("inf"))
+        )
 
-        skilled_candidates.sort(key=distance_fn)
-        
-        # Try to assign to the closest engineer with available capacity
         assigned = False
         for engineer in skilled_candidates:
             current_jobs = assignments[engineer.id]
             total_job_time = sum(j.length for j in current_jobs)
-            
-            # Estimate travel time if this job is added
-            test_jobs = current_jobs + [job]
-            job_locations = [j.location for j in test_jobs]
-            _, estimated_travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
-            
-            # Check whether total work fits within working hours
+
+            # Use a sequential travel estimate instead of running full TSP on every
+            # candidate — this is O(n) vs O(n!) and avoids expensive routing calls
+            # during the assignment loop.
+            job_locations = [j.location for j in current_jobs] + [job.location]
+            estimated_travel_time = _sequential_travel(
+                engineer.location, job_locations, travel_matrix
+            )
+
             if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:
                 assignments[engineer.id].append(job)
                 assigned = True
                 break
-        
+
         if not assigned:
             unassigned.append(job)
 
