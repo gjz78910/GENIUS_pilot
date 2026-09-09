@@ -144,6 +144,19 @@ def generate_report(
 
         job_records.sort(key=lambda r: r["job_time"])
 
+        total_duration = sum(r["job_duration_minutes"] for r in job_records)
+        total_travel = sum(r["travel_time_minutes"] for r in job_records)
+        job_records.append({
+            "job_id": "TOTAL",
+            "job_location": "",
+            "job_time": "",
+            "required_skills": "",
+            "job_start_time_minutes": "",
+            "job_end_time_minutes": "",
+            "job_duration_minutes": total_duration,
+            "travel_time_minutes": total_travel,
+        })
+
         # Write CSV file
         file_path = os.path.join(output_dir, f"engineer_{engineer_id}_schedule.csv")
         with open(file_path, "w", newline="") as f:
@@ -165,8 +178,10 @@ def generate_report(
             )
             writer.writeheader()
 
+            def _fmt(v):
+                return round(v, 2) if isinstance(v, float) else v
+
             for record in job_records:
-                total_time = 0.0
                 writer.writerow({
                     "engineer_id": engineer_id,
                     "engineer_name": engineer.name,
@@ -174,9 +189,9 @@ def generate_report(
                     "job_location": record["job_location"],
                     "job_time": record["job_time"],
                     "required_skills": record["required_skills"],
-                    "job_start_time_minutes": round(record["job_start_time_minutes"], 2),
-                    "job_end_time_minutes": round(record["job_end_time_minutes"], 2),
-                    "job_duration_minutes": round(record["job_duration_minutes"], 2),
-                    "travel_time_minutes": round(record["travel_time_minutes"], 2),
-                    "total_time_minutes": round(total_time, 2),
+                    "job_start_time_minutes": _fmt(record["job_start_time_minutes"]),
+                    "job_end_time_minutes": _fmt(record["job_end_time_minutes"]),
+                    "job_duration_minutes": _fmt(record["job_duration_minutes"]),
+                    "travel_time_minutes": _fmt(record["travel_time_minutes"]),
+                    "total_time_minutes": _fmt(record["job_duration_minutes"] + record["travel_time_minutes"]) if isinstance(record["job_duration_minutes"], float) else "",
                 })
