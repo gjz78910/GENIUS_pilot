@@ -39,6 +39,7 @@ def assign_jobs(
     """
     # Initialise assignment mapping with empty lists for each engineer
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
+    job_time: Dict[int, float] = {e.id: 0.0 for e in engineers}
     unassigned: List[Job] = []
 
     for job in jobs:
@@ -53,26 +54,25 @@ def assign_jobs(
             unassigned.append(job)
             continue
 
-        # Sort by distance to find closest available engineer with capacity
-        def distance_fn(engineer: Engineer) -> float:
-            return travel_matrix.get(engineer.location, {}).get(job.location, float("inf"))
+        skilled_candidates.sort(
+            key=lambda e: travel_matrix.get(e.location, {}).get(job.location, float("inf"))
+        )
 
-        skilled_candidates.sort(key=distance_fn)
-        
         # Try to assign to the closest engineer with available capacity
         assigned = False
         for engineer in skilled_candidates:
             current_jobs = assignments[engineer.id]
-            total_job_time = sum(j.length for j in current_jobs)
-            
+            total_job_time = job_time[engineer.id]
+
             # Estimate travel time if this job is added
             test_jobs = current_jobs + [job]
             job_locations = [j.location for j in test_jobs]
             _, estimated_travel_time = find_optimal_route(engineer.location, job_locations, travel_matrix)
-            
+
             # Check whether total work fits within working hours
             if total_job_time + job.length + estimated_travel_time <= engineer.working_hours:
                 assignments[engineer.id].append(job)
+                job_time[engineer.id] += job.length
                 assigned = True
                 break
         
