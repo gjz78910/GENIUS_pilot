@@ -142,10 +142,52 @@ def held_karp_tsp(
     return best_route, best_distance
 
 
+def nearest_neighbor_tsp(
+    start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> Tuple[Tuple[str, ...], float]:
+    """Solve TSP using the nearest-neighbor heuristic in O(n^2) time.
+
+    Not optimal, but fast enough for capacity estimation during matching
+    and as a fallback for large destination sets.
+    """
+    if not destinations:
+        return (start, start), 0.0
+
+    unvisited = list(destinations)
+    route = [start]
+    total_distance = 0.0
+    current = start
+
+    while unvisited:
+        nearest = min(unvisited, key=lambda loc: travel_matrix[current][loc])
+        total_distance += travel_matrix[current][nearest]
+        route.append(nearest)
+        unvisited.remove(nearest)
+        current = nearest
+
+    total_distance += travel_matrix[current][start]
+    route.append(start)
+    return tuple(route), total_distance
+
+
+_HELD_KARP_THRESHOLD = 10
+
+
+def estimate_route_cost(
+    start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> float:
+    """Return a fast travel-time estimate using nearest-neighbor. O(n^2)."""
+    _, distance = nearest_neighbor_tsp(start, destinations, travel_matrix)
+    return distance
+
+
 def find_optimal_route(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
 ) -> Tuple[Tuple[str, ...], float]:
     """Find a route visiting all destinations and returning to start.
+
+    Uses Held-Karp (exact) for small destination sets and falls back to
+    nearest-neighbor for larger ones to guarantee bounded runtime.
 
     Parameters
     ----------
@@ -162,4 +204,6 @@ def find_optimal_route(
         A tuple containing the route (including start at the beginning
         and end) and its total distance.
     """
-    return held_karp_tsp(start, destinations, travel_matrix)
+    if len(destinations) <= _HELD_KARP_THRESHOLD:
+        return held_karp_tsp(start, destinations, travel_matrix)
+    return nearest_neighbor_tsp(start, destinations, travel_matrix)
