@@ -70,8 +70,10 @@ class TestScheduler(unittest.TestCase):
             self.assertEqual(route[0], engineer.location)
             self.assertEqual(route[-1], engineer.location)
             
-            # Route should contain exactly len(assigned_jobs) + 2 points (start and end)
-            self.assertEqual(len(route), len(assigned_jobs) + 2)
+            # Route visits each unique job location once, plus home at start and end.
+            # Multiple jobs at the same location share one route stop.
+            unique_job_locations = len(set(j.location for j in assigned_jobs))
+            self.assertEqual(len(route), unique_job_locations + 2)
             
             # Distance should be non-negative
             self.assertGreaterEqual(distance, 0.0)

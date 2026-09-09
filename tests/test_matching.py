@@ -135,17 +135,17 @@ class TestMatching(unittest.TestCase):
         Requirement 3: Travel time is included in capacity calculations.
         Uses optimized TSP route for accurate estimation.
         """
-        engineers = [Engineer(id=1, name="Alice", location="A", skills=["repair"], working_hours=3.0)]
+        engineers = [Engineer(id=1, name="Alice", location="A", skills=["repair"], working_hours=4.0)]
         jobs = [
             Job(id=1, location="C", time="09:00", required_skills=["repair"], length=1.5),
             Job(id=2, location="C", time="10:00", required_skills=["repair"], length=1.5),
         ]
-        
+
         assignments, unassigned = assign_jobs(engineers, jobs, self.travel_matrix)
-        
-        # With travel time from A to C (1.0h each way), only one job should fit
-        # Job 1: 1.5h + ~2.0h travel = ~3.5h (exceeds 3.0h with both jobs)
-        self.assertLessEqual(len(assignments[1]), 1)
+
+        # Travel A→C→A = 2.0h. One job: 1.5h work + 2.0h travel = 3.5h ≤ 4.0h (fits).
+        # Two jobs: 3.0h work + 2.0h travel = 5.0h > 4.0h (does not fit).
+        self.assertEqual(len(assignments[1]), 1)
 
     # ========================================
     # REQUIREMENT 4: Overflow Handling
