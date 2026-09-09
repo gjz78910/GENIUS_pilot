@@ -50,10 +50,15 @@ def _calculate_job_timings(
 
         # Process jobs at this location
         if current_loc in location_to_jobs:
+            first_at_stop = True
             for job in location_to_jobs[current_loc]:
                 if job.id in processed_jobs:
                     continue  # Skip if already processed
                 processed_jobs.add(job.id)
+
+                # Travel applies only to the first job at this route stop
+                job_travel = travel_minutes if first_at_stop else 0.0
+                first_at_stop = False
 
                 job_start_minutes = current_time_minutes
                 job_duration_minutes = job.length * 60.0
@@ -67,7 +72,7 @@ def _calculate_job_timings(
                     "job_start_time_minutes": job_start_minutes,
                     "job_end_time_minutes": job_end_minutes,
                     "job_duration_minutes": job_duration_minutes,
-                    "travel_time_minutes": 0.0,
+                    "travel_time_minutes": job_travel,
                 })
 
                 # Update current time after job completion
@@ -163,8 +168,19 @@ def generate_report(
             )
             writer.writeheader()
 
+            job_records.sort(key=lambda r: r["job_time"])
+
+            total_duration = 0.0
+            total_travel = 0.0
+            total_time = 0.0
+
             for record in job_records:
-                total_time = 0.0
+                row_duration = record["job_duration_minutes"]
+                row_travel = record["travel_time_minutes"]
+                row_total = row_duration + row_travel
+                total_duration += row_duration
+                total_travel += row_travel
+                total_time += row_total
                 writer.writerow({
                     "engineer_id": engineer_id,
                     "engineer_name": engineer.name,
@@ -174,7 +190,21 @@ def generate_report(
                     "required_skills": record["required_skills"],
                     "job_start_time_minutes": round(record["job_start_time_minutes"], 2),
                     "job_end_time_minutes": round(record["job_end_time_minutes"], 2),
-                    "job_duration_minutes": round(record["job_duration_minutes"], 2),
-                    "travel_time_minutes": round(record["travel_time_minutes"], 2),
-                    "total_time_minutes": round(total_time, 2),
+                    "job_duration_minutes": round(row_duration, 2),
+                    "travel_time_minutes": round(row_travel, 2),
+                    "total_time_minutes": round(row_total, 2),
                 })
+
+            writer.writerow({
+                "engineer_id": engineer_id,
+                "engineer_name": engineer.name,
+                "job_id": "TOTAL",
+                "job_location": "",
+                "job_time": "",
+                "required_skills": "",
+                "job_start_time_minutes": "",
+                "job_end_time_minutes": "",
+                "job_duration_minutes": round(total_duration, 2),
+                "travel_time_minutes": round(total_travel, 2),
+                "total_time_minutes": round(total_time, 2),
+            })
