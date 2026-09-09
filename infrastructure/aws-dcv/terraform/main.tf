@@ -24,12 +24,26 @@ data "aws_subnets" "selected" {
 locals {
   selected_subnet_id = var.subnet_id != "" ? var.subnet_id : data.aws_subnets.selected.ids[0]
   auto_stop_minutes  = floor(var.auto_stop_hours * 60)
+
+  # Hostname baked into user_data at instance creation time. Only possible
+  # for sslip mode when using a dedicated Elastic IP, because that IP is
+  # known at plan time (the EIP is allocated independently of the instance).
+  # Without a dedicated EIP, the instance's own public IP is only known
+  # *after* it is created, so referencing it here would be a circular
+  # dependency (the instance's user_data would depend on its own IP). In
+  # that case this is left empty and the boot script discovers its own
+  # public IP via the instance metadata service and builds its own hostname
+  # -- see user_data.sh.tftpl and the `self_discover_hostname` flag below.
   participant_hostnames = {
     for participant_id, participant in local.participants :
-    participant_id => var.dynamic_dns_provider == "sslip" ? "${var.dcv_hostname_prefix}-${replace(aws_eip.participant[participant_id].public_ip, ".", "-")}.sslip.io" : lookup(
+    participant_id => var.dynamic_dns_provider != "sslip" ? lookup(
       var.dcv_hostname_overrides,
       participant_id,
       "${var.dcv_hostname_prefix}-${replace(lower(participant.participant_id), "_", "-")}.${var.dcv_hostname_domain}"
+      ) : (
+      participant.use_dedicated_eip ?
+      "${var.dcv_hostname_prefix}-${replace(aws_eip.participant[participant_id].public_ip, ".", "-")}.sslip.io" :
+      ""
     )
   }
 }
@@ -120,7 +134,9 @@ resource "aws_vpc_security_group_egress_rule" "all" {
 }
 
 resource "aws_eip" "participant" {
-  for_each = var.enable_trusted_dcv_cert && var.dynamic_dns_provider == "sslip" ? local.participants : {}
+  for_each = var.enable_trusted_dcv_cert && var.dynamic_dns_provider == "sslip" ? {
+    for participant_id, participant in local.participants : participant_id => participant if participant.use_dedicated_eip
+  } : {}
 
   domain = "vpc"
   tags   = merge(local.common_tags, { Name = "${var.project_name}-${each.value.participant_id}" })
@@ -272,8 +288,10 @@ resource "aws_instance" "participant" {
     dynamic_dns_provider         = var.dynamic_dns_provider
     duckdns_token                = var.duckdns_token
     dcv_hostname                 = local.participant_hostnames[each.key]
-    duckdns_domain               = trimsuffix(local.participant_hostnames[each.key], ".${var.dcv_hostname_domain}")
-    expected_public_ip           = var.dynamic_dns_provider == "sslip" ? aws_eip.participant[each.key].public_ip : ""
+    duckdns_domain               = var.dynamic_dns_provider == "duckdns" ? trimsuffix(local.participant_hostnames[each.key], ".${var.dcv_hostname_domain}") : ""
+    expected_public_ip           = var.dynamic_dns_provider == "sslip" && each.value.use_dedicated_eip ? aws_eip.participant[each.key].public_ip : ""
+    self_discover_hostname       = var.dynamic_dns_provider == "sslip" && !each.value.use_dedicated_eip
+    dcv_hostname_prefix          = var.dcv_hostname_prefix
     letsencrypt_email            = var.letsencrypt_email
   }))
 
@@ -335,6 +353,7 @@ resource "aws_ssm_document" "end_session" {
           timeoutSeconds = "7200"
           runCommand = split("\n", templatefile("${path.module}/templates/end_session.sh.tftpl", {
             artifact_bucket = aws_s3_bucket.artifacts.bucket
+            aws_region      = var.aws_region
           }))
         }
       }

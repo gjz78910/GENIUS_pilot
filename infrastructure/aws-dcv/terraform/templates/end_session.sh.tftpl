@@ -4,6 +4,8 @@ set -euo pipefail
 PARTICIPANT_ID="{{ participantId }}"
 SESSION_ID="{{ sessionId }}"
 ARTIFACT_BUCKET="${artifact_bucket}"
+AWS_REGION="${aws_region}"
+export AWS_REGION
 PROJECT_DIR="/home/participant/GENIUS_pilot"
 RUNTIME_DIR="/home/participant/genius-runtime"
 ARCHIVE="/tmp/genius-$PARTICIPANT_ID-$SESSION_ID-$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
