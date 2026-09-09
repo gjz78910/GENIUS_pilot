@@ -41,7 +41,17 @@ def assign_jobs(
     assignments: Dict[int, List[Job]] = {e.id: [] for e in engineers}
     unassigned: List[Job] = []
 
-    for job in jobs:
+    def _skilled_count(job: Job) -> int:
+        return sum(
+            1 for e in engineers
+            if all(s in e.skills for s in job.required_skills)
+        )
+
+    # Process most-constrained jobs first: jobs only one engineer can do are
+    # assigned before shared-skill jobs can consume that engineer's capacity.
+    ordered_jobs = sorted(jobs, key=_skilled_count)
+
+    for job in ordered_jobs:
         # Filter engineers who possess all required skills
         skilled_candidates: List[Engineer] = [
             engineer
@@ -53,11 +63,16 @@ def assign_jobs(
             unassigned.append(job)
             continue
 
-        # Sort by distance to find closest available engineer with capacity
-        def distance_fn(engineer: Engineer) -> float:
-            return travel_matrix.get(engineer.location, {}).get(job.location, float("inf"))
+        # Sort by travel distance first (minimises travel time), then by most
+        # remaining capacity as a tiebreaker (avoids funnelling equal-distance
+        # jobs to an already-busy engineer).
+        def assignment_key(engineer: Engineer) -> tuple:
+            dist = travel_matrix.get(engineer.location, {}).get(job.location, float("inf"))
+            current_load = sum(j.length for j in assignments[engineer.id])
+            remaining = engineer.working_hours - current_load
+            return (dist, -remaining)
 
-        skilled_candidates.sort(key=distance_fn)
+        skilled_candidates.sort(key=assignment_key)
         
         # Try to assign to the closest engineer with available capacity
         assigned = False

@@ -9,7 +9,7 @@ The main entry point is `find_optimal_route`, which returns a route that:
 from __future__ import annotations
 
 from itertools import permutations
-from typing import Sequence, Tuple, Dict
+from typing import List, Sequence, Tuple, Dict
 
 
 def brute_force_tsp(
@@ -59,6 +59,49 @@ def brute_force_tsp(
     return best_route, best_distance
 
 
+def nearest_neighbor_tsp(
+    start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
+) -> Tuple[Tuple[str, ...], float]:
+    """Solve TSP using the nearest-neighbor heuristic.
+
+    Greedy O(n²) approach: from the current location always travel to the
+    closest unvisited destination.  Produces a good-enough route in a fraction
+    of the time needed by brute force, which is O(n!).
+
+    Parameters
+    ----------
+    start : str
+        The starting (and ending) location for the route.
+    destinations : Sequence[str]
+        Locations that must be visited exactly once.
+    travel_matrix : Dict[str, Dict[str, float]]
+        Travel distances between locations.
+
+    Returns
+    -------
+    Tuple[Tuple[str, ...], float]
+        Route tuple (start … stops … start) and its total distance.
+    """
+    if not destinations:
+        return (start, start), 0.0
+
+    unvisited: List[str] = list(destinations)
+    route: List[str] = [start]
+    total_distance: float = 0.0
+    current: str = start
+
+    while unvisited:
+        nearest = min(unvisited, key=lambda loc: travel_matrix[current][loc])
+        total_distance += travel_matrix[current][nearest]
+        current = nearest
+        route.append(nearest)
+        unvisited.remove(nearest)
+
+    total_distance += travel_matrix[current][start]
+    route.append(start)
+    return tuple(route), total_distance
+
+
 def find_optimal_route(
     start: str, destinations: Sequence[str], travel_matrix: Dict[str, Dict[str, float]]
 ) -> Tuple[Tuple[str, ...], float]:
@@ -79,4 +122,4 @@ def find_optimal_route(
         A tuple containing the route (including start at the beginning
         and end) and its total distance.
     """
-    return brute_force_tsp(start, destinations, travel_matrix)
+    return nearest_neighbor_tsp(start, destinations, travel_matrix)
