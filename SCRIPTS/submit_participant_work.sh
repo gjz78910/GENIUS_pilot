@@ -27,7 +27,17 @@ started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 checkpoint_timeout_seconds="${GENIUS_CHECKPOINT_TIMEOUT_SECONDS:-180}"
 
 # Capture authoritative checkpoint outcomes before the repository snapshot.
-python SCRIPTS/run_experiment_test_checkpoints.py \
+# Use the conda env's python directly rather than relying on "python" being
+# on PATH: a non-interactive invocation (e.g. from the end-of-session SSM
+# document's `bash -lc`) hits the standard Ubuntu ~/.bashrc guard ("If not
+# running interactively, don't do anything") before conda's own init block
+# ever runs, so plain "python" resolves to nothing there even though it
+# works fine in a participant's interactive terminal.
+PYTHON_BIN="/opt/conda/envs/genius_pilot/bin/python"
+if [ ! -x "$PYTHON_BIN" ]; then
+    PYTHON_BIN="$(command -v python || command -v python3)"
+fi
+"$PYTHON_BIN" SCRIPTS/run_experiment_test_checkpoints.py \
     --participant-id "$PARTICIPANT_ID" \
     --session-id "$SESSION_ID" \
     --output-dir DATA_COLLECTION \
